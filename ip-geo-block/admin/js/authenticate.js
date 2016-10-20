@@ -6,6 +6,7 @@
  */
 // utility object
 var IP_GEO_BLOCK_ZEP = {
+	init: false,
 	auth: 'ip-geo-block-auth-nonce',
 	nonce: IP_GEO_BLOCK_AUTH.nonce || '',
 	redirect: function (url) {
@@ -345,17 +346,16 @@ var IP_GEO_BLOCK_ZEP = {
 				}
 			}
 		}
-
-		IP_GEO_BLOCK_ZEP.done = true;
 	}
 
 	$(function () {
 		attach_nonce();
+		IP_GEO_BLOCK_ZEP.init = true;
 	});
 
 	// fallback on error
 	$(window).on('error', function () {
-		if (typeof IP_GEO_BLOCK_ZEP.done === 'undefined') {
+		if (!IP_GEO_BLOCK_ZEP.init) {
 			attach_nonce();
 		}
 	});

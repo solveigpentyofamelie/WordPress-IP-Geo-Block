@@ -41,9 +41,10 @@ class IP_Geo_Block {
 	 * 
 	 */
 	private function __construct() {
-		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php';
-		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-load.php';
-		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php';
+		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php' );
+		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-load.php' );
+		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php' );
+		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
 
 		$settings = self::get_option();
 		$priority = $settings['priority'];
@@ -51,7 +52,7 @@ class IP_Geo_Block {
 		$loader = new IP_Geo_Block_Loader();
 
 		// include drop in if it exists
-		@include_once IP_Geo_Block_Util::unslashit( $settings['api_dir'] ) . '/drop-in.php';
+		@include( IP_Geo_Block_Util::unslashit( $settings['api_dir'] ) . '/drop-in.php' );
 
 		// Garbage collection for IP address cache
 		add_action( self::CACHE_NAME, array( $this, 'exec_cache_gc' ) );
@@ -175,10 +176,25 @@ class IP_Geo_Block {
 
 	// get optional values from wp options
 	public static function get_option() {
-		if ( function_exists( 'get_option' ) )
+//		if ( function_exists( 'get_option' ) ) {
 			return FALSE !== ( $option = get_option( self::OPTION_NAME ) ) ? $option : self::get_default();
-		else
-			return IP_Geo_Block_Opts::load_settings();
+//		} else {
+//			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-opts.php' );
+//			return IP_Geo_Block_Opts::load_settings();
+//		}
+	}
+
+	/**
+	 * Get WordPress folders.
+	 *
+	 */
+	public function uploads_url() {
+		$dir = wp_upload_dir(); // @since 2.2.0
+		return $dir['baseurl'];
+	}
+
+	public function languages_url() {
+		return content_url() . '/languages'; // @since 2.6.0
 	}
 
 	/**
@@ -196,19 +212,6 @@ class IP_Geo_Block {
 			wp_enqueue_script( $handle, $script, array( 'jquery' ), self::VERSION );
 			wp_localize_script( $handle, 'IP_GEO_BLOCK_AUTH', $nonce );
 		}
-	}
-
-	/**
-	 * Get WordPress folders.
-	 *
-	 */
-	public function uploads_url() {
-		$dir = wp_upload_dir(); // @since 2.2.0
-		return $dir['baseurl'];
-	}
-
-	public function languages_url() {
-		return content_url() . '/languages'; // @since 2.6.0
 	}
 
 	/**
@@ -273,7 +276,12 @@ class IP_Geo_Block {
 	 * @return array $result country code and so on
 	 */
 	public static function get_geolocation( $ip = NULL, $providers = array(), $callback = 'get_country' ) {
-		$result = self::_get_geolocation( $ip ? $ip : self::get_ip_address(), self::get_option(), $providers, $callback );
+		// make valid providers list
+		$settings = self::get_option();
+		if ( empty( $providers ) )
+			$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
+
+		$result = self::_get_geolocation( $ip ? $ip : self::get_ip_address(), $settings, $providers, $callback );
 
 		if ( ! empty( $result['countryCode'] ) )
 			$result['code'] = $result['countryCode'];
@@ -285,11 +293,7 @@ class IP_Geo_Block {
 	 * API for internal.
 	 *
 	 */
-	private static function _get_geolocation( $ip, $settings, $providers = array(), $callback = 'get_country' ) {
-		// make valid providers list
-		if ( empty( $providers ) )
-			$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
-
+	private static function _get_geolocation( $ip, $settings, $providers, $callback = 'get_country' ) {
 		// set arguments for wp_remote_get()
 		$args = self::get_request_headers( $settings );
 
@@ -377,8 +381,6 @@ class IP_Geo_Block {
 	 * @param boolean $die send http response and die if validation fails
 	 */
 	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $auth = TRUE ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 		// set IP address to be validated
 		$ips = array( self::get_ip_address() );
 
@@ -425,13 +427,6 @@ class IP_Geo_Block {
 				break;
 		}
 
-		// update cache
-		IP_Geo_Block_API_Cache::update_cache( $hook, $validate, $settings );
-
-		// update statistics
-		if ( $auth && $settings['save_statistics'] )
-			IP_Geo_Block_Logs::update_stat( $hook, $validate, $settings );
-
 		// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
 		$var = (int)apply_filters( self::PLUGIN_NAME . '-record-logs', $settings['validation']['reclogs'], $hook, $validate );
 		$block = ( 'passed' !== $validate['result'] );
@@ -440,8 +435,15 @@ class IP_Geo_Block {
 		     ( 3 === $var && ! $validate['auth'] ) || // unauthenticated
 		     ( 4 === $var &&   $validate['auth'] ) || // authenticated
 		     ( 5 === $var ) ) { // all
-			IP_Geo_Block_Logs::record_logs( $hook, $validate, $settings );
+			IP_Geo_Block_Logs::record_logs( $hook, $validate, $settings, $block && $die );
 		}
+
+		// update cache
+		IP_Geo_Block_API_Cache::update_cache( $hook, $validate, $settings, $block && $die );
+
+		// update statistics
+		if ( $auth && $settings['save_statistics'] )
+			IP_Geo_Block_Logs::update_stat( $hook, $validate, $settings, $block && $die );
 
 		// send response code to refuse
 		if ( $block && $die )
@@ -497,9 +499,8 @@ class IP_Geo_Block {
 	 */
 	public function validate_login() {
 		// parse action
-		$action = isset( $_GET['key'] ) ? 'resetpass' : (
-			isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login'
-		);
+		$action = isset( $_GET['key'] ) ?
+			'resetpass' : ( isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login' );
 
 		if ( 'retrievepassword' === $action )
 			$action = 'lostpassword';
@@ -585,17 +586,16 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function validate_direct() {
+		// analyze target in wp-includes, wp-content/(plugins|themes|language|uploads)
+		$path = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
+		$target = in_array( $type, array( 'plugins', 'themes' ) ) ? '[^\?\&\/]*' : '[^\?\&]*';
+		preg_match( "/($path)($target)/", $this->request_uri, $target );
+		$target = empty( $target[2] ) ? $target[1] : $target[2];
+
+		// set validation type by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
 		$settings = self::get_option();
-		$request = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
-		$module = in_array( $type, array( 'plugins', 'themes' ) ) ? '[^\?\&\/]*' : '[^\?\&]*';
-
-		// wp-includes, wp-content/(plugins|themes|language|uploads)
-		preg_match( "/($request)($module)/", $this->request_uri, $module );
-		$request = empty( $module[2] ) ? $module[1] : $module[2];
-
-		// set validation type (0: Bypass, 1: Block by country, 2: WP-ZEP)
-		$list = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
-		$type = in_array( $request, $list, TRUE ) ? 0 : $settings['validation'][ $type ];
+		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
+		$type = in_array( $target, $path, TRUE ) ? 0 : $settings['validation'][ $type ];
 
 		// register validation of nonce (2: WP-ZEP)
 		if ( 2 & $type )
@@ -618,14 +618,12 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function auth_fail( $something = NULL ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 		// Count up a number of fails when authentication is failed
 		if ( $cache = IP_Geo_Block_API_Cache::get_cache( $this->remote_addr ) ) {
 			$validate = self::make_validation( $this->remote_addr, array(
-				'code' => $cache['code'],
-				'fail' => TRUE,
-				'result' => 'failed',
+				'code'     => $cache['code'],
+				'fail'     => TRUE,
+				'result'   => 'failed',
 				'provider' => 'Cache',
 			) );
 
@@ -636,14 +634,16 @@ class IP_Geo_Block {
 			if ( defined( 'XMLRPC_REQUEST' ) && FALSE !== stripos( file_get_contents( 'php://input' ), 'system.multicall' ) )
 				$validate['result'] = 'multi';
 
+			$block = 'multi' === $validate['result'] || $cache['fail'] > max( 0, $settings['login_fails'] );
+
 			// (1) blocked, (3) unauthenticated, (5) all
 			if ( 1 & (int)$settings['validation']['reclogs'] )
-				IP_Geo_Block_Logs::record_logs( $cache['hook'], $validate, $settings );
+				IP_Geo_Block_Logs::record_logs( $cache['hook'], $validate, $settings, $block );
 
 			// send response code to refuse immediately
-			if ( $cache['fail'] > max( 0, $settings['login_fails'] ) || 'multi' === $validate['result'] ) {
+			if ( $block ) {
 				if ( $settings['save_statistics'] )
-					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings );
+					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings, TRUE );
 
 				$this->send_response( $cache['hook'], $settings['response_code'] );
 			}

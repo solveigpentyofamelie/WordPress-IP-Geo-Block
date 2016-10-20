@@ -450,7 +450,7 @@ class IP_Geo_Block_Opts {
 			}
 
 			// set permission not to be overwritten by other plugins.
-			@chmod( $src, fileperms( $src ) & ~(0x0080 | 0x0010 | 0x0002) );
+			@chmod( $src, fileperms( $src ) & ~0222 );
 
 			// put settings to config.php in ip-geo-api.
 			self::save_settings( $settings );
@@ -466,12 +466,25 @@ class IP_Geo_Block_Opts {
 	 */
 	public static function save_settings( $settings ) {
 		$path = self::get_api_dir( $settings );
-		return $path ? file_put_contents( $path . 'config.php', "<?php\nreturn " . var_export( $settings, TRUE ) . ";\n" ) : FALSE;
+
+		if ( file_put_contents( $path . '/config.php', "<?php\nreturn " . var_export( $settings, TRUE ) . ";\n", LOCK_EX ) )
+			return TRUE;
+
+		if ( class_exists( 'IP_Geo_Block_Admin' ) )
+			IP_Geo_Block_Admin::add_admin_notice( 'error', sprintf( __( 'Unable to write %s. Please check the permission.', 'ip-geo-block' ), $path ) );
+
+		return FALSE;
 	}
 
 	public static function load_settings() {
-		$path = self::get_api_dir( NULL );
-		return $path ? require $path . 'config.php' : self::get_default();
+		static $opts = NULL;
+
+		if ( ! $opts ) {
+			$path = self::get_api_dir( NULL );
+			$opts = $path ? require( $path . '/config.php' ) : self::get_default();
+		}
+
+		return $opts;
 	}
 
 }

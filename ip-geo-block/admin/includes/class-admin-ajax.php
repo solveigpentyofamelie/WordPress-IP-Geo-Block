@@ -84,8 +84,6 @@ class IP_Geo_Block_Admin_Ajax {
 	 *
 	 */
 	static public function export_logs( $which ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 		$csv = '';
 		$which = IP_Geo_Block_Logs::restore_logs( $which );
 		$date = isset( $which[0] ) ? $which[0][1] : $_SERVER['REQUEST_TIME'];
@@ -114,8 +112,6 @@ class IP_Geo_Block_Admin_Ajax {
 	 *
 	 */
 	static public function restore_logs( $which ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 		// if js is slow then limit the number of rows
 		$list = array();
 		$limit = IP_Geo_Block_Logs::limit_rows( @$_POST['time'] );

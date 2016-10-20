@@ -315,8 +315,6 @@ class IP_Geo_Block_Admin {
 		if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ) {
 			// Check creation of database table
 			if ( $settings['validation']['reclogs'] ) {
-				require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 				if ( ( $warn = IP_Geo_Block_Logs::diag_tables() ) &&
 				     FALSE === IP_Geo_Block_Logs::create_tables() ) {
 					self::add_admin_notice( 'notice-warning', $warn );
@@ -816,6 +814,9 @@ class IP_Geo_Block_Admin {
 			) );
 		}
 
+		// Save settings for advanced-cache.php
+		IP_Geo_Block_Opts::save_settings( $options );
+
 		// Force to finish update matching rule
 		delete_transient( IP_Geo_Block::CRON_NAME );
 
@@ -857,7 +858,6 @@ class IP_Geo_Block_Admin {
 
 		  case 'clear-statistics':
 			// Set default values
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
 			IP_Geo_Block_Logs::clear_stat();
 			$res = array(
 				'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_NAME,
@@ -876,8 +876,6 @@ class IP_Geo_Block_Admin {
 
 		  case 'clear-logs':
 			// Delete logs in MySQL DB
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 			$hook = array( 'comment', 'login', 'admin', 'xmlrpc', 'public' );
 			$which = in_array( $which, $hook ) ? $which : NULL;
 			IP_Geo_Block_Logs::clear_logs( $which );
@@ -933,8 +931,6 @@ class IP_Geo_Block_Admin {
 		  case 'create-table':
 		  case 'delete-table':
 			// Need to define `IP_GEO_BLOCK_DEBUG` to true
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 			if ( 'create-table' === $_POST['cmd'] )
 				IP_Geo_Block_Logs::create_tables();
 			else

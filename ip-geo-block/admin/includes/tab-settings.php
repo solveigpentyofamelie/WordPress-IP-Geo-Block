@@ -77,7 +77,7 @@ class IP_Geo_Block_Admin_Tab {
 				'type' => 'html',
 				'option' => $option_name,
 				'field' => $field,
-				'value' => esc_html( $key['ip'] . ' / ' . ( $key['code'] ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ),
+				'value' => esc_html( $key['ip'] . ' / ' . ( $key['code'] && isset( $key['provider'] ) ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ),
 				'after' => '&nbsp;<a class="button button-secondary" id="ip-geo-block-scan-code" title="' . __( 'Scan all the APIs you selected at Geolocation API settings', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Scan your country code', 'ip-geo-block' ) . '</a><div id="ip-geo-block-scanning"></div>',
 			)
 		);

@@ -163,7 +163,8 @@ Also thanks for providing the following great services and REST APIs for free.
 
 Development of this plugin is promoted at 
     [WordPress-IP-Geo-Block](https://github.com/tokkonopapa/WordPress-IP-Geo-Block "tokkonopapa/WordPress-IP-Geo-Block - GitHub")
-and class libraries to handle geo-location database of Maxmind and IP2Location are developed separately at 
+and class libraries to handle geo-location database for Maxmind and IP2Location
+are developed separately as "add-in"s at 
     [WordPress-IP-Geo-API](https://github.com/tokkonopapa/WordPress-IP-Geo-API "tokkonopapa/WordPress-IP-Geo-API - GitHub").
 All contributions will always be welcome. Or visit my 
     [development blog](http://www.ipgeoblock.com/ "IP Geo Block").

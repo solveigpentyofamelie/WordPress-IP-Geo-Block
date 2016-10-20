@@ -451,11 +451,7 @@ class IP_Geo_Block_API_IPInfoDB extends IP_Geo_Block_API {
  */
 class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 
-	public function __construct( $api_key = NULL ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-	}
-
-	public static function update_cache( $hook, $validate, $settings ) {
+	public static function update_cache( $hook, $validate, $settings, $block ) {
 		$cache = self::get_cache( $ip = $validate['ip'] );
 
 		if ( $cache ) {
@@ -476,7 +472,7 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 			'fail' => $validate['auth'] ? 0 : $fail,
 			'call' => $settings['save_statistics'] ? $call : 0,
 			'host' => isset( $validate['host'] ) ? $validate['host'] : NULL,
-		) );
+		), $block );
 
 		// also update cache by cookie
 		if ( $settings['cache_cookie'] )
@@ -736,7 +732,7 @@ if ( class_exists( 'IP_Geo_Block' ) ) {
 		$exclude = array( '.', '..' );
 		foreach ( $plugins as $plugin ) {
 			if ( ! in_array( $plugin, $exclude, TRUE ) && is_dir( $dir.$plugin ) ) {
-				@include_once( $dir.$plugin.'/class-'.$plugin.'.php' );
+				@include( $dir.$plugin.'/class-'.$plugin.'.php' );
 			}
 		}
 	}

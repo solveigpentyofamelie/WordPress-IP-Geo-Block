@@ -78,16 +78,12 @@ class IP_Geo_Block_Rewrite {
 		$validate['result'] = 'blocked'; //'malice';
 
 		// (1) blocked, unknown, (3) unauthenticated, (5) all
-		if ( (int)$settings['validation']['reclogs'] & 1 ) {
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
+		if ( (int)$settings['validation']['reclogs'] & 1 )
 			IP_Geo_Block_Logs::record_logs( 'admin', $validate, $settings );
-		}
 
 		// update statistics
-		if ( $settings['save_statistics'] ) {
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings );
-		}
+		if ( $settings['save_statistics'] )
+			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings, TRUE );
 
 		// send response code to refuse
 		$context->send_response( 'admin', $exist ? $settings['response_code'] : 404 );

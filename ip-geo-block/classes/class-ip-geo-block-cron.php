@@ -155,9 +155,9 @@ class IP_Geo_Block_Cron {
 	/**
 	 * Kick off a cron job to garbage collection for IP address cache.
 	 *
+	 * @note: When the init action occurs in /wp-settings.php, wp_cron() runs.
 	 */
 	public static function exec_cache_gc( $settings ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
 		IP_Geo_Block_Logs::delete_expired_cache( $settings['cache_time'] );
 		self::stop_cache_gc();
 		self::start_cache_gc( $settings );

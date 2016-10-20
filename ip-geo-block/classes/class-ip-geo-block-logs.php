@@ -30,6 +30,28 @@ class IP_Geo_Block_Logs {
 	);
 
 	/**
+	 * Check if $wpdb is aveilable
+	 *
+	 *//*
+	private static function is_available( $force = FALSE ) {
+		global $wpdb, $table_prefix;
+
+		if ( is_object( $wpdb ) )
+			return TRUE;
+
+		if ( $force ) {
+			// Include the wpdb class and, if present, a db.php database drop-in.
+			require_wp_db();
+
+			// Set the database table prefix and the format specifiers for database table columns.
+			$GLOBALS['table_prefix'] = $table_prefix; // defined in wp-config.php
+			wp_set_wpdb_vars();
+		}
+
+		return is_object( $wpdb );
+	}*/
+
+	/**
 	 * Create
 	 *
 	 * @note creating mixed storage engine may cause troubles with some plugins.
@@ -163,12 +185,14 @@ class IP_Geo_Block_Logs {
 	 * Restore statistics data.
 	 *
 	 */
-	public static function restore_stat( $ret = FALSE ) {
+	public static function restore_stat( $default = FALSE, $force = FALSE ) {
+//		if ( ! self::is_available( $force ) ) return FALSE;
+
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE_STAT;
 
 		$data = $wpdb->get_results( "SELECT * FROM `$table`", ARRAY_A ) or self::error( __LINE__ );
-		return empty( $data ) ? ( $ret ? self::$default : FALSE ) : unserialize( $data[0]['data'] );
+		return empty( $data ) ? ( $default ? self::$default : FALSE ) : unserialize( $data[0]['data'] );
 	}
 
 	/**
@@ -176,6 +200,8 @@ class IP_Geo_Block_Logs {
 	 *
 	 */
 	public static function record_stat( $statistics ) {
+//		if ( ! self::is_available() ) return FALSE;
+
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE_STAT;
 
@@ -449,7 +475,9 @@ class IP_Geo_Block_Logs {
 	 * @param array $validate validation results
 	 * @param array $settings option settings
 	 */
-	public static function record_logs( $hook, $validate, $settings ) {
+	public static function record_logs( $hook, $validate, $settings, $force = FALSE ) {
+//		if ( ! self::is_available( $force ) ) return FALSE;
+
 		// get data
 		$agent = self::get_user_agent();
 		$heads = self::get_http_headers();
@@ -534,9 +562,9 @@ class IP_Geo_Block_Logs {
 	 * Update statistics.
 	 *
 	 */
-	public static function update_stat( $hook, $validate, $settings ) {
+	public static function update_stat( $hook, $validate, $settings, $force = FALSE ) {
 		// Restore statistics.
-		if ( $statistics = self::restore_stat() ) {
+		if ( $statistics = self::restore_stat( FALSE, $force ) ) {
 
 			$provider = isset( $validate['provider'] ) ? $validate['provider'] : 'ZZ';
 			if ( empty( $statistics['providers'][ $provider ] ) )
@@ -582,6 +610,8 @@ class IP_Geo_Block_Logs {
 	 *
 	 */
 	public static function search_cache( $ip ) {
+//		if ( ! self::is_available() ) return NULL;
+
 		global $wpdb;
 		$table = $wpdb->prefix . IP_Geo_Block::CACHE_NAME;
 
@@ -621,7 +651,9 @@ class IP_Geo_Block_Logs {
 	 * Update cache
 	 *
 	 */
-	public static function update_cache( $cache ) {
+	public static function update_cache( $cache, $force = FALSE ) {
+//		if ( ! self::is_available( $force ) ) return FALSE;
+
 		global $wpdb;
 		$table = $wpdb->prefix . IP_Geo_Block::CACHE_NAME;
 

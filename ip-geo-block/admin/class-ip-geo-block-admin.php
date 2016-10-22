@@ -814,9 +814,6 @@ class IP_Geo_Block_Admin {
 			) );
 		}
 
-		// Save settings for advanced-cache.php
-		IP_Geo_Block_Opts::save_settings( $options );
-
 		// Force to finish update matching rule
 		delete_transient( IP_Geo_Block::CRON_NAME );
 

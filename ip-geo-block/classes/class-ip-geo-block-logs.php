@@ -489,11 +489,11 @@ class IP_Geo_Block_Logs {
 			$validate['ip'] = preg_replace( '/\d{1,3}$/', '***', $validate['ip'] );
 
 		// limit the maximum number of rows
-		global $wpdb;
-		$table = $wpdb->prefix . self::TABLE_LOGS;
-		$rows = $settings['validation']['maxlogs'];
+		$rows = (int)$settings['validation']['maxlogs'];
 
 		// count the number of rows for each hook
+		global $wpdb;
+		$table = $wpdb->prefix . self::TABLE_LOGS;
 		$sql = $wpdb->prepare(
 			"SELECT count(*) FROM `$table` WHERE `hook` = '%s'", $hook
 		) and $count = (int)$wpdb->get_var( $sql );

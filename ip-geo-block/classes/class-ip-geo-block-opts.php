@@ -464,7 +464,7 @@ class IP_Geo_Block_Opts {
 	 * Save/Load settings data to/from API_DIR/config.php
 	 *
 	 */
-	public static function save_settings( $settings ) {
+	private static function save_settings( $settings ) {
 		$path = self::get_api_dir( $settings );
 
 		if ( file_put_contents( $path . '/config.php', "<?php\nreturn " . var_export( $settings, TRUE ) . ";\n", LOCK_EX ) )

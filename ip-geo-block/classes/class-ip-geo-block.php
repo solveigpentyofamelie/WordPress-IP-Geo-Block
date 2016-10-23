@@ -574,7 +574,7 @@ class IP_Geo_Block {
 		// register validation of malicious signature (except in the comment and post)
 		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) ) {
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
-			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_script'    ), 6, 2 );
+			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_badtags'   ), 6, 2 );
 		}
 
 		// validate country by IP address (1: Block by country)
@@ -603,7 +603,7 @@ class IP_Geo_Block {
 
 		// register validation of malicious signature
 		add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
-		add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_script'    ), 6, 2 );
+		add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_badtags'   ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
 		$validate = $this->validate_ip( 'admin', $settings, 1 & $type );
@@ -696,9 +696,9 @@ class IP_Geo_Block {
 		return $validate;
 	}
 
-	public function check_script( $validate, $settings ) {
-		return preg_match( '!<script[^>]*>(.*?)<\\\\*/script[^>]*>!', $this->query, $m ) &&
-		       preg_match( '/\w+/', $m[1] ) ? $validate + array( 'result' => 'script' ) : $validate;
+	public function check_badtags( $validate, $settings ) {
+		return preg_match( '!<(script|svg|iframe|object|applet)[^>]*>(.*?)<\\\\*/\1[^>]*>!', $this->query, $m ) &&
+		       preg_match( '/\w+/', $m[2] ) ? $validate + array( 'result' => 'badtag' ) : $validate;
 	}
 
 	/**
@@ -764,7 +764,7 @@ class IP_Geo_Block {
 
 		// validate script tag on front-end
 		if ( $public['exception'] && FALSE === strpos( $this->request_uri, $public['exception'] ) )
-			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_script' ), 5, 2 );
+			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_badtags' ), 5, 2 );
 
 		// register user agent validation and malicious requests
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );

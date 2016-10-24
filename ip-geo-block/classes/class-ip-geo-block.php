@@ -67,7 +67,7 @@ class IP_Geo_Block {
 
 		// normalize requested uri and page
 		$this->query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
-		$this->request_uri = strtolower( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) );
+		$this->request_uri = strtolower( @parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) );
 		$this->request_uri = preg_replace( array( '!\.+/!', '!//+!' ), '/', $this->request_uri );
 		$this->pagenow = ! empty( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : basename( $_SERVER['SCRIPT_NAME'] );
 

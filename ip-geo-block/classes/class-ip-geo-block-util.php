@@ -447,7 +447,7 @@ class IP_Geo_Block_Util {
 	 
 		// remove %0d and %0a from location
 		$strip = array( '%0d', '%0a', '%0D', '%0A' );
-		return _deep_replace( $strip, $location ); // wp-includes/formatting.php
+		return self::deep_replace( $strip, $location ); // wp-includes/formatting.php
 	}
 
 	/**
@@ -597,7 +597,7 @@ class IP_Geo_Block_Util {
 	/**
 	 * WP alternative function for advanced-cache.php
 	 *
-	 * Removes any NULL characters in $string. 
+	 * Removes any NULL characters in $string.
 	 * @source: wp-includes/kses.php
 	 */
 	private static function kses_no_null( $string ) {
@@ -605,6 +605,24 @@ class IP_Geo_Block_Util {
 		$string = preg_replace( '/\\\\+0+/', '', $string );
 
 		return $string;
+	}
+
+	/**
+	 * WP alternative function for advanced-cache.php
+	 *
+	 * Perform a deep string replace operation to ensure the values in $search are no longer present.
+	 * e.g. $subject = '%0%0%0DDD', $search ='%0D', $result ='' rather than the '%0%0DD' that str_replace would return
+	 * @source: wp-includes/formatting.php
+	 */
+	private static function deep_replace( $search, $subject ) {
+		$subject = (string) $subject;
+
+		$count = 1;
+		while ( $count ) {
+			$subject = str_replace( $search, '', $subject, $count );
+		}
+
+		return $subject;
 	}
 
 }

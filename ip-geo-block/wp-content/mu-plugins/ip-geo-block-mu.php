@@ -22,9 +22,11 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) die;
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
-if ( ! defined( 'IP_GEO_BLOCK_BEFORE_INIT' ) ):
+if ( ! class_exists( 'IP_Geo_Block' ) ):
 
 /*----------------------------------------------------------------------------*
  * Detect plugin. For use on Front End only.
@@ -36,24 +38,22 @@ $plugin = 'ip-geo-block/ip-geo-block.php';
 if ( is_plugin_active( $plugin ) || is_plugin_active_for_network( $plugin ) ) {
 
 	// Load plugin class
-	include_once( WP_PLUGIN_DIR . '/' . $plugin );
+	require( WP_PLUGIN_DIR . '/' . $plugin );
 
 	$plugin = IP_Geo_Block::get_option();
 
 	// check setup had already done
 	if ( version_compare( $plugin['version'], IP_Geo_Block::VERSION ) >= 0 && $plugin['matching_rule'] >= 0 ) {
 
-		// Validation must be executed before `init` action hook
-		define( 'IP_GEO_BLOCK_BEFORE_INIT', TRUE );
-
 		// Remove instanciation
 		remove_action( 'plugins_loaded', array( 'IP_Geo_Block', 'get_instance' ) );
 
 		// Instanciate immediately
 		IP_Geo_Block::get_instance();
+//		add_action( 'muplugins_loaded', array( 'IP_Geo_Block', 'get_instance' ) );
 	}
 }
 
 unset( $plugin );
 
-endif;
+endif; // ! class_exists( 'IP_Geo_Block' )

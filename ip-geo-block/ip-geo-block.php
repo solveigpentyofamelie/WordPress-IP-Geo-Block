@@ -48,7 +48,7 @@ endif;
  * Load class
  *
  */
-require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block.php' );
+require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block.php' );
 
 /**
  * Register hooks that are fired when the plugin is activated or deactivated.
@@ -82,7 +82,7 @@ add_action( 'plugins_loaded', array( 'IP_Geo_Block', 'get_instance' ) );
  *
  */
 if ( is_admin() ) {
-	require_once( IP_GEO_BLOCK_PATH . 'admin/class-ip-geo-block-admin.php' );
+	require( IP_GEO_BLOCK_PATH . 'admin/class-ip-geo-block-admin.php' );
 	add_action( 'plugins_loaded', array( 'IP_Geo_Block_Admin', 'get_instance' ) );
 }
 

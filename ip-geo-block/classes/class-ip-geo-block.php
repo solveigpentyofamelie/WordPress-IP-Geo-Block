@@ -697,8 +697,8 @@ class IP_Geo_Block {
 	}
 
 	public function check_badtags( $validate, $settings ) {
-		return preg_match( '!<(script|svg|iframe|object|applet)[^>]*>(.*?)<\\\\*/\1[^>]*>!', $this->query, $m ) &&
-		       preg_match( '/\w+/', $m[2] ) ? $validate + array( 'result' => 'badtag' ) : $validate;
+		return preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query )
+			? $validate + array( 'result' => 'badtag' ) : $validate;
 	}
 
 	/**
@@ -763,7 +763,7 @@ class IP_Geo_Block {
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
 
 		// validate script tag on front-end
-		if ( $public['exception'] && FALSE === strpos( $this->request_uri, $public['exception'] ) )
+		if ( ! $public['exception'] || FALSE === strpos( $this->request_uri, $public['exception'] ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_badtags' ), 5, 2 );
 
 		// register user agent validation and malicious requests
@@ -785,7 +785,7 @@ class IP_Geo_Block {
 		$u_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		foreach ( IP_Geo_Block_Util::multiexplode( array( ",", "\n" ), $settings['public']['ua_list'] ) as $pat ) {
-			@list( $name, $code ) = IP_Geo_Block_Util::multiexplode( array( ':', '#' ), $pat );
+			list( $name, $code ) = array_pad( IP_Geo_Block_Util::multiexplode( array( ':', '#' ), $pat ), 2, '' );
 
 			if ( $name && ( '*' === $name || FALSE !== strpos( $u_agent, $name ) ) ) {
 				$which = ( FALSE === strpos( $pat, ':' ) );     // 0: pass (':'), 1: block ('#')
@@ -812,7 +812,7 @@ class IP_Geo_Block {
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 
-				elseif ( filter_var( $code, FILTER_VALIDATE_IP ) ) {
+				elseif ( $code = explode( '/', $code ) && filter_var( $code[0], FILTER_VALIDATE_IP ) ) {
 					$name = $this->check_ips( $validate, $code, $which );
 					if ( $not xor isset( $name['result'] ) )
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );

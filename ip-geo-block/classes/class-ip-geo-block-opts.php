@@ -132,7 +132,7 @@ class IP_Geo_Block_Opts {
 			'matching_rule'  => -1,   // -1:follow, 0:white list, 1:black list
 			'white_list'     => NULL, // Comma separeted country code
 			'black_list'     => 'ZZ', // Comma separeted country code
-			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US\nPinterest:US,AOL:US",
+			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
 			'exception'      => NULL, // Path from document root for exception
 			'simulate'       => FALSE,// just simulate, never block
 		),

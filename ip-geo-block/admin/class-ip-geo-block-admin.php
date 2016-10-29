@@ -532,7 +532,6 @@ class IP_Geo_Block_Admin {
 
 		  case 'html':
 			echo "\n", $args['value'], "\n"; // must be sanitized at caller
-			break;
 		}
 
 		if ( ! empty( $args['after'] ) )
@@ -688,10 +687,9 @@ class IP_Geo_Block_Admin {
 		//----------------------------------------
 
 		// sanitize proxy
-		$output['validation']['proxy'] = preg_replace(
-			'/[^\w,]/', '',
-			strtoupper( $output['validation']['proxy'] )
-		);
+		$output['validation']['proxy'] = implode( ',', $this->trim(
+			preg_replace( '/[^\w,]/', '', strtoupper( $output['validation']['proxy'] ) )
+		) );
 
 		// sanitize and format ip address
 		$key = array( '/[^\d\n\.\/,]/', '/([\s,])+/', '/(?:^,|,$)/' );
@@ -710,13 +708,7 @@ class IP_Geo_Block_Admin {
 		$output['public']['ua_list'] = preg_replace_callback( '/[:#]\w+/', array( $this, 'strtoupper' ), $output['public']['ua_list'] );
 
 		// reject invalid signature which potentially blocks itself
-		$key = array();
-		foreach ( explode( ',', $output['signature'] ) as $val ) {
-			$val = trim( $val );
-			if ( $val && FALSE === stripos( IP_Geo_Block::$wp_path['admin'], $val ) )
-				$key[] = $val;
-		}
-		$output['signature'] = implode( ',', $key );
+		$output['signature'] = implode( ',', $this->trim( $output['signature'] ) );
 
 		// 2.2.5 exception : convert associative array to simple array
 		foreach ( array( 'plugins', 'themes' ) as $key )
@@ -726,19 +718,30 @@ class IP_Geo_Block_Admin {
 		foreach ( array( 'white_list', 'black_list' ) as $key )
 			$output['public'][ $key ] = strtoupper( preg_replace( '/\s/', '', $output['public'][ $key ] ) );
 
+		// 3.0.0 exception : trim extra space and comma
+		foreach ( array( 'public', 'includes' ) as $key )
+			$output['exception'][ $key ] = ! empty( $output['exception'][ $key ] ) ? $this->trim( $output['exception'][ $key ] ) : $default['exception'][ $key ];
+
 		// 3.0.0 exception for other areas : set default factors
-		foreach ( array( 'includes', 'uploads', 'languages' ) as $key )
+		foreach ( array( 'uploads', 'languages' ) as $key )
 			$output['exception'][ $key ] = $default['exception'][ $key ];
 
 		return $output;
 	}
 
-	/**
-	 * For preg_replace_callback()
-	 *
-	 */
+	// Callback for preg_replace_callback()
 	public function strtoupper( $matches ) {
 		return strtoupper( $matches[0] );
+	}
+
+	// Trim extra space and comma avoiding invalid signature which potentially blocks itself
+	private function trim( $text ) {
+		$ret = array();
+		foreach ( explode( ',', $text ) as $val ) {
+			if ( $val && FALSE === stripos( IP_Geo_Block::$wp_path['admin'], $val ) )
+				$ret[] = $val;
+		}
+		return $ret;
 	}
 
 	/**

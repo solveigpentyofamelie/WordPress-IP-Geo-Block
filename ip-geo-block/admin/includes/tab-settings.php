@@ -712,6 +712,26 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
+if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
+		// Excluded action
+		$key = 'exception';
+		add_settings_field(
+			$option_name.'_'.$key.'_'.$field,
+			'<dfn title="' . __( 'Specify the name of action that is invariably blocked.', 'ip-geo-block' ) . '">' . __( 'Excluded actions', 'ip-geo-block' ) . '</dfn>',
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $key,
+				'sub-field' => $field,
+				'value' => implode( ',', $options[ $key ][ $field ] ),
+				'after' => $comma[0],
+			)
+		);
+endif;
+
 		// Simulation mode
 		$key = 'simulate';
 		add_settings_field(

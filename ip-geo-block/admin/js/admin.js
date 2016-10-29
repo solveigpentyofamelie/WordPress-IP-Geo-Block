@@ -185,8 +185,8 @@ var ip_geo_block_time = new Date();
 
 	// Enable / Disable at front-end target settings
 	function set_front_end(checked) {
-		$.each(['matching_rule', 'ua_list', 'exception', 'simulate'], function (i, val) {
-			$(ID('@', 'public_' + val)).prop('disabled', !checked);
+		$.each(['public_matching_rule', 'public_ua_list', 'exception_public', 'public_simulate'], function (i, val) {
+			$(ID('@', val)).prop('disabled', !checked);
 		});
 	}
 

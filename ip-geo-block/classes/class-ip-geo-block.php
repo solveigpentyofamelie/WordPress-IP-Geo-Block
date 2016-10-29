@@ -361,7 +361,7 @@ class IP_Geo_Block {
 				trackback_response( $code, IP_Geo_Block_Util::kses( $mesg ) ); // @since 0.71
 
 			elseif ( ! defined( 'DOING_AJAX' ) && ! defined( 'XMLRPC_REQUEST' ) ) {
-				$hook = IP_Geo_Block_Util::may_be_logged_in();
+				$hook = IP_Geo_Block_Util::may_be_logged_in() && 'admin' === $this->target_type;
 				FALSE !== ( @include( get_stylesheet_directory() .'/'.$code.'.php' ) ) or // child  theme
 				FALSE !== ( @include( get_template_directory()   .'/'.$code.'.php' ) ) or // parent theme
 				wp_die( // get_dashboard_url() @since 3.1.0

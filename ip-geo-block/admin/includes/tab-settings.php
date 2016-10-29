@@ -712,24 +712,6 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
-		// Exceptions for validating "Bad signatures"
-		$key = 'exception';
-		add_settings_field(
-			$option_name.'_'.$field.'_'.$key,
-			'<dfn title="' . __( 'You can specify the pages to prevent false detection. e.g. &#8220;/forums&#8221; for bbPress.', 'ip-geo-block' ) . '">' . __( 'Exceptions to validating &#8220;Bad signatures in query&#8221;', 'ip-geo-block' ) . '</dfn>',
-			array( $context, 'callback_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type' => 'text',
-				'option' => $option_name,
-				'field' => $field,
-				'sub-field' => $key,
-				'value' => $options[ $field ][ $key ],
-				'after' => $comma[0],
-			)
-		);
-
 		// Simulation mode
 		$key = 'simulate';
 		add_settings_field(

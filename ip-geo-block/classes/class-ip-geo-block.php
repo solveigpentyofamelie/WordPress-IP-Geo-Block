@@ -755,7 +755,7 @@ class IP_Geo_Block {
 		}
 
 		// validate bad signatures when an action is required on front-end
-		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', array() ), TRUE ) )
+		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
 
 		// register user agent validation and malicious requests

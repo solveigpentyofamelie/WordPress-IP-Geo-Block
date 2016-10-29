@@ -80,6 +80,7 @@ class IP_Geo_Block_Opts {
 			'plugins'     => FALSE,   // for wp-content/plugins
 			'themes'      => FALSE,   // for wp-content/themes
 			// since version 3.0.0
+			'public'      => FALSE,   // for public facing pages
 			'includes'    => FALSE,   // for wp-includes/
 			'uploads'     => FALSE,   // for UPLOADS/uploads
 			'languages'   => FALSE,   // for wp-content/language
@@ -107,6 +108,9 @@ class IP_Geo_Block_Opts {
 			'plugins'     => array(), // for pliugins
 			'themes'      => array(), // for themes
 			// since version 3.0.0
+			'public'      => array(   // for public facing pages
+				'bbp-new-topic', 'bbp-new-reply',
+			),
 			'includes'    => array(   // for wp-includes/
 				'ms-files.php', 'js/tinymce/wp-tinymce.php'
 			 ),
@@ -133,7 +137,6 @@ class IP_Geo_Block_Opts {
 			'white_list'     => NULL, // Comma separeted country code
 			'black_list'     => 'ZZ', // Comma separeted country code
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
-			'exception'      => NULL, // Path from document root for exception
 			'simulate'       => FALSE,// just simulate, never block
 		),
 	);
@@ -255,14 +258,13 @@ class IP_Geo_Block_Opts {
 			}
 
 			if ( version_compare( $version, '3.0.0' ) < 0 ) {
-				$settings['cache_time_gc']        = $default['cache_time_gc'];
-				$settings['cache_cookie']         = $default['cache_cookie'];
-				$settings['validation']['public'] = $default['validation']['public'];
-				$settings['redirect_uri']         = $default['redirect_uri'];
-				$settings['network_wide']         = $default['network_wide'];
-				$settings['public']               = $default['public'];
+				$settings['cache_time_gc'] = $default['cache_time_gc'];
+				$settings['cache_cookie']  = $default['cache_cookie'];
+				$settings['redirect_uri']  = $default['redirect_uri'];
+				$settings['network_wide']  = $default['network_wide'];
+				$settings['public']        = $default['public'];
 
-				foreach ( array( 'includes', 'uploads', 'languages' ) as $tmp ) {
+				foreach ( array( 'public', 'includes', 'uploads', 'languages' ) as $tmp ) {
 					$settings['validation'][ $tmp ] = $default['validation'][ $tmp ];
 					$settings['rewrite'   ][ $tmp ] = $default['rewrite'   ][ $tmp ];
 					$settings['exception' ][ $tmp ] = $default['exception' ][ $tmp ];

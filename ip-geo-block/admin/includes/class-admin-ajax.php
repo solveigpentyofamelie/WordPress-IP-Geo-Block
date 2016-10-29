@@ -268,10 +268,10 @@ class IP_Geo_Block_Admin_Ajax {
 			'[rewrite][languages]',      // 3.0.0
 			'[exception][plugins][*]',   // 2.2.5
 			'[exception][themes][*]',    // 2.2.5
-			'[exception][public]',       // 3.0.0
-			'[exception][includes]',     // 3.0.0
-			'[exception][uploads]',      // 3.0.0
-			'[exception][languages]',    // 3.0.0
+			'[exception][public][$]',    // 3.0.0
+			'[exception][includes][$]',  // 3.0.0
+			'[exception][uploads][$]',   // 3.0.0
+			'[exception][languages][$]', // 3.0.0
 			'[public][matching_rule]',   // 3.0.0
 			'[public][white_list]',      // 3.0.0
 			'[public][black_list]',      // 3.0.0
@@ -332,8 +332,12 @@ class IP_Geo_Block_Admin_Ajax {
 							strval( $input[  $m[1]  ][  $m[2]  ] ) & (int)$m[3];
 					}
 					elseif ( isset( $input[ $m[1] ][ $m[2] ] ) ) {
-						foreach ( $input[ $m[1] ][ $m[2] ] as $val ) {
-							$json[ $prfx.'['.$m[1].']['.$m[2].']'.'['.$val.']' ] = 1;
+						if ( '*' === $m[3] ) {
+							foreach ( $input[ $m[1] ][ $m[2] ] as $val ) {
+								$json[ $prfx.'['.$m[1].']['.$m[2].']'.'['.$val.']' ] = 1;
+							}
+						} else {
+							$json[ $prfx.'['.$m[1].']['.$m[2].']' ] = implode( ',', $input[ $m[1] ][ $m[2] ] );
 						}
 					}
 					break;

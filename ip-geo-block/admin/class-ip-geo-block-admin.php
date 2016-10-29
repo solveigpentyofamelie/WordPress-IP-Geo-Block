@@ -532,6 +532,7 @@ class IP_Geo_Block_Admin {
 
 		  case 'html':
 			echo "\n", $args['value'], "\n"; // must be sanitized at caller
+			break;
 		}
 
 		if ( ! empty( $args['after'] ) )
@@ -719,8 +720,14 @@ class IP_Geo_Block_Admin {
 			$output['public'][ $key ] = strtoupper( preg_replace( '/\s/', '', $output['public'][ $key ] ) );
 
 		// 3.0.0 exception : trim extra space and comma
-		foreach ( array( 'public', 'includes' ) as $key )
-			$output['exception'][ $key ] = ! empty( $output['exception'][ $key ] ) ? $this->trim( $output['exception'][ $key ] ) : $default['exception'][ $key ];
+		foreach ( array( 'public', 'includes' ) as $key ) {
+			if ( empty( $output['exception'][ $key ] ) ) {
+				$output['exception'][ $key ] = $default['exception'][ $key ];
+			} else {
+				$output['exception'][ $key ] = (  is_array( $output['exception'][ $key ] ) ?
+				$output['exception'][ $key ] : $this->trim( $output['exception'][ $key ] ) );
+			}
+		}
 
 		// 3.0.0 exception for other areas : set default factors
 		foreach ( array( 'uploads', 'languages' ) as $key )
@@ -738,8 +745,10 @@ class IP_Geo_Block_Admin {
 	private function trim( $text ) {
 		$ret = array();
 		foreach ( explode( ',', $text ) as $val ) {
-			if ( $val && FALSE === stripos( IP_Geo_Block::$wp_path['admin'], $val ) )
+			$val = trim( $val );
+			if ( $val && FALSE === stripos( IP_Geo_Block::$wp_path['admin'], $val ) ) {
 				$ret[] = $val;
+			}
 		}
 		return $ret;
 	}
@@ -939,6 +948,7 @@ class IP_Geo_Block_Admin {
 			$res = array(
 				'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_NAME,
 			);
+			break;
 		}
 
 		if ( isset( $res ) ) // wp_send_json_{success,error}() @since 3.5.0

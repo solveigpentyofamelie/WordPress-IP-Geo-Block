@@ -572,10 +572,8 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature (except in the comment and post)
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) ) {
+		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
-			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_badtags'   ), 6, 2 );
-		}
 
 		// validate country by IP address (1: Block by country)
 		$this->validate_ip( 'admin', $settings, 1 & $type );
@@ -587,23 +585,23 @@ class IP_Geo_Block {
 	 */
 	public function validate_direct() {
 		// analyze target in wp-includes, wp-content/(plugins|themes|language|uploads)
-		$path = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
+		$name = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
 		$target = in_array( $type, array( 'plugins', 'themes' ) ) ? '[^\?\&\/]*' : '[^\?\&]*';
-		preg_match( "/($path)($target)/", $this->request_uri, $target );
+		preg_match( "/($name)($target)/", $this->request_uri, $target );
 		$target = empty( $target[2] ) ? $target[1] : $target[2];
 
 		// set validation type by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
 		$settings = self::get_option();
-		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
-		$type = in_array( $target, $path, TRUE ) ? 0 : $settings['validation'][ $type ];
+		$name = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
+		$type = in_array( $target, $name, TRUE ) ? 0 : (int)$settings['validation'][ $type ];
 
 		// register validation of nonce (2: WP-ZEP)
 		if ( 2 & $type )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
 
 		// register validation of malicious signature
-		add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
-		add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_badtags'   ), 6, 2 );
+		elseif ( 0 === $type )
+			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
 		$validate = $this->validate_ip( 'admin', $settings, 1 & $type );
@@ -627,13 +625,12 @@ class IP_Geo_Block {
 				'provider' => 'Cache',
 			) );
 
-			$settings = self::get_option();
-			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings );
-
 			// validate xmlrpc system.multicall
 			if ( defined( 'XMLRPC_REQUEST' ) && FALSE !== stripos( file_get_contents( 'php://input' ), 'system.multicall' ) )
 				$validate['result'] = 'multi';
 
+			$settings = self::get_option();
+			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // update 'fail'
 			$block = 'multi' === $validate['result'] || $cache['fail'] > max( 0, $settings['login_fails'] );
 
 			// (1) blocked, (3) unauthenticated, (5) all
@@ -693,12 +690,11 @@ class IP_Geo_Block {
 			}
 		}
 
-		return $validate;
-	}
+		// validate malicious tags
+		if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query ) )
+			return $validate + array( 'result' => 'badtag' );
 
-	public function check_badtags( $validate, $settings ) {
-		return preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query )
-			? $validate + array( 'result' => 'badtag' ) : $validate;
+		return $validate;
 	}
 
 	/**
@@ -761,10 +757,6 @@ class IP_Geo_Block {
 		// validate bad signatures when an action is required on front-end
 		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', array() ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
-
-		// validate script tag on front-end
-		if ( ! $public['exception'] || FALSE === strpos( $this->request_uri, $public['exception'] ) )
-			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_badtags' ), 5, 2 );
 
 		// register user agent validation and malicious requests
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );

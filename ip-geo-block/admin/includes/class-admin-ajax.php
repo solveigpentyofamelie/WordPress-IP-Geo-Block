@@ -366,7 +366,7 @@ class IP_Geo_Block_Admin_Ajax {
 				    'themes'      => 2,       // Validate on wp-content/themes
 				    'timing'      => 1,       // 0:init, 1:mu-plugins, 2:drop-in
 				),
-				'signature'       => "../,/wp-config.php,/passwd,curl,wget\neval,select:.5,where:.5,union:.5\ncreate:.6,password:.4,load_file:.5",
+				'signature'       => "../,/wp-config.php,/passwd\ncurl,wget,eval,base64\nselect:.5,where:.5,union:.5\nload_file:.5,create:.6,password:.4",
 				'rewrite'         => array(   // Apply rewrite rule
 				    'plugins'     => TRUE,    // for wp-content/plugins
 				    'themes'      => TRUE,    // for wp-content/themes

@@ -75,8 +75,8 @@ and reverse-brute-force attacks to the login form and XML-RPC.
   [reduce the load on server](http://www.ipgeoblock.com/codex/validation-timing.html "Validation timing | IP Geo Block")
   especially against brute-force attacks.  
   And furthermore, a cache mechanism for the fetched IP addresses and country 
-  code has been equipped to reduce load on the server against the burst 
-  accesses with a short period of time.
+  code can help to reduce load on the server against the burst accesses with 
+  a short period of time.
 
 * **Support of BuddyPress and bbPress:**  
   You can configure this plugin such that a registered user can login as the

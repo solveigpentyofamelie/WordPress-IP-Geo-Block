@@ -247,6 +247,21 @@ class IP_Geo_Block {
 	}
 
 	/**
+	 * Retrieve IP address via Chrome Compression Proxy
+	 *
+	 */
+	public function get_chrome_proxy( $ip ) {
+		// $_SERVER['REMOTE_ADDR'] should be validated by DNS lookup?
+		if ( isset( $_SERVER['HTTP_VIA'] ) &&
+		     FALSE !== strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) &&
+		     isset( $_SERVER['HTTP_FORWARDED'] ) ) {
+			$proxy = preg_replace( '/^for=.*?([\d\.a-f:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
+		}
+
+		return ! empty( $proxy ) ? $proxy : $ip;
+	}
+
+	/**
 	 * Render a text message at the comment form.
 	 *
 	 */
@@ -760,6 +775,9 @@ class IP_Geo_Block {
 
 		// register user agent validation and malicious requests
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );
+
+		// retrieve true ip address via chrome compression proxy
+		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_chrome_proxy' ), 20, 1 );
 
 		// validate country by IP address (block: true, die: false)
 		$this->validate_ip( 'public', $settings, TRUE, ! $public['simulate'] );

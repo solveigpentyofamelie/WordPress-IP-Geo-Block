@@ -251,14 +251,14 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function get_chrome_proxy( $ip ) {
-		// $_SERVER['REMOTE_ADDR'] should be validated by DNS lookup?
-		if ( isset( $_SERVER['HTTP_VIA'] ) &&
-		     FALSE !== strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) &&
-		     isset( $_SERVER['HTTP_FORWARDED'] ) ) {
+		if ( isset( $_SERVER['HTTP_VIA'] ) && strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) && isset( $_SERVER['HTTP_FORWARDED'] ) ) {
+			// $_SERVER['REMOTE_ADDR'] should be validated by reverse DNS lookup?
+			// require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
+			// if ( FALSE !== strpos( 'google', IP_Geo_Block_Lkup::gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) ) )
 			$proxy = preg_replace( '/^for=.*?([\d\.a-f:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
 		}
 
-		return ! empty( $proxy ) ? $proxy : $ip;
+		return empty( $proxy ) ? $ip : $proxy;
 	}
 
 	/**

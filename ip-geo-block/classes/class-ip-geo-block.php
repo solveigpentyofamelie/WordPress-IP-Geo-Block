@@ -758,6 +758,29 @@ class IP_Geo_Block {
 	 * Validate at public facing pages.
 	 *
 	 */
+	public function fetch_request( $wp ) {
+		$settings = self::get_option();
+		$public = $settings['public'];
+
+		// exception for post type
+		global $post;
+		if ( $post ) {
+			$type = get_post_type( $post->ID );
+			if ( in_array( $type, $public['target_posts'], TRUE ) ) {
+				;
+			}
+		}
+
+		// exception for page
+		else {
+			foreach ( $public['target_pages'] as $page ) {
+				if ( FALSE !== strpos( $this->request_uri, "/$page" ) ) {
+					;
+				}
+			}
+		}
+	}
+
 	public function validate_public() {
 		$settings = self::get_option();
 		$public = $settings['public'];
@@ -768,6 +791,9 @@ class IP_Geo_Block {
 			$settings['white_list'   ] = $public['white_list'   ];
 			$settings['black_list'   ] = $public['black_list'   ];
 		}
+
+		// fetch and validate request then setup exception filter
+		add_action( 'wp', array( $this, 'fetch_request' ) );
 
 		// validate bad signatures when an action is required on front-end
 		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )

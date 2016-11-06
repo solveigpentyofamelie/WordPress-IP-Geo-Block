@@ -466,7 +466,9 @@ class IP_Geo_Block_Admin_Tab {
 		$desc = array(
 			__( 'Regardless of the country code, it will block a malicious request to <code>%s&hellip;/*.php</code>.', 'ip-geo-block' ),
 			__( 'It configures &#8220%s&#8221 to validate a request to the PHP file which does not load WordPress core.', 'ip-geo-block' ),
-			__( '<dfn title="Select the item which causes undesired blocking in order to exclude it from the validation target. Oblique font indicates &#8220;INACTIVE&#8221;.">Exceptions</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Select the item which causes undesired blocking in order to exclude from the validation target. Grayed item indicates &#8220;INACTIVE&#8221;.">Exceptions</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Select page in order to exclude from the validation target.">Page</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Select post type in order to exclude from the validation target.">Post type</dfn>', 'ip-geo-block' ),
 		);
 
 		// Set rewrite condition
@@ -691,6 +693,49 @@ class IP_Geo_Block_Admin_Tab {
 				'sub-field' => $key,
 				'value' => $options[ $field ][ $key ],
 				'after' => $comma[0],
+			)
+		);
+
+		// List of page
+		$exception = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[3] . "<li style='display:none'><ul>\n";
+		if ( $tmp = get_pages() ) {
+			foreach ( $tmp as $val ) {
+				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_pages_' . $val->post_name . '" name="ip_geo_block_settings[public][target_pages][' . $val->post_name . ']" value="1"' . checked( isset( $options[ $field ]['target_pages'][ $val->post_name ] ), TRUE, FALSE ) . ' />';
+				$exception .= '<label for="ip_geo_block_settings_public_target_pages_' . $val->post_name . '">' . $val->post_name . '</label></li>' . "\n";
+			}
+		}
+		$exception .= '</ul></li></ul>' . "\n";
+
+		// List of post type
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[4] . "<li style='display:none'><ul>\n";
+		foreach ( array_keys( get_post_types() ) as $val ) {
+			$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_posts_' . $val . '" name="ip_geo_block_settings[public][target_posts][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_posts'][ $val ] ), TRUE, FALSE ) . ' />';
+			$exception .= '<label for="ip_geo_block_settings_public_target_posts_' . $val . '">' . $val . '</label></li>' . "\n";
+		}
+		$exception .= '</ul></li></ul>' . "\n";
+
+		// Validation target
+		$key = 'target_rule';
+		add_settings_field(
+			$option_name.'_'.$field.'_'.$key,
+			'<dfn title="' . __( 'Specify the validation target on front-end.', 'ip-geo-block' ) . '">' . __( 'Validation target', 'ip-geo-block' ) . '</dfn>',
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'select',
+				'option' => $option_name,
+				'field' => $field,
+				'sub-field' => $key,
+				'value' => $options[ $field ][ $key ],
+				'list' => array(
+					0 => __( 'All requests', 'ip-geo-block' ),
+					1 => __( 'Except for followings', 'ip-geo-block' ),
+				),
+				'desc' => array(
+					1 => __( 'This doesn\'t work when &#8220;Validation timing&#8221; is selected as &#8220;mu-plugins&#8221; (ip-geo-block-mu.php).', 'ip-geo-block' ),
+				),
+				'after' => '<div class="ip-geo-block-desc"></div>' . "\n" . $exception,
 			)
 		);
 

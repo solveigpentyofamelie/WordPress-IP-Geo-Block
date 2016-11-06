@@ -136,6 +136,9 @@ class IP_Geo_Block_Opts {
 			'matching_rule'  => -1,   // -1:follow, 0:white list, 1:black list
 			'white_list'     => NULL, // Comma separeted country code
 			'black_list'     => 'ZZ', // Comma separeted country code
+			'target_rule'    => 0,    // 0:all, 1:block target, 2:pass target
+			'target_pages'   => array(), // target pages
+			'target_posts'   => array(), // target post types
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,// just simulate, never block
 		),

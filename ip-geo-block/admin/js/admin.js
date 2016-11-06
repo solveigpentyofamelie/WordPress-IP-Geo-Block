@@ -126,14 +126,14 @@ var ip_geo_block_time = new Date();
 	}
 
 	// Show/Hide folding list
-	function show_folding_list(element, name) {
+	function show_folding_list($this, element, target, mask) {
 		var stat = false;
-		stat |= 0 === element.prop('type').indexOf('checkbox') && element.is(':checked');
-		stat |= 0 === element.prop('type').indexOf('select'  ) && '0' !== element.val();
+		stat |= (0 === $this.prop('type').indexOf('checkbox') && $this.is(':checked'));
+		stat |= (0 === $this.prop('type').indexOf('select'  ) && '0' !== $this.val());
 
-		element.nextAll('.' + name + '_folding').each(function (i, obj) {
+		element.nextAll('.' + target + '_folding').each(function (i, obj) {
 			obj = $(obj);
-			if (stat) {
+			if (stat && mask) {
 				obj.removeClass('folding-disable');
 			} else {
 				obj.children('li').hide();
@@ -184,10 +184,20 @@ var ip_geo_block_time = new Date();
 	}
 
 	// Enable / Disable at front-end target settings
-	function set_front_end(checked) {
-		$.each(['public_matching_rule', 'public_ua_list', 'exception_public', 'public_simulate'], function (i, val) {
-			$(ID('@', val)).prop('disabled', !checked);
-		});
+	function set_front_end($this) {
+		var checked = $this.is(':checked'),
+		    target  = ID('%', 'settings'),
+		    select  = $(ID('@', 'public_target_rule')),
+		    parent  = $this.closest('tr').nextAll('tr');
+
+		// Enable / Disable descendent items
+		parent.find('[name^="' + target + '"]').prop('disabled', !checked);
+
+		// Enable / Disable description
+		parent.find(ID('.', 'desc')).css('opacity', checked ? 1.0 : 0.5);
+
+		// Show / Hide validation target
+		show_folding_list($this, select, target, '1' === select.val() ? true : false);
 	}
 
 	/**
@@ -236,7 +246,7 @@ var ip_geo_block_time = new Date();
 			});
 
 			// Public facing pages
-			set_front_end($(ID('@', 'validation_public')).is(':checked'));
+			set_front_end($(ID('@', 'validation_public')));
 
 			// Additional edge case
 			var i = ID('%', 'settings[providers][IPInfoDB]');
@@ -534,7 +544,8 @@ var ip_geo_block_time = new Date();
 
 			// Show/Hide folding list at Login form
 			$(ID('@', 'validation_login')).on('change', function (event) {
-				show_folding_list($(this), name);
+				var $this = $(this);
+				show_folding_list($this, $this, name, true);
 				return false;
 			}).trigger('change');
 
@@ -542,13 +553,14 @@ var ip_geo_block_time = new Date();
 			$('select[name^="' + name + '"]').on('change', function (event) {
 				var $this = $(this);
 				show_description($this);
-				show_folding_list($this, name);
+				show_folding_list($this, $this, name, true);
 				return false;
 			}).trigger('change');
 
 			// Enable / Disable for Public facing pages
 			$(ID('@', 'validation_public')).on('change', function (event) {
-				set_front_end($(this).is(':checked'));
+				set_front_end($(this));
+				return false;
 			}).trigger('change');
 
 			// Export / Import settings

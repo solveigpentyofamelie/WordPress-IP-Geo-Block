@@ -126,13 +126,18 @@ var ip_geo_block_time = new Date();
 	}
 
 	// Show/Hide folding list
-	function show_folding_list($this, element, target, mask) {
+	function show_folding_list($this, element, field, mask) {
 		var stat = false;
 		stat |= (0 === $this.prop('type').indexOf('checkbox') && $this.is(':checked'));
 		stat |= (0 === $this.prop('type').indexOf('select'  ) && '0' !== $this.val());
 
-		element.nextAll('.' + target + '_folding').each(function (i, obj) {
+		element.nextAll('.' + field + '_folding').each(function (i, obj) {
 			obj = $(obj);
+
+			// completely hide
+			// obj.css('display', mask ? 'block' : 'none');
+
+			// fold the contents
 			if (stat && mask) {
 				obj.removeClass('folding-disable');
 			} else {
@@ -185,19 +190,19 @@ var ip_geo_block_time = new Date();
 
 	// Enable / Disable at front-end target settings
 	function set_front_end($this) {
-		var checked = $this.is(':checked'),
-		    target  = ID('%', 'settings'),
+		var field   = ID('%', 'settings'),
+		    checked = $this.is(':checked'),
 		    select  = $(ID('@', 'public_target_rule')),
 		    parent  = $this.closest('tr').nextAll('tr');
 
 		// Enable / Disable descendent items
-		parent.find('[name^="' + target + '"]').prop('disabled', !checked);
+		parent.find('[name^="' + field + '"]').prop('disabled', !checked);
 
 		// Enable / Disable description
 		parent.find(ID('.', 'desc')).css('opacity', checked ? 1.0 : 0.5);
 
 		// Show / Hide validation target
-		show_folding_list($this, select, target, '1' === select.val() ? true : false);
+		show_folding_list($this, select, field, '1' === select.val() ? true : false);
 	}
 
 	/**

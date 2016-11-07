@@ -699,18 +699,20 @@ class IP_Geo_Block_Admin_Tab {
 		// List of page
 		$exception = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[3] . "<li style='display:none'><ul>\n";
 		if ( $tmp = get_pages() ) {
-			foreach ( $tmp as $val ) {
-				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_pages_' . $val->post_name . '" name="ip_geo_block_settings[public][target_pages][' . $val->post_name . ']" value="1"' . checked( isset( $options[ $field ]['target_pages'][ $val->post_name ] ), TRUE, FALSE ) . ' />';
-				$exception .= '<label for="ip_geo_block_settings_public_target_pages_' . $val->post_name . '">' . $val->post_name . '</label></li>' . "\n";
+			foreach ( $tmp as $key ) {
+				$val = esc_attr( $key->post_name );
+				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_pages_' . $val . '" name="ip_geo_block_settings[public][target_pages][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_pages'][ $val ] ), TRUE, FALSE ) . ' />';
+				$exception .= '<label for="ip_geo_block_settings_public_target_pages_' . $val . '">' . esc_html( $key->post_name ) . '</label></li>' . "\n";
 			}
 		}
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of post type
 		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[4] . "<li style='display:none'><ul>\n";
-		foreach ( array_keys( get_post_types() ) as $val ) {
+		foreach ( array_keys( get_post_types() ) as $key ) {
+			$val = esc_attr( $key );
 			$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_posts_' . $val . '" name="ip_geo_block_settings[public][target_posts][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_posts'][ $val ] ), TRUE, FALSE ) . ' />';
-			$exception .= '<label for="ip_geo_block_settings_public_target_posts_' . $val . '">' . $val . '</label></li>' . "\n";
+			$exception .= '<label for="ip_geo_block_settings_public_target_posts_' . $val . '">' . esc_html( $key ) . '</label></li>' . "\n";
 		}
 		$exception .= '</ul></li></ul>' . "\n";
 
@@ -733,7 +735,7 @@ class IP_Geo_Block_Admin_Tab {
 					1 => __( 'Except for followings', 'ip-geo-block' ),
 				),
 				'desc' => array(
-					1 => __( 'This doesn\'t work when &#8220;Validation timing&#8221; is selected as &#8220;mu-plugins&#8221; (ip-geo-block-mu.php).', 'ip-geo-block' ),
+					1 => __( 'Regardless of the setting for &#8220;Validation timing&#8221;, it is deferred until WP core is ready to get page/post type.', 'ip-geo-block' ),
 				),
 				'after' => '<div class="ip-geo-block-desc"></div>' . "\n" . $exception,
 			)
@@ -953,6 +955,22 @@ if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 		add_settings_field(
 			$option_name.'_'.$field.'_'.$key,
 			__( 'Recording period of the logs (days)', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $field,
+				'sub-field' => $key,
+				'value' => $options[ $field ][ $key ],
+			)
+		);
+
+		$key = 'maxlogs';
+		add_settings_field(
+			$option_name.'_'.$field.'_'.$key,
+			__( 'Maximum length of logs for each target', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,

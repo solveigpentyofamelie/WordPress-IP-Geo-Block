@@ -187,7 +187,7 @@ class IP_Geo_Block {
 	/**
 	 * Get WordPress folders.
 	 *
-	 */
+	 *//*
 	public function uploads_url() {
 		$dir = wp_upload_dir(); // @since 2.2.0
 		return $dir['baseurl'];
@@ -195,7 +195,7 @@ class IP_Geo_Block {
 
 	public function languages_url() {
 		return content_url() . '/languages'; // @since 2.6.0
-	}
+	}*/
 
 	/**
 	 * Register and enqueue a nonce with a specific JavaScript.
@@ -358,6 +358,8 @@ class IP_Geo_Block {
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', (int)$code );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) );
 
+		// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
+		'public' !== $hook and header( 'X-Robots-Tag: noindex' );
 		nocache_headers(); // nocache and response code
 
 		switch ( (int)substr( (string)$code, 0, 1 ) ) {
@@ -566,6 +568,10 @@ class IP_Geo_Block {
 			$type = (int)$settings['validation']['admin'];
 		}
 
+		// if there's no action parameter but something is specified
+		if ( empty( $action ) && ! empty( $_REQUEST ) )
+			$zep = TRUE;
+
 		// setup WP-ZEP (2: WP-ZEP)
 		if ( ( 2 & $type ) && $zep ) {
 			// redirect if valid nonce in referer
@@ -578,9 +584,23 @@ class IP_Geo_Block {
 				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 			) );
 
+			if ( $action ) {
+				$in_page   = in_array( $page,   $list, TRUE );
+				$in_action = in_array( $action, $list, TRUE );
+			}
+
+			// fallback when something is specified
+			else {
+				$page = $in_page = $in_action = FALSE;
+				foreach ( array_values( $_REQUEST ) as $action ) {
+					if ( in_array( $action, $list, TRUE ) ) {
+						$in_action = TRUE;
+						break;
+					}
+				}
+			}
+
 			// combination with vulnerable keys should be prevented to bypass WP-ZEP
-			$in_action = in_array( $action, $list, TRUE );
-			$in_page   = in_array( $page,   $list, TRUE );
 			if ( ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
 			     ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) )
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
@@ -758,32 +778,20 @@ class IP_Geo_Block {
 	 * Validate at public facing pages.
 	 *
 	 */
-	public function fetch_request( $wp ) {
-		$settings = self::get_option();
-		$public = $settings['public'];
-
-		// exception for post type
-		global $post;
-		if ( $post ) {
-			$type = get_post_type( $post->ID );
-			if ( in_array( $type, $public['target_posts'], TRUE ) ) {
-				;
-			}
-		}
-
-		// exception for page
-		else {
-			foreach ( $public['target_pages'] as $page ) {
-				if ( FALSE !== strpos( $this->request_uri, "/$page" ) ) {
-					;
-				}
-			}
-		}
-	}
-
 	public function validate_public() {
 		$settings = self::get_option();
 		$public = $settings['public'];
+
+		if ( $public['target_rule'] ) {
+			// postpone validation until 'wp' fires
+			if ( ! did_action( 'wp' ) ) {
+				add_action( 'wp', array( $this, 'validate_public' ) );
+				return;
+			}
+
+			// register filter hook to check pages and post types
+			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_pages' ), 10, 2 );
+		}
 
 		// replace "Validation rule settings"
 		if ( -1 !== (int)$public['matching_rule'] ) {
@@ -791,9 +799,6 @@ class IP_Geo_Block {
 			$settings['white_list'   ] = $public['white_list'   ];
 			$settings['black_list'   ] = $public['black_list'   ];
 		}
-
-		// fetch and validate request then setup exception filter
-		add_action( 'wp', array( $this, 'fetch_request' ) );
 
 		// validate bad signatures when an action is required on front-end
 		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
@@ -807,6 +812,25 @@ class IP_Geo_Block {
 
 		// validate country by IP address (block: true, die: false)
 		$this->validate_ip( 'public', $settings, TRUE, ! $public['simulate'] );
+	}
+
+	public function check_pages( $validate, $settings ) {
+		// exception for post type
+		global $post;
+		if ( $post ) {
+			if ( in_array( get_post_type( $post->ID ), $settings['public']['target_posts'], TRUE ) )
+				return $validate + array( 'result' => 'passed' );
+		}
+
+		// exception for page
+		else {
+			foreach ( $settings['public']['target_pages'] as $page ) {
+				if ( FALSE !== strpos( $this->request_uri, "/$page" ) )
+					return $validate + array( 'result' => 'passed' );
+			}
+		}
+
+		return $validate;
 	}
 
 	public function check_bots( $validate, $settings ) {

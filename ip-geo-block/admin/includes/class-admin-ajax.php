@@ -153,7 +153,7 @@ class IP_Geo_Block_Admin_Ajax {
 	 *
 	 */
 	static public function validate_settings( $parent ) {
-		// restore escaped characters
+		// restore escaped characters (see wp_magic_quotes() in wp-includes/load.php)
 		$json = str_replace(
 			array( '\\"', '\\\\', "'"  ),
 			array( '"',   '\\',   '\"' ),
@@ -275,6 +275,9 @@ class IP_Geo_Block_Admin_Ajax {
 			'[public][matching_rule]',   // 3.0.0
 			'[public][white_list]',      // 3.0.0
 			'[public][black_list]',      // 3.0.0
+			'[public][target_rule]',     // 3.0.0
+			'[public][target_pages][$]', // 3.0.0
+			'[public][target_posts][$]', // 3.0.0
 			'[public][ua_list]',         // 3.0.0
 			'[public][simulate]',        // 3.0.0
 			'[providers][Maxmind]',
@@ -290,6 +293,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[save_statistics]',
 			'[validation][reclogs]',
 			'[validation][recdays]',     // 2.2.9
+			'[validation][maxlogs]',
 			'[validation][postkey]',
 			'[update][auto]',
 			'[anonymize]',
@@ -371,7 +375,8 @@ class IP_Geo_Block_Admin_Ajax {
 				    'plugins'     => TRUE,    // for wp-content/plugins
 				    'themes'      => TRUE,    // for wp-content/themes
 				),
-			), FALSE // should not overwrite the existing parameters
+			),
+			FALSE // should not overwrite the existing parameters
 		);
 	}
 

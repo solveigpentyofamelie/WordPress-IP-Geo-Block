@@ -68,7 +68,7 @@ class IP_Geo_Block {
 		// normalize requested uri and page
 		$this->query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
 		$this->request_uri = strtolower( @parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) );
-		$this->request_uri = preg_replace( array( '!\.+/!', '!//+!' ), '/', $this->request_uri );
+		$this->request_uri = preg_replace( array( '!\.+/!', '!//+!' ), '/', $this->request_uri ? $this->request_uri : $_SERVER['REQUEST_URI'] );
 		$this->pagenow = ! empty( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : basename( $_SERVER['SCRIPT_NAME'] );
 
 		// setup the content folders
@@ -545,9 +545,11 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function validate_admin() {
+		// if there's no action parameter but something is specified
 		$settings = self::get_option();
-		$page   = isset( $_REQUEST['page'  ] ) ? $_REQUEST['page'  ] : NULL;
-		$action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : NULL;
+		$action = isset( $_REQUEST['task' ] ) ? 'task' : 'action';
+		$action = isset( $_REQUEST[$action] ) ? $_REQUEST[$action] : NULL;
+		$page   = isset( $_REQUEST['page' ] ) ? $_REQUEST['page' ] : NULL;
 
 		switch ( $this->pagenow ) {
 		  case 'admin-ajax.php':
@@ -568,10 +570,6 @@ class IP_Geo_Block {
 			$type = (int)$settings['validation']['admin'];
 		}
 
-		// if there's no action parameter but something is specified
-		if ( empty( $action ) && ! empty( $_REQUEST ) )
-			$zep = TRUE;
-
 		// setup WP-ZEP (2: WP-ZEP)
 		if ( ( 2 & $type ) && $zep ) {
 			// redirect if valid nonce in referer
@@ -579,28 +577,14 @@ class IP_Geo_Block {
 
 			// list of request with a specific query to bypass WP-ZEP
 			$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', array(
-				'wp-compression-test', // wp-admin/includes/template.php
+				'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
 				'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
 				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 			) );
 
-			if ( $action ) {
-				$in_page   = in_array( $page,   $list, TRUE );
-				$in_action = in_array( $action, $list, TRUE );
-			}
-
-			// fallback when something is specified
-			else {
-				$page = $in_page = $in_action = FALSE;
-				foreach ( array_values( $_REQUEST ) as $action ) {
-					if ( in_array( $action, $list, TRUE ) ) {
-						$in_action = TRUE;
-						break;
-					}
-				}
-			}
-
 			// combination with vulnerable keys should be prevented to bypass WP-ZEP
+			$in_action = in_array( $action, $list, TRUE );
+			$in_page   = in_array( $page,   $list, TRUE );
 			if ( ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
 			     ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) )
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );

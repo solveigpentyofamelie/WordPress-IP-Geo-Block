@@ -66,10 +66,10 @@ class IP_Geo_Block {
 			$loader->add_action( 'init', 'ip_geo_block_activate', $priority );
 
 		// normalize requested uri and page
-		$this->query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
-		$this->request_uri = strtolower( @parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) );
-		$this->request_uri = preg_replace( array( '!\.+/!', '!//+!' ), '/', $this->request_uri ? $this->request_uri : $_SERVER['REQUEST_URI'] );
+		$key = preg_replace( array( '!\.+/!', '!//+!' ), '/', $_SERVER['REQUEST_URI'] );
+		$this->request_uri = @parse_url( $key, PHP_URL_PATH ) or $this->request_uri = $key;
 		$this->pagenow = ! empty( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : basename( $_SERVER['SCRIPT_NAME'] );
+		$this->query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
 
 		// setup the content folders
 		self::$wp_path = array( 'home' => IP_Geo_Block_Util::unslashit( parse_url( site_url(), PHP_URL_PATH ) ) ); // @since 2.6.0
@@ -359,7 +359,7 @@ class IP_Geo_Block {
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) );
 
 		// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
-		'public' !== $hook and header( 'X-Robots-Tag: noindex' );
+		'public' !== $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 		nocache_headers(); // nocache and response code
 
 		switch ( (int)substr( (string)$code, 0, 1 ) ) {
@@ -570,29 +570,29 @@ class IP_Geo_Block {
 			$type = (int)$settings['validation']['admin'];
 		}
 
-		// setup WP-ZEP (2: WP-ZEP)
-		if ( ( 2 & $type ) && $zep ) {
-			// redirect if valid nonce in referer
-			IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
+		// list of request with a specific query to bypass WP-ZEP
+		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', array(
+			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
+			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
+			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
+		) );
 
-			// list of request with a specific query to bypass WP-ZEP
-			$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', array(
-				'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
-				'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
-				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
-			) );
+		$in_action = in_array( $action, $list, TRUE );
+		$in_page   = in_array( $page,   $list, TRUE );
 
-			// combination with vulnerable keys should be prevented to bypass WP-ZEP
-			$in_action = in_array( $action, $list, TRUE );
-			$in_page   = in_array( $page,   $list, TRUE );
-			if ( ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
-			     ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) )
+		// combination with vulnerable keys should be prevented to bypass WP-ZEP
+		if ( ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
+		     ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) ) {
+			if ( ( 2 & $type ) && $zep ) {
+				// redirect if valid nonce in referer, otherwise register WP-ZEP (2: WP-ZEP)
+				IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
-		}
+			}
 
-		// register validation of malicious signature (except in the comment and post)
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
-			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+			// register validation of malicious signature (except in the comment and post)
+			if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+		}
 
 		// validate country by IP address (1: Block by country)
 		$this->validate_ip( 'admin', $settings, 1 & $type );
@@ -604,23 +604,25 @@ class IP_Geo_Block {
 	 */
 	public function validate_direct() {
 		// analyze target in wp-includes, wp-content/(plugins|themes|language|uploads)
-		$name = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
-		$target = in_array( $type, array( 'plugins', 'themes' ) ) ? '[^\?\&\/]*' : '[^\?\&]*';
-		preg_match( "/($name)($target)/", $this->request_uri, $target );
+		$path = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
+		$target = ( 'plugins' === $type || 'themes' === $type ? '[^\?\&\/]*' : '[^\?\&]*' );
+		preg_match( "/($path)($target)/", $this->request_uri, $target );
 		$target = empty( $target[2] ) ? $target[1] : $target[2];
 
 		// set validation type by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
 		$settings = self::get_option();
-		$name = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
-		$type = in_array( $target, $name, TRUE ) ? 0 : (int)$settings['validation'][ $type ];
+		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
+		$type = (int)$settings['validation'][ $type ];
 
-		// register validation of nonce (2: WP-ZEP)
-		if ( 2 & $type )
-			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
+		if ( ! in_array( $target, $path, TRUE ) ) {
+			// register validation of nonce (2: WP-ZEP)
+			if ( 2 & $type )
+				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
 
-		// register validation of malicious signature
-		elseif ( 0 === $type )
-			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+			// register validation of malicious signature
+			if ( ! IP_Geo_Block_Util::may_be_logged_in() )
+				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+		}
 
 		// validate country by IP address (1: Block by country)
 		$validate = $this->validate_ip( 'admin', $settings, 1 & $type );

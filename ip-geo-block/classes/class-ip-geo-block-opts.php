@@ -109,7 +109,8 @@ class IP_Geo_Block_Opts {
 			'themes'      => array(), // for themes
 			// since version 3.0.0
 			'public'      => array(   // for public facing pages
-				'bbp-new-topic', 'bbp-new-reply',
+				'bbp-new-topic', 'bbp-edit-topic',
+				'bbp-new-reply', 'bbp-edit-reply',
 			),
 			'includes'    => array(   // for wp-includes/
 				'ms-files.php', 'js/tinymce/wp-tinymce.php'

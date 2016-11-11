@@ -361,7 +361,7 @@ class IP_Geo_Block_Util {
 		elseif ( isset( $_COOKIE ) ) {
 			 foreach ( array_keys( $_COOKIE ) as $key ) {
 				if ( 0 === strpos( $key, 'wp-settings-' ) ) {
-					$num = preg_replace( '/\D/', '', $key ); // get numerical characters
+					$num = substr( $key, 12 ); // get numerical characters
 					break;
 				}
 			}

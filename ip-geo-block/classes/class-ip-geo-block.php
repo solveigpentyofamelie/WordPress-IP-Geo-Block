@@ -277,7 +277,7 @@ class IP_Geo_Block {
 	private static function make_validation( $ip, $result ) {
 		return array_merge( array(
 			'ip'   => $ip,
-			'auth' => IP_Geo_Block_Util::guess_current_user_id(),
+			'auth' => IP_Geo_Block_Util::get_current_user_id(),
 			'code' => 'ZZ', // may be overwritten with $result
 		), $result );
 	}
@@ -358,8 +358,6 @@ class IP_Geo_Block {
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', (int)$code );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) );
 
-		// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
-		'public' !== $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 		nocache_headers(); // nocache and response code
 
 		switch ( (int)substr( (string)$code, 0, 1 ) ) {
@@ -372,6 +370,8 @@ class IP_Geo_Block {
 			exit;
 
 		  default: // 4xx Client Error, 5xx Server Error
+			// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
+			'login' === $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 			status_header( $code ); // @since 2.0.0
 
 			if ( function_exists( 'trackback_response' ) )
@@ -858,7 +858,7 @@ class IP_Geo_Block {
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 
-				elseif ( $code = explode( '/', $code ) && filter_var( $code[0], FILTER_VALIDATE_IP ) ) {
+				elseif ( preg_match( '!^[0-9a-f\.:/]+$!', $code ) ) {
 					$name = $this->check_ips( $validate, $code, $which );
 					if ( $not xor isset( $name['result'] ) )
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );

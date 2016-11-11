@@ -524,7 +524,7 @@ class IP_Geo_Block_API_Cookie extends IP_Geo_Block_API {
 
 		setcookie(
 			IP_Geo_Block::CACHE_NAME,
-			base64_encode( convert_uuencode( $nonce . '|' . implode( '|', array_values( $cache ) ) ) ),
+			IP_Geo_Block_Util::cache_encode( $nonce . '|' . implode( '|', array_values( $cache ) ) ),
 			$_SERVER['REQUEST_TIME'] + $settings['cache_time'],
 			IP_Geo_Block_Util::slashit( IP_Geo_Block::$wp_path['home'] ),
 			'',
@@ -535,7 +535,7 @@ class IP_Geo_Block_API_Cookie extends IP_Geo_Block_API {
 
 	public static function get_cache( $ip ) {
 		if ( isset( $_COOKIE[ IP_Geo_Block::CACHE_NAME ] ) ) {
-			$cache = explode( '|', convert_uudecode( base64_decode( $_COOKIE[ IP_Geo_Block::CACHE_NAME ] ) ) );
+			$cache = explode( '|', IP_Geo_Block_Util::cache_decode( $_COOKIE[ IP_Geo_Block::CACHE_NAME ] ) );
 
 			// prevent to disguise country code
 			if ( count( $cache ) === 8 &&

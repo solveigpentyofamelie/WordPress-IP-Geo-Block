@@ -498,6 +498,28 @@ For more details, see
   and
     [release 3.0.0](http://www.ipgeoblock.com/changelog/release-3.0.0.html "3.0.0 Release Note | IP Geo Block").
 
+= 2.2.9.2 =
+Sorry for frequent update but need to fix the following issue:
+
+* **Improved:** Avoid conflict with "Open external links in a new window" 
+  plugin to prevent leak of nonce. This update is not for fixing a 
+  vulnerability of this plugin but for getting rid of the potential 
+  risk with the conflict. For more detail, see 
+  [this discussion at support forum](https://wordpress.org/support/topic/ip-geoblock-opens-2-windows-on-link-clicks-when-user-is-logged-in/ "Topic: IP Geoblock opens 2 windows on link clicks when user is logged in &laquo; WordPress.org Forums").
+
+= 2.2.9.1 =
+* **Bug fix:** Blocking Wordfence scanning.
+  ([@](https://wordpress.org/support/topic/wordfence-conflict-2/ "WordFence Conflict"))
+* **Bug fix:** Illegal elimination of colon in text field for IP address.
+  ([@](https://wordpress.org/support/topic/adding-ipv6-to-white-list/ "Adding IPv6 to white list"))
+* **Improved:** Compatibility with PHP 7 that cause to feel relaxed.
+  ([@](https://wordpress.org/support/topic/plans-for-php-7-compatiblity/ "Plans for PHP 7 compatiblity?"))
+* **Improved:** Avoid resetting whitelist on update by InfiniteWP.
+  ([@](https://wordpress.org/support/topic/whitelist-resets-on-update/ "[Resolved] Whitelist resets on update"))
+* **Trial feature:** `X-Robots-Tag` HTTP header with `noindex, nofollow` 
+  for login page.
+  ([@](https://wordpress.org/support/topic/ip-geo-block-and-searchmachines/ "IP GEo-block and searchmachines"))
+
 = 2.2.9 =
 * **New feature:** A new option that makes this plugin configured as a 
   "Must-use plugin". It can massively reduce the server load especially 

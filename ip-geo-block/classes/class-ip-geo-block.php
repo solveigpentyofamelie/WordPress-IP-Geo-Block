@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.0b10';
+	const VERSION = '3.0.0b11';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -244,21 +244,6 @@ class IP_Geo_Block {
 	 */
 	public static function get_ip_address() {
 		return apply_filters( self::PLUGIN_NAME . '-ip-addr', $_SERVER['REMOTE_ADDR'] );
-	}
-
-	/**
-	 * Retrieve IP address via Chrome Compression Proxy
-	 *
-	 */
-	public function get_chrome_proxy( $ip ) {
-		if ( isset( $_SERVER['HTTP_VIA'] ) && strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) && isset( $_SERVER['HTTP_FORWARDED'] ) ) {
-			// $_SERVER['REMOTE_ADDR'] should be validated by reverse DNS lookup?
-			// require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
-			// if ( FALSE !== strpos( 'google', IP_Geo_Block_Lkup::gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) ) )
-			$proxy = preg_replace( '/^for=.*?([\d\.a-f:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
-		}
-
-		return empty( $proxy ) ? $ip : $proxy;
 	}
 
 	/**
@@ -652,7 +637,7 @@ class IP_Geo_Block {
 
 			$settings = self::get_option();
 			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // update 'fail'
-			$block = 'multi' === $validate['result'] || $cache['fail'] > max( 0, $settings['login_fails'] );
+			$block = $cache['fail'] > max( 0, (int)$settings['login_fails'] ) || 'multi' === $validate['result'];
 
 			// (1) blocked, (3) unauthenticated, (5) all
 			if ( 1 & (int)$settings['validation']['reclogs'] )
@@ -674,7 +659,7 @@ class IP_Geo_Block {
 		$cache = IP_Geo_Block_API_Cache::get_cache( $validate['ip'] );
 
 		// if a number of fails is exceeded, then fail
-		if ( $cache && $cache['fail'] > max( 0, $settings['login_fails'] ) ) {
+		if ( $cache && $cache['fail'] > max( 0, (int)$settings['login_fails'] ) ) {
 			if ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
 				$validate['result'] = 'failed'; // can't overwrite existing result
 		}
@@ -786,6 +771,9 @@ class IP_Geo_Block {
 			$settings['black_list'   ] = $public['black_list'   ];
 		}
 
+		// retrieve IP address of visitor via Chrome Compression Proxy
+		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_chrome_proxy' ), 20, 1 );
+
 		// validate bad signatures when an action is required on front-end
 		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
@@ -793,11 +781,19 @@ class IP_Geo_Block {
 		// register user agent validation and malicious requests
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );
 
-		// retrieve true ip address via chrome compression proxy
-		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_chrome_proxy' ), 20, 1 );
-
 		// validate country by IP address (block: true, die: false)
 		$this->validate_ip( 'public', $settings, TRUE, ! $public['simulate'] );
+	}
+
+	public function get_chrome_proxy( $ip ) {
+		if ( isset( $_SERVER['HTTP_VIA'] ) && FALSE !== strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) && isset( $_SERVER['HTTP_FORWARDED'] ) ) {
+			// Retrieve IP address of visitor via Chrome Compression Proxy
+			// require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
+			// if ( FALSE !== strpos( 'google', IP_Geo_Block_Lkup::gethostbyaddr( $ip ) ) )
+			$proxy = preg_replace( '/^for=.*?([a-f\d\.:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
+		}
+
+		return empty( $proxy ) ? $ip : $proxy;
 	}
 
 	public function check_pages( $validate, $settings ) {
@@ -858,7 +854,7 @@ class IP_Geo_Block {
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 
-				elseif ( preg_match( '!^[0-9a-f\.:/]+$!', $code ) ) {
+				elseif ( preg_match( '!^[a-f\d\.:/]+$!', $code ) ) {
 					$name = $this->check_ips( $validate, $code, $which );
 					if ( $not xor isset( $name['result'] ) )
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );

@@ -157,6 +157,17 @@ class IP_Geo_Block_Admin {
 				'action' => 'ip_geo_block',
 				'url' => admin_url( 'admin-ajax.php' ),
 				'nonce' => IP_Geo_Block_Util::create_nonce( $this->get_ajax_action() ),
+				'msg' => array(
+					__( 'Import settings ?',  'ip-geo-block' ),
+					__( 'Create table ?',     'ip-geo-block' ),
+					__( 'Delete table ?',     'ip-geo-block' ),
+					__( 'Clear statistics ?', 'ip-geo-block' ),
+					__( 'Clear cache ?',      'ip-geo-block' ),
+					__( 'Clear logs ?',       'ip-geo-block' ),
+					__( 'This feature is available with HTML5 compliant browsers.', 'ip-geo-block' ),
+					__( '"Validation timing" at "Validation rule settings" is set to "init action hook".', 'ip-geo-block' ),
+					__( '"Validation target" at "Front-end target settings" is set to "All requests".', 'ip-geo-block' ),
+				),
 			)
 		);
 		wp_enqueue_script( $handle );
@@ -948,7 +959,6 @@ class IP_Geo_Block_Admin {
 			$res = array(
 				'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_NAME,
 			);
-			break;
 		}
 
 		if ( isset( $res ) ) // wp_send_json_{success,error}() @since 3.5.0

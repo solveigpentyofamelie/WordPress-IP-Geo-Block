@@ -47,8 +47,8 @@ class IP_Geo_Block {
 		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
 
 		$settings = self::get_option();
-		$priority = $settings['priority'];
-		$validate = $settings['validation'];
+		$priority = &$settings['priority'];
+		$validate = &$settings['validation'];
 		$loader = new IP_Geo_Block_Loader();
 
 		// include drop in if it exists
@@ -751,7 +751,7 @@ class IP_Geo_Block {
 	 */
 	public function validate_public() {
 		$settings = self::get_option();
-		$public = $settings['public'];
+		$public = &$settings['public'];
 
 		if ( $public['target_rule'] ) {
 			// postpone validation until 'wp' fires
@@ -825,13 +825,14 @@ class IP_Geo_Block {
 		// check requested url
 		$is_feed = IP_Geo_Block_Lkup::is_feed( $this->request_uri );
 		$u_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$referer = isset( $_SERVER['HTTP_REFERER'   ] ) ? $_SERVER['HTTP_REFERER'   ] : '';
 
 		foreach ( IP_Geo_Block_Util::multiexplode( array( ",", "\n" ), $settings['public']['ua_list'] ) as $pat ) {
 			list( $name, $code ) = array_pad( IP_Geo_Block_Util::multiexplode( array( ':', '#' ), $pat ), 2, '' );
 
 			if ( $name && ( '*' === $name || FALSE !== strpos( $u_agent, $name ) ) ) {
 				$which = ( FALSE === strpos( $pat, ':' ) );     // 0: pass (':'), 1: block ('#')
-				$not   = ( '!' === substr( $code, 0, 1 ) );     // 0: positive, 1: negative
+				$not   = ( '!' === $code[0] );                  // 0: positive, 1: negative
 				$code  = ( $not ? substr( $code, 1 ) : $code ); // qualification identifier
 
 				if ( 'FEED' === $code ) {
@@ -844,8 +845,13 @@ class IP_Geo_Block {
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 
-				elseif ( 'HOST=' === substr( $code, 0, 5 ) ) {
+				elseif ( 0 === strncmp( 'HOST=', $code, 5 ) ) {
 					if ( $not xor FALSE !== strpos( $validate['host'], substr( $code, 5 ) ) )
+						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
+				}
+
+				elseif ( 0 === strncmp( 'REF=', $code, 4 ) ) {
+					if ( $not xor FALSE !== strpos( $referer, substr( $code, 4 ) ) )
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 

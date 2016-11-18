@@ -47,11 +47,11 @@ var ip_geo_block_time = new Date();
 	}
 
 	function warning(status, msg) {
-		window.alert(sanitize(status + ' ' + msg));
+		window.alert(status ? sanitize(status + ': ' + msg) : msg);
 	}
 
 	function notice_html5() {
-		warning('Notice:', 'This feature is available with HTML5 compliant browsers.');
+		warning(null, IP_GEO_BLOCK.msg[6]);
 	}
 
 	function redirect(page, tab) {
@@ -183,7 +183,7 @@ var ip_geo_block_time = new Date();
 			}
 		};
 		reader.onerror = function (event) {
-			warning('Error: ', event.target.error.code);
+			warning('Error', event.target.error.code);
 		};
 		reader.readAsText(file);
 	}
@@ -624,7 +624,7 @@ var ip_geo_block_time = new Date();
 
 			// Import pre-defined settings
 			$(ID('#', 'default')).on('click', function (event) {
-				confirm('Import settings ?', function () {
+				confirm(IP_GEO_BLOCK.msg[0], function () {
 					ajax_post('pre-defined', {
 						cmd: 'import-default'
 					}, deserialize_json);
@@ -637,7 +637,7 @@ var ip_geo_block_time = new Date();
 			});
 
 			$(ID('#', 'preferred')).on('click', function (event) {
-				confirm('Import settings ?', function () {
+				confirm(IP_GEO_BLOCK.msg[0], function () {
 					ajax_post('pre-defined', {
 						cmd: 'import-preferred'
 					}, deserialize_json);
@@ -647,14 +647,14 @@ var ip_geo_block_time = new Date();
 
 			// Manipulate DB table for validation logs
 			$(ID('@', 'create_table')).on('click', function (event) {
-				confirm('Create table ?', function () {
+				confirm(IP_GEO_BLOCK.msg[1], function () {
 					ajax_table('create-table');
 				});
 				return false;
 			});
 
 			$(ID('@', 'delete_table')).on('click', function (event) {
-				confirm('Delete table ?', function () {
+				confirm(IP_GEO_BLOCK.msg[2], function () {
 					ajax_table('delete-table');
 				});
 				return false;
@@ -690,6 +690,22 @@ var ip_geo_block_time = new Date();
 				return true;
 			});
 
+			$(ID('@', 'public_target_rule')).on('change', function (event) {
+				var timing = $(ID('@', 'validation_timing'));
+				if (0 != $(this).val() && 1 == timing.val()) {
+					timing.val(0).trigger('change');
+					warning(null, IP_GEO_BLOCK.msg[7]);
+				}
+			});
+
+			$(ID('@', 'validation_timing')).on('change', function (event) {
+				var target = $(ID('@', 'public_target_rule'));
+				if (0 != $(this).val() && 0 != target.val()) {
+					target.val(0).trigger('change');
+					warning(null, IP_GEO_BLOCK.msg[8]);
+				}
+			});
+
 			break;
 
 		  /*----------------------------------------
@@ -708,7 +724,7 @@ var ip_geo_block_time = new Date();
 
 			// Statistics
 			$(ID('@', 'clear_statistics')).on('click', function (event) {
-				confirm('Clear statistics ?', function () {
+				confirm(IP_GEO_BLOCK.msg[3], function () {
 					ajax_clear('statistics', null);
 				});
 				return false;
@@ -716,7 +732,7 @@ var ip_geo_block_time = new Date();
 
 			// Statistics
 			$(ID('@', 'clear_cache')).on('click', function (event) {
-				confirm('Clear cache ?', function () {
+				confirm(IP_GEO_BLOCK.msg[4], function () {
 					ajax_clear('cache', null);
 				});
 				return false;
@@ -880,7 +896,7 @@ var ip_geo_block_time = new Date();
 
 			// Validation logs
 			$(ID('@', 'clear_logs')).on('click', function (event) {
-				confirm('Clear logs ?', function () {
+				confirm(IP_GEO_BLOCK.msg[5], function () {
 					ajax_clear('logs', null);
 				});
 				return false;

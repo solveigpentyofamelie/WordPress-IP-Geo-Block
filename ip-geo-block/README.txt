@@ -487,24 +487,19 @@ For more details, see
 * **Important:** Update geo location api libraries for maxmind and ip2locatoin.
   Please confirm the directory for local geo location dabase (`ip-geo-api`) can
   be writable.
-* **New feature:** Add selection of validation timing.
 * **New feature:** Add the function of blocking front-end.
-* **New feature:** Add IP address and country code cache by cookie.
-* **New feature:** Add getting host information using reverse DNS lookup.
-* **New filter hook:** Add `ip-geo-block-public` to validate requests on 
-  front-end.
+* **New feature:** Add cache of IP address and country code by cookie.
+* **New filter hook:** Add `ip-geo-block-public` to extend validattion of 
+  requests on front-end.
 * See more details at
     [Call for testing 3.0.0 beta](http://www.ipgeoblock.com/changelog/call-for-testing-3.0.0b.html "Call for testing 3.0.0 beta | IP Geo Block")
   and
     [release 3.0.0](http://www.ipgeoblock.com/changelog/release-3.0.0.html "3.0.0 Release Note | IP Geo Block").
 
 = 2.2.9.2 =
-Sorry for frequent update but need to fix the following issue:
-
 * **Improved:** Avoid conflict with "Open external links in a new window" 
-  plugin to prevent leak of nonce. This update is not for fixing a 
-  vulnerability of this plugin but for getting rid of the potential 
-  risk with the conflict. For more detail, see 
+  plugin and some other reason to prevent duplicated window open. For more 
+  detail, see 
   [this discussion at support forum](https://wordpress.org/support/topic/ip-geoblock-opens-2-windows-on-link-clicks-when-user-is-logged-in/ "Topic: IP Geoblock opens 2 windows on link clicks when user is logged in &laquo; WordPress.org Forums").
 
 = 2.2.9.1 =

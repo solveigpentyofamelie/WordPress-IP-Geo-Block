@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
 "POT-Creation-Date: 2016-11-19 01:27+0900\n"
-"PO-Revision-Date: 2016-11-19 01:28+0900\n"
+"PO-Revision-Date: 2016-11-19 11:39+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -55,14 +55,13 @@ msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:168
 msgid ""
-"\"Validation timing\" at \"Validation rule settings\" is set to \"init "
-"action hook\"."
+"[Validation timing] at [Validation rule settings] is set to [\"init\" action "
+"hook]."
 msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:169
 msgid ""
-"\"Validation target\" at \"Front-end target settings\" is set to \"All "
-"requests\"."
+"[Validation target] at [Front-end target settings] is set to [All requests]."
 msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:196

@@ -41,11 +41,6 @@ class IP_Geo_Block {
 	 * 
 	 */
 	private function __construct() {
-		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php' );
-		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-load.php' );
-		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php' );
-		require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-
 		$settings = self::get_option();
 		$priority = &$settings['priority'];
 		$validate = &$settings['validation'];
@@ -425,8 +420,7 @@ class IP_Geo_Block {
 				$validate = self::validate_country( $hook, $validate, $settings, $block );
 
 			// if one of IPs is blocked then stop
-			if ( 'passed' !== $validate['result'] )
-				break;
+			if ( 'passed' !== $validate['result'] ) break;
 		}
 
 		// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)

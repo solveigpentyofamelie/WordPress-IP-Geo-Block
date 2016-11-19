@@ -49,6 +49,10 @@ endif;
  *
  */
 require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block.php' );
+require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php' );
+require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-load.php' );
+require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php' );
+require( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
 
 /**
  * Register hooks that are fired when the plugin is activated or deactivated.

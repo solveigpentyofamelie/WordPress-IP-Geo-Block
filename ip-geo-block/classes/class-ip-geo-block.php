@@ -797,22 +797,20 @@ class IP_Geo_Block {
 	}
 
 	public function check_pages( $validate, $settings ) {
-		// exception for post type
 		global $post;
 		if ( $post ) {
-			if ( in_array( get_post_type( $post->ID ), $settings['public']['target_posts'], TRUE ) )
-				return $validate + array( 'result' => 'passed' );
+			// page
+			$type = isset( $post->post_name ) ? $post->post_name : NULL;
+			if ( $type && ! empty( $settings['public']['target_pages'][ $type ] ) )
+				return $validate;
+
+			// post type
+			$type = get_post_type( $post->ID );
+			if ( $type && ! empty( $settings['public']['target_posts'][ $type ] ) )
+				return $validate;
 		}
 
-		// exception for page
-		else {
-			foreach ( $settings['public']['target_pages'] as $page ) {
-				if ( FALSE !== strpos( $this->request_uri, "/$page" ) )
-					return $validate + array( 'result' => 'passed' );
-			}
-		}
-
-		return $validate;
+		return $validate + array( 'result' => 'passed' );
 	}
 
 	public function check_bots( $validate, $settings ) {

@@ -165,8 +165,6 @@ class IP_Geo_Block_Admin {
 					__( 'Clear cache ?',      'ip-geo-block' ),
 					__( 'Clear logs ?',       'ip-geo-block' ),
 					__( 'This feature is available with HTML5 compliant browsers.', 'ip-geo-block' ),
-					__( '[Validation timing] at [Validation rule settings] is set to ["init" action hook].', 'ip-geo-block' ),
-					__( '[Validation target] at [Front-end target settings] is set to [All requests].', 'ip-geo-block' ),
 				),
 			)
 		);

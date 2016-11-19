@@ -689,23 +689,6 @@ var ip_geo_block_time = new Date();
 				}
 				return true;
 			});
-
-			$(ID('@', 'public_target_rule')).on('change', function (event) {
-				var timing = $(ID('@', 'validation_timing'));
-				if (0 != $(this).val() && 1 == timing.val()) {
-					timing.val(0).trigger('change');
-					warning(null, IP_GEO_BLOCK.msg[7]);
-				}
-			});
-
-			$(ID('@', 'validation_timing')).on('change', function (event) {
-				var target = $(ID('@', 'public_target_rule'));
-				if (0 != $(this).val() && 0 != target.val()) {
-					target.val(0).trigger('change');
-					warning(null, IP_GEO_BLOCK.msg[8]);
-				}
-			});
-
 			break;
 
 		  /*----------------------------------------

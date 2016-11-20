@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.0b11';
+	const VERSION = '3.0.0b12';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -330,13 +330,13 @@ class IP_Geo_Block {
 	 * Send response header with http status code and reason.
 	 *
 	 */
-	public function send_response( $hook, $code ) {
+	public function send_response( $hook, $settings ) {
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
 		if ( ! defined( 'DONOTCACHEPAGE' ) )
 			define( 'DONOTCACHEPAGE', TRUE );
 
-		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', (int)$code );
-		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) );
+		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', (int)$settings['response_code'] );
+		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) . ' - ' . $settings['response_msg'] );
 
 		nocache_headers(); // nocache and response code
 
@@ -346,12 +346,12 @@ class IP_Geo_Block {
 			exit;
 
 		  case 3: // 3xx Redirection
-			IP_Geo_Block_Util::redirect( 'http://blackhole.webpagetest.org/', $code );
+			IP_Geo_Block_Util::redirect( $settings['redirect_uri'], $code );
 			exit;
 
 		  default: // 4xx Client Error, 5xx Server Error
 			// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
-			'login' === $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
+			'public' !== $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 			status_header( $code ); // @since 2.0.0
 
 			if ( function_exists( 'trackback_response' ) )
@@ -420,7 +420,8 @@ class IP_Geo_Block {
 				$validate = self::validate_country( $hook, $validate, $settings, $block );
 
 			// if one of IPs is blocked then stop
-			if ( 'passed' !== $validate['result'] ) break;
+			if ( 'passed' !== $validate['result'] )
+				break;
 		}
 
 		// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
@@ -443,7 +444,7 @@ class IP_Geo_Block {
 
 		// send response code to refuse
 		if ( $block && $die )
-			$this->send_response( $hook, $settings['response_code'] );
+			$this->send_response( $hook, $settings );
 
 		return $validate;
 	}
@@ -755,7 +756,7 @@ class IP_Geo_Block {
 			}
 
 			// register filter hook to check pages and post types
-			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_pages' ), 10, 2 );
+			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_page' ), 10, 2 );
 		}
 
 		// replace "Validation rule settings"
@@ -781,7 +782,7 @@ class IP_Geo_Block {
 
 	public function get_chrome_proxy( $ip ) {
 		if ( isset( $_SERVER['HTTP_VIA'] ) && FALSE !== strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) && isset( $_SERVER['HTTP_FORWARDED'] ) ) {
-			// Retrieve IP address of visitor via Chrome Compression Proxy
+			// Retrieve IP address in case from Chrome Compression Proxy
 			// require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
 			// if ( FALSE !== strpos( 'google', IP_Geo_Block_Lkup::gethostbyaddr( $ip ) ) )
 			$proxy = preg_replace( '/^for=.*?([a-f\d\.:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
@@ -790,20 +791,39 @@ class IP_Geo_Block {
 		return empty( $proxy ) ? $ip : $proxy;
 	}
 
-	public function check_pages( $validate, $settings ) {
+	public function check_page( $validate, $settings ) {
 		global $post;
 		if ( $post ) {
-			// page
-			$type = isset( $post->post_name ) ? $post->post_name : NULL;
-			if ( $type && ! empty( $settings['public']['target_pages'][ $type ] ) )
-				return $validate;
+			// check page
+			$key = isset( $post->post_name ) ? $post->post_name : NULL;
+			if ( $key && isset( $settings['public']['target_pages'][ $key ] ) )
+				return $validate; // block by country
 
-			// post type
-			$type = get_post_type( $post->ID );
-			if ( $type && ! empty( $settings['public']['target_posts'][ $type ] ) )
-				return $validate;
+			// check post type
+			$key = get_post_type( $post->ID );
+			if ( $key && isset( $settings['public']['target_posts'][ $key ] ) )
+				return $validate; // block by country
+
+			// check tag (single page or tag archive)
+			$key = get_the_tags( $post->ID );
+			if ( is_array( $key ) && ( is_single() || is_tag() ) ) {
+				foreach ( $key as $val ) {
+					if ( isset( $settings['public']['target_tags'][ $val->slug ] ) )
+						return $validate; // block by country
+				}
+			}
+
+			// check category (single page or category archive)
+			$key = get_the_category( $post->ID );
+			if ( ! empty( $key ) && ( is_single() || is_category() ) ) {
+				foreach ( $key as $val ) {
+					if ( isset( $settings['public']['target_cates'][ $val->slug ] ) )
+						return $validate; // block by country
+				}
+			}
 		}
 
+		// if all checks are passed, then provide content
 		return $validate + array( 'result' => 'passed' );
 	}
 

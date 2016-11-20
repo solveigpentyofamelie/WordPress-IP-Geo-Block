@@ -247,18 +247,51 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ],
 				'list' => array(
 					200 => '200 OK',
-					205 => '205 Reset Content',
 					301 => '301 Moved Permanently',
 					302 => '302 Found',
+					303 => '303 See Other',
 					307 => '307 Temporary Redirect',
 					400 => '400 Bad Request',
 					403 => '403 Forbidden',
 					404 => '404 Not Found',
 					406 => '406 Not Acceptable',
-					410 => '410 Gone',
 					500 => '500 Internal Server Error',
 					503 => '503 Service Unavailable',
 				),
+			)
+		);
+
+		// Redirect URI
+		$field = 'redirect_uri';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="Specify the redirect url for response code 3xx.">Redirect URL</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'class' => 'ip-geo-block-hide',
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $field,
+				'value' => $options[ $field ],
+			)
+		);
+
+		// Response message
+		$field = 'response_msg';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="Specify the message for response code 4xx.">Response message</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'class' => 'ip-geo-block-hide',
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $field,
+				'value' => $options[ $field ],
 			)
 		);
 
@@ -467,8 +500,6 @@ class IP_Geo_Block_Admin_Tab {
 			__( 'Regardless of the country code, it will block a malicious request to <code>%s&hellip;/*.php</code>.', 'ip-geo-block' ),
 			__( 'It configures &#8220%s&#8221 to validate a request to the PHP file which does not load WordPress core.', 'ip-geo-block' ),
 			__( '<dfn title="Select the item which causes undesired blocking in order to exclude from the validation target. Grayed item indicates &#8220;INACTIVE&#8221;.">Exceptions</dfn>', 'ip-geo-block' ),
-			__( '<dfn title="Select page in order to exclude from the validation target.">Page</dfn>', 'ip-geo-block' ),
-			__( '<dfn title="Select post type in order to exclude from the validation target.">Post type</dfn>', 'ip-geo-block' ),
 		);
 
 		// Set rewrite condition
@@ -697,25 +728,49 @@ class IP_Geo_Block_Admin_Tab {
 		);
 
 		// List of page
-		$exception = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[3] . "<li style='display:none'><ul>\n";
+		$exception = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual page as a blocking target.">Page</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
 		$tmp = get_pages();
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
 				$val = esc_attr( $key->post_name );
 				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_pages_' . $val . '" name="ip_geo_block_settings[public][target_pages][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_pages'][ $val ] ), TRUE, FALSE ) . ' />';
-				$exception .= '<label for="ip_geo_block_settings_public_target_pages_' . $val . '">' . esc_html( $key->post_name ) . '</label></li>' . "\n";
+				$exception .= '<label for="ip_geo_block_settings_public_target_pages_' . $val . '">' . esc_html( $key->post_title ) . '</label></li>' . "\n";
 			}
 		}
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of post type
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[4] . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual post type as a blocking target.">Post type</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
 		$tmp = get_post_types( array( 'public' => TRUE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
 				$val = esc_attr( $key );
 				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_posts_' . $val . '" name="ip_geo_block_settings[public][target_posts][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_posts'][ $val ] ), TRUE, FALSE ) . ' />';
 				$exception .= '<label for="ip_geo_block_settings_public_target_posts_' . $val . '">' . esc_html( $key ) . '</label></li>' . "\n";
+			}
+		}
+		$exception .= '</ul></li></ul>' . "\n";
+
+		// List of category
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual category as a blocking target.">Category</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$tmp = get_categories( array( 'hide_empty' => FALSE ) );
+		if ( ! empty( $tmp ) ) {
+			foreach ( $tmp as $key ) {
+				$val = esc_attr( $key->slug );
+				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_cates_' . $val . '" name="ip_geo_block_settings[public][target_cates][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_cates'][ $val ] ), TRUE, FALSE ) . ' />';
+				$exception .= '<label for="ip_geo_block_settings_public_target_cates_' . $val . '">' . esc_html( $key->name ) . '</label></li>' . "\n";
+			}
+		}
+		$exception .= '</ul></li></ul>' . "\n";
+
+		// List of tag
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual tag as a blocking target.">Tag</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$tmp = get_tags( array( 'hide_empty' => FALSE ) );
+		if ( ! empty( $tmp ) ) {
+			foreach ( $tmp as $key ) {
+				$val = esc_attr( $key->slug );
+				$exception .= '<li><input type="checkbox" id="ip_geo_block_settings_public_target_tags_' . $val . '" name="ip_geo_block_settings[public][target_tags][' . $val . ']" value="1"' . checked( isset( $options[ $field ]['target_tags'][ $val ] ), TRUE, FALSE ) . ' />';
+				$exception .= '<label for="ip_geo_block_settings_public_target_tags_' . $val . '">' . esc_html( $key->name ) . '</label></li>' . "\n";
 			}
 		}
 		$exception .= '</ul></li></ul>' . "\n";
@@ -736,10 +791,10 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'list' => array(
 					0 => __( 'All requests', 'ip-geo-block' ),
-					1 => __( 'Specified page/post type', 'ip-geo-block' ),
+					1 => __( 'Specify the targets', 'ip-geo-block' ),
 				),
 				'desc' => array(
-					1 => __( "Notice that &#8220;Validation timing&#8221; is always ignored and deferred. And also this doesn't work compatible with any page cache plugins.", 'ip-geo-block' ),
+					1 => __( "Notice that &#8220;Validation timing&#8221; is always ignored and deferred regardless of its setting.", 'ip-geo-block' ),
 				),
 				'after' => '<div class="ip-geo-block-desc"></div>' . "\n" . $exception,
 			)

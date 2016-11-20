@@ -238,8 +238,9 @@ class IP_Geo_Block_Admin_Ajax {
 			'[extra_ips][white_list]',
 			'[extra_ips][black_list]',
 			'[signature]',
-			'[response_code]',
 			'[login_fails]',
+			'[response_code]',
+			'[response_msg]',            // 3.0.0
 			'[redirect_uri]',            // 3.0.0
 			'[validation][timing]',      // 2.2.9
 			'[validation][proxy]',
@@ -278,6 +279,8 @@ class IP_Geo_Block_Admin_Ajax {
 			'[public][target_rule]',     // 3.0.0
 			'[public][target_pages][$]', // 3.0.0
 			'[public][target_posts][$]', // 3.0.0
+			'[public][target_cates][$]', // 3.0.0
+			'[public][target_tags][$]',  // 3.0.0
 			'[public][ua_list]',         // 3.0.0
 			'[public][simulate]',        // 3.0.0
 			'[providers][Maxmind]',

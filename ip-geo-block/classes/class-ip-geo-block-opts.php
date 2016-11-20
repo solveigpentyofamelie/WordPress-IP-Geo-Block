@@ -131,15 +131,18 @@ class IP_Geo_Block_Opts {
 			'postpass'     => TRUE,
 		),
 		// since version 3.0.0
-		'redirect_uri'    => NULL,    // URI for redirection on blocking
+		'response_msg'    => 'You are not allowed to access this page.', // message on blocking
+		'redirect_uri'    => 'http://blackhole.webpagetest.org/',    // redirection on blocking
 		'network_wide'    => FALSE,   // settings page on network dashboard
 		'public'          => array(
 			'matching_rule'  => -1,   // -1:follow, 0:white list, 1:black list
 			'white_list'     => NULL, // Comma separeted country code
 			'black_list'     => 'ZZ', // Comma separeted country code
 			'target_rule'    => 0,    // 0:all requests, 1:except for page and post type
-			'target_pages'   => array(), // target pages
-			'target_posts'   => array(), // target post types
+			'target_pages'   => array(), // blocking target of pages
+			'target_posts'   => array(), // blocking target of post types
+			'target_cates'   => array(), // blocking target of categories
+			'target_tags'    => array(), // blocking target of tags
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,// just simulate, never block
 		),
@@ -262,11 +265,9 @@ class IP_Geo_Block_Opts {
 			}
 
 			if ( version_compare( $version, '3.0.0' ) < 0 ) {
-				$settings['cache_time_gc'] = $default['cache_time_gc'];
-				$settings['cache_cookie']  = $default['cache_cookie'];
-				$settings['redirect_uri']  = $default['redirect_uri'];
-				$settings['network_wide']  = $default['network_wide'];
-				$settings['public']        = $default['public'];
+				foreach ( array( 'cache_time_gc', 'cache_cookie', 'response_msg', 'redirect_uri', 'network_wide', 'public' ) as $tmp ) {
+					$settings[ $tmp ] = $default[ $tmp ];
+				}
 
 				foreach ( array( 'public', 'includes', 'uploads', 'languages' ) as $tmp ) {
 					$settings['validation'][ $tmp ] = $default['validation'][ $tmp ];
@@ -407,7 +408,6 @@ class IP_Geo_Block_Opts {
 	public static function get_validation_timing() {
 		if ( self::is_advanced_cache() )
 			return 2; // advanced-cache.php
-
 		elseif ( file_exists( WPMU_PLUGIN_DIR . '/ip-geo-block-mu.php' ) )
 			return 1; // mu-plugins
 

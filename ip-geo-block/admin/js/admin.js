@@ -682,33 +682,23 @@ var ip_geo_block_time = new Date();
 
 			// Response message and Redirect URL
 			$(ID('@', 'response_code')).on('change', function (event) {
-				var val = parseInt($(this).val() / 100, 10),
+				var res = parseInt($(this).val() / 100, 10),
 				    elm = $(this).closest('tr').nextAll('tr');
-				if (2 === val) {
+				if (2 === res) { // 2xx
 					elm.each(function (index) {
-						if (index < 2) {
-							$(this).hide();
-						}
+						if (index < 2) { $(this).hide(); }
 					});
 				}
-				else if (3 === val) {
+				else if (3 === res) { // 3xx
 					elm.each(function (index) {
-						if (0 === index) {
-							$(this).show();
-						}
-						else if (1 === index) {
-							$(this).hide();
-						}
+						if      (0 === index) { $(this).show(); } // redirect_uri
+						else if (1 === index) { $(this).hide(); } // response_msg
 					});
 				}
-				else if (4 === val) {
+				else { // 4xx, 5xx
 					elm.each(function (index) {
-						if (0 === index) {
-							$(this).hide();
-						}
-						else if (1 === index) {
-							$(this).show();
-						}
+						if      (0 === index) { $(this).hide(); } // redirect_uri
+						else if (1 === index) { $(this).show(); } // response_msg
 					});
 				}
 			}).trigger('change');

@@ -795,36 +795,26 @@ class IP_Geo_Block {
 		global $post;
 		if ( $post ) {
 			// check page
-			$key = isset( $post->post_name ) ? $post->post_name : NULL;
-			if ( $key && isset( $settings['public']['target_pages'][ $key ] ) )
+			if ( isset( $post->post_name ) && isset( $settings['public']['target_pages'][ $post->post_name ] ) )
 				return $validate; // block by country
 
-			// check post type
-			$key = get_post_type( $post->ID );
-			if ( $key && isset( $settings['public']['target_posts'][ $key ] ) )
+			// check post type (this would not block top page)
+			$keys = array_keys( $settings['public']['target_posts'] );
+			if ( ! empty( $keys ) && is_singular( $keys ) )
+				return $validate; // block by country
+
+			// check category (single page or category archive)
+			$keys = array_keys( $settings['public']['target_cates'] );
+			if ( ! empty( $keys ) && in_category( $keys ) && ( is_single() || is_category() ) )
 				return $validate; // block by country
 
 			// check tag (single page or tag archive)
-			$key = get_the_tags( $post->ID );
-			if ( is_array( $key ) && ( is_single() || is_tag() ) ) {
-				foreach ( $key as $val ) {
-					if ( isset( $settings['public']['target_tags'][ $val->slug ] ) )
-						return $validate; // block by country
-				}
-			}
-
-			// check category (single page or category archive)
-			$key = get_the_category( $post->ID );
-			if ( ! empty( $key ) && ( is_single() || is_category() ) ) {
-				foreach ( $key as $val ) {
-					if ( isset( $settings['public']['target_cates'][ $val->slug ] ) )
-						return $validate; // block by country
-				}
-			}
+			$keys = array_keys( $settings['public']['target_tags'] );
+			if ( ! empty( $keys ) && has_tag( $keys ) && ( is_single() || is_tag() ) )
+				return $validate; // block by country
 		}
 
-		// if all checks are passed, then provide content
-		return $validate + array( 'result' => 'passed' );
+		return $validate + array( 'result' => 'passed' ); // provide content
 	}
 
 	public function check_bots( $validate, $settings ) {

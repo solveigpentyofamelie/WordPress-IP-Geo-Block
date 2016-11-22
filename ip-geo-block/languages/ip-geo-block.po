@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-11-20 21:32+0900\n"
-"PO-Revision-Date: 2016-11-20 21:34+0900\n"
+"POT-Creation-Date: 2016-11-23 00:28+0900\n"
+"PO-Revision-Date: 2016-11-23 00:29+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -582,8 +582,9 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:797
 msgid ""
-"Notice that &#8220;Validation timing&#8221; is always ignored and deferred "
-"regardless of its setting."
+"Notice that &#8220;Validation timing&#8221; is deferred till &#8220;"
+"wp&#8221; action hook. It means that this feature would not be compatible "
+"with any page caching."
 msgstr ""
 
 #: admin/includes/tab-settings.php:807

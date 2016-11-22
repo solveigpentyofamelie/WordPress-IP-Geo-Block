@@ -794,7 +794,7 @@ class IP_Geo_Block_Admin_Tab {
 					1 => __( 'Specify the targets', 'ip-geo-block' ),
 				),
 				'desc' => array(
-					1 => __( "Notice that &#8220;Validation timing&#8221; is always ignored and deferred regardless of its setting.", 'ip-geo-block' ),
+					1 => __( "Notice that &#8220;Validation timing&#8221; is deferred till &#8220;wp&#8221; action hook. It means that this feature would not be compatible with any page caching.", 'ip-geo-block' ),
 				),
 				'after' => '<div class="ip-geo-block-desc"></div>' . "\n" . $exception,
 			)

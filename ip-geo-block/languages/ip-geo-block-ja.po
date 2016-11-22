@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-11-20 21:32+0900\n"
-"PO-Revision-Date: 2016-11-20 21:58+0900\n"
+"POT-Creation-Date: 2016-11-23 00:28+0900\n"
+"PO-Revision-Date: 2016-11-23 00:45+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -611,6 +611,30 @@ msgstr "フロントエンドの設定（ベータ）"
 msgid "Follow &#8220;Validation rule settings&#8221;"
 msgstr "「検証ルールの設定」に従う"
 
+#: admin/includes/tab-settings.php:731
+msgid ""
+"<dfn title=\"Specify the individual page as a blocking target.\">Page</dfn>"
+msgstr "<dfn title=\"特定のページを遮断対象として指定します。\">ページ</dfn>"
+
+#: admin/includes/tab-settings.php:743
+msgid ""
+"<dfn title=\"Specify the individual post type as a blocking target.\">Post "
+"type</dfn>"
+msgstr ""
+"<dfn title=\"特定の投稿タイプを遮断対象として指定します。\">投稿タイプ</dfn>"
+
+#: admin/includes/tab-settings.php:755
+msgid ""
+"<dfn title=\"Specify the individual category as a blocking target."
+"\">Category</dfn>"
+msgstr ""
+"<dfn title=\"特定のカテゴリを遮断対象として指定します。\">カテゴリ</dfn>"
+
+#: admin/includes/tab-settings.php:767
+msgid ""
+"<dfn title=\"Specify the individual tag as a blocking target.\">Tag</dfn>"
+msgstr "<dfn title=\"特定のタグを遮断対象として指定します。\">タグ</dfn>"
+
 #: admin/includes/tab-settings.php:782
 msgid "Specify the validation target on front-end."
 msgstr "フロント・エンドの検証対象を設定します。"
@@ -629,9 +653,12 @@ msgstr "ターゲットを指定"
 
 #: admin/includes/tab-settings.php:797
 msgid ""
-"Notice that &#8220;Validation timing&#8221; is always ignored and deferred "
-"regardless of its setting."
-msgstr "「検証のタイミング」は、その設定に関わらず常に無視・遅延されます。"
+"Notice that &#8220;Validation timing&#8221; is deferred till &#8220;"
+"wp&#8221; action hook. It means that this feature would not be compatible "
+"with any page caching."
+msgstr ""
+"「検証のタイミング」が &#8220;wp&#8221; アクション・フックまで遅延されます。"
+"これにより、ページ・キャッシュとの互換性がなくなることに注意してください。"
 
 #: admin/includes/tab-settings.php:807
 msgid ""

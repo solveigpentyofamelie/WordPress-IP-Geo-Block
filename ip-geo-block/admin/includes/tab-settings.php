@@ -265,7 +265,7 @@ class IP_Geo_Block_Admin_Tab {
 		$field = 'redirect_uri';
 		add_settings_field(
 			$option_name.'_'.$field,
-			__( '<dfn title="Specify the redirect url for response code 3xx.">Redirect URL</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Specify the URL for response code 2xx and 3xx. Front-end URL on your site would not be blocked to prevent loop of redirection even when you enable [Front-end target settings]. Empty URL is altered to your home.">Redirect URL</dfn>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -282,7 +282,7 @@ class IP_Geo_Block_Admin_Tab {
 		$field = 'response_msg';
 		add_settings_field(
 			$option_name.'_'.$field,
-			__( '<dfn title="Specify the message for response code 4xx.">Response message</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Specify the message for response code 4xx and 5xx.">Response message</dfn>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -451,6 +451,7 @@ class IP_Geo_Block_Admin_Tab {
 			1 => __( 'Block by country', 'ip-geo-block' ),
 			2 => __( 'Prevent Zero-day Exploit', 'ip-geo-block' ),
 		);
+
 		$desc = array(
 			1 => __( 'It will block a request related to the services for both public facing pages and the dashboard.', 'ip-geo-block' ),
 			2 => __( 'Regardless of the country code, it will block a malicious request related to the services only for the dashboard.', 'ip-geo-block' ),
@@ -494,6 +495,25 @@ class IP_Geo_Block_Admin_Tab {
 				'desc' => $desc,
 			)
 		);
+
+if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
+		// Excluded request for specific action or page to bypass WP-ZEP
+		$key = 'admin';
+		add_settings_field(
+			$option_name.'_exception_'.$key,
+			__( 'Exception for admin action and page', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => 'exception',
+				'sub-field' => $key,
+				'value' => $options['exception'][ $key ],
+			)
+		);
+endif;
 
 		array_unshift( $list, __( 'Disable', 'ip-geo-block' ) );
 		$desc = array(
@@ -637,7 +657,7 @@ class IP_Geo_Block_Admin_Tab {
 			array(
 				'type' => 'html',
 				'value' => '<ul style="margin-top:0.25em">' . "\n" . $tmp . "\n</ul>\n",
-				'before' => '<p class="ip-geo-block-desc">' . __( 'WordPress core does not directly request PHP files in the following directories except for the few. This feature configures <code>.htaccess</code> in each directory to prevent attackers from requesting to the executable files such as PHP, CGI and SSI.', 'ip-geo-block' ) . '</p>',
+				'before' => '<p class="ip-geo-block-desc">' . __( 'WordPress core does not directly request PHP files in the following directories except for a few. This feature configures <code>.htaccess</code> in each directory to prevent attackers from requesting executable files such as PHP, CGI and SSI.', 'ip-geo-block' ) . '</p>',
 			)
 		);
 */
@@ -647,7 +667,7 @@ class IP_Geo_Block_Admin_Tab {
 		$section = $plugin_slug . '-public';
 		add_settings_section(
 			$section,
-			__( 'Front-end target settings (beta)', 'ip-geo-block' ),
+			__( 'Front-end target settings', 'ip-geo-block' ),
 			array( __CLASS__, 'note_public' ),
 			$option_slug
 		);
@@ -740,7 +760,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of post type
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual post type as a blocking target.">Post type</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual post type on a single page as a blocking target.">Post type</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
 		$tmp = get_post_types( array( 'public' => TRUE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -752,7 +772,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of category
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual category as a blocking target.">Category</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual category on a single page or archive page as a blocking target.">Category</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
 		$tmp = get_categories( array( 'hide_empty' => FALSE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -764,7 +784,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of tag
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual tag as a blocking target.">Tag</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual tag on a single page or archive page as a blocking target.">Tag</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
 		$tmp = get_tags( array( 'hide_empty' => FALSE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -1219,8 +1239,7 @@ endif;
 		// Google Maps API key
 		$field = 'api_key';
 		$key = 'GoogleMap';
-		if ( 'default' !== $options[ $field ][ $key ] or
-		     defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ) {
+		if ( 'default' !== $options[ $field ][ $key ] or defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ) {
 			add_settings_field(
 				$option_name.'_'.$field,
 				__( '<dfn title="Valid key for Google Maps JavaScript API">Google Maps API key</dfn>', 'ip-geo-block' ),
@@ -1333,7 +1352,7 @@ endif;
 	public static function note_public() {
 		echo
 			'<ul class="ip-geo-block-note">', "\n",
-				'<li>', __( 'There are some restrictions when you enable "Block by country" with your caching plugin. For more details, please refer to the documents at <a href="http://www.ipgeoblock.com/codex/#blocking-on-front-end" title="Codex | IP Geo Block">Blocking on front-end</a>.', 'ip-geo-block' ), '</li>', "\n",
+				'<li>', __( 'Please refer to the document &#8220;<a href="http://www.ipgeoblock.com/codex/#blocking-on-front-end" title="Codex | IP Geo Block" target=_blank>Blocking on front-end</a>&#8221; for details, including restrictions on cache plugin.', 'ip-geo-block' ), '</li>', "\n",
 				'<li>', __( 'If you find any issues or have something to suggest, please feel free to open an issue at <a class="ip-geo-block-link" href="http://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block" target=_blank>support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
 			'</ul>', "\n";
 	}

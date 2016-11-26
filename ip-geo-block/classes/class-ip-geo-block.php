@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.0b12';
+	const VERSION = '3.0.0b13';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -135,7 +135,7 @@ class IP_Geo_Block {
 			}
 		}
 
-		// force to change the redirect URL at logout to remove nonce, embed a nonce into pages
+		// force to change the redirect URL on logout to remove nonce, embed a nonce into pages
 		add_filter( 'wp_redirect', array( $this, 'logout_redirect' ), 20, 2 ); // logout_redirect @4.2
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_nonce' ), $priority );
 
@@ -210,7 +210,7 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Remove the redirecting URL at logout not to be blocked by WP-ZEP.
+	 * Remove the redirecting URL on logout not to be blocked by WP-ZEP.
 	 *
 	 */
 	public function logout_redirect( $uri ) {
@@ -242,7 +242,7 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Render a text message at the comment form.
+	 * Render a text message on the comment form.
 	 *
 	 */
 	public function comment_form_message() {
@@ -335,29 +335,38 @@ class IP_Geo_Block {
 		if ( ! defined( 'DONOTCACHEPAGE' ) )
 			define( 'DONOTCACHEPAGE', TRUE );
 
-		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', (int)$settings['response_code'] );
-		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', get_status_header_desc( $code ) . ' - ' . $settings['response_msg'] );
+		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', $settings['response_code'] );
+		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', $settings['response_msg' ] ? $settings['response_msg'] : get_status_header_desc( $code ) );
 
-		nocache_headers(); // nocache and response code
+		if ( function_exists( 'trackback_response' ) )
+			trackback_response( $code, IP_Geo_Block_Util::kses( $mesg ) ); // @since 0.71
 
-		switch ( (int)substr( (string)$code, 0, 1 ) ) {
+		elseif ( defined( 'XMLRPC_REQUEST' ) && isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			status_header( 405 );
+			header( 'Allow: POST' );
+			header( 'Content-Type: text/plain' );
+			die( 'XML-RPC server accepts POST requests only.' );
+		}
+
+		nocache_headers(); // Set the headers to prevent caching for the different browsers.
+
+		switch ( (int)substr( $code, 0, 1 ) ) {
 		  case 2: // 2xx Success
-			header( 'Refresh: 0; url=' . home_url(), TRUE, $code ); // @since 3.0
+			header( 'Refresh: 0; url=' . esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), TRUE, $code ); // @since 2.8
 			exit;
 
 		  case 3: // 3xx Redirection
-			IP_Geo_Block_Util::redirect( $settings['redirect_uri'], $code );
+			IP_Geo_Block_Util::redirect( esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), $code ); // @since 2.8
 			exit;
 
 		  default: // 4xx Client Error, 5xx Server Error
-			// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
-			'public' !== $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 			status_header( $code ); // @since 2.0.0
 
-			if ( function_exists( 'trackback_response' ) )
-				trackback_response( $code, IP_Geo_Block_Util::kses( $mesg ) ); // @since 0.71
+			// https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
+			'public' !== $hook and header( 'X-Robots-Tag: noindex, nofollow', FALSE );
 
-			elseif ( ! defined( 'DOING_AJAX' ) && ! defined( 'XMLRPC_REQUEST' ) ) {
+			// Show human readable page
+			if ( ! defined( 'DOING_AJAX' ) && ! defined( 'XMLRPC_REQUEST' ) ) {
 				$hook = IP_Geo_Block_Util::may_be_logged_in() && 'admin' === $this->target_type;
 				FALSE !== ( @include( get_stylesheet_directory() .'/'.$code.'.php' ) ) or // child  theme
 				FALSE !== ( @include( get_template_directory()   .'/'.$code.'.php' ) ) or // parent theme
@@ -450,16 +459,7 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Validate at frontend.
-	 *
-	 */
-	public function validate_front( $can_access = TRUE ) {
-		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE );
-		return ( 'passed' === $validate['result'] ? $can_access : FALSE );
-	}
-
-	/**
-	 * Validate at comment.
+	 * Validate on comment.
 	 *
 	 */
 	public function validate_comment( $comment = NULL ) {
@@ -470,8 +470,13 @@ class IP_Geo_Block {
 		return $comment;
 	}
 
+	public function validate_front( $can_access = TRUE ) {
+		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE );
+		return ( 'passed' === $validate['result'] ? $can_access : FALSE );
+	}
+
 	/**
-	 * Validate at xmlrpc.
+	 * Validate on xmlrpc.
 	 *
 	 */
 	public function validate_xmlrpc() {
@@ -491,7 +496,7 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Validate at login.
+	 * Validate on login.
 	 *
 	 */
 	public function validate_login() {
@@ -514,14 +519,14 @@ class IP_Geo_Block {
 		// wp-includes/pluggable.php @since 2.5.0
 		add_action( 'wp_login_failed', array( $this, 'auth_fail' ), $settings['priority'] );
 
-		// enables to skip validation of country at login/out except BuddyPress signup
+		// enables to skip validation of country on login/out except BuddyPress signup
 		$this->validate_ip( 'login', $settings,
 			! empty( $actions[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 )
 		);
 	}
 
 	/**
-	 * Validate at admin area.
+	 * Validate in admin area.
 	 *
 	 */
 	public function validate_admin() {
@@ -550,12 +555,12 @@ class IP_Geo_Block {
 			$type = (int)$settings['validation']['admin'];
 		}
 
-		// list of request with a specific query to bypass WP-ZEP
-		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', array(
+		// list of request for specific action or page to bypass WP-ZEP
+		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ) + array(
 			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
 			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
 			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
-		) );
+		);
 
 		$in_action = in_array( $action, $list, TRUE );
 		$in_page   = in_array( $page,   $list, TRUE );
@@ -579,7 +584,7 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Validate at plugins/themes area.
+	 * Validate in plugins/themes area.
 	 *
 	 */
 	public function validate_direct() {
@@ -741,12 +746,16 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Validate at public facing pages.
+	 * Validate on public facing pages.
 	 *
 	 */
 	public function validate_public() {
 		$settings = self::get_option();
 		$public = &$settings['public'];
+
+		// avoid redirection loop
+		if ( $settings['response_code'] < 400 && IP_Geo_Block_Util::compare_url( $_SERVER['REQUEST_URI'], $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ) )
+			return; // do not block
 
 		if ( $public['target_rule'] ) {
 			// postpone validation until 'wp' fires
@@ -766,10 +775,10 @@ class IP_Geo_Block {
 			$settings['black_list'   ] = $public['black_list'   ];
 		}
 
-		// retrieve IP address of visitor via Chrome Compression Proxy
-		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_chrome_proxy' ), 20, 1 );
+		// retrieve IP address of visitor via proxy services
+		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_proxy_ip' ), 20, 1 );
 
-		// validate bad signatures when an action is required on front-end
+		// validate bad signatures when an action is required
 		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
 
@@ -780,9 +789,8 @@ class IP_Geo_Block {
 		$this->validate_ip( 'public', $settings, TRUE, ! $public['simulate'] );
 	}
 
-	public function get_chrome_proxy( $ip ) {
+	public function get_proxy_ip( $ip ) {
 		if ( isset( $_SERVER['HTTP_VIA'] ) && FALSE !== strpos( $_SERVER['HTTP_VIA'], 'Chrome-Compression-Proxy' ) && isset( $_SERVER['HTTP_FORWARDED'] ) ) {
-			// Retrieve IP address in case from Chrome Compression Proxy
 			// require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
 			// if ( FALSE !== strpos( 'google', IP_Geo_Block_Lkup::gethostbyaddr( $ip ) ) )
 			$proxy = preg_replace( '/^for=.*?([a-f\d\.:]+).*$/', '$1', $_SERVER['HTTP_FORWARDED'] );
@@ -793,23 +801,25 @@ class IP_Geo_Block {
 
 	public function check_page( $validate, $settings ) {
 		global $post;
+		$public = &$settings['public'];
+
 		if ( $post ) {
 			// check page
-			if ( isset( $post->post_name ) && isset( $settings['public']['target_pages'][ $post->post_name ] ) )
+			if ( isset( $post->post_name ) && isset( $public['target_pages'][ $post->post_name ] ) )
 				return $validate; // block by country
 
 			// check post type (this would not block top page)
-			$keys = array_keys( $settings['public']['target_posts'] );
+			$keys = array_keys( $public['target_posts'] );
 			if ( ! empty( $keys ) && is_singular( $keys ) )
 				return $validate; // block by country
 
 			// check category (single page or category archive)
-			$keys = array_keys( $settings['public']['target_cates'] );
+			$keys = array_keys( $public['target_cates'] );
 			if ( ! empty( $keys ) && in_category( $keys ) && ( is_single() || is_category() ) )
 				return $validate; // block by country
 
 			// check tag (single page or tag archive)
-			$keys = array_keys( $settings['public']['target_tags'] );
+			$keys = array_keys( $public['target_tags'] );
 			if ( ! empty( $keys ) && has_tag( $keys ) && ( is_single() || is_tag() ) )
 				return $validate; // block by country
 		}

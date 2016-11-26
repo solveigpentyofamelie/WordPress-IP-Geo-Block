@@ -165,6 +165,27 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
+	 * Simple comparison of urls
+	 *
+	 */
+	public static function compare_url( $a, $b ) {
+		if ( ! ( $a = @parse_url( $a ) ) ) return FALSE;
+		if ( ! ( $b = @parse_url( $b ) ) ) return FALSE;
+
+		// leave scheme to site configuration because is_ssl() doesn’t work behind some load balancers.
+		unset( $a['scheme'] );
+		unset( $b['scheme'] );
+
+		// $_SERVER['HTTP_HOST'] can't be available in case of malicious url.
+		$key = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
+		if ( empty( $a['host'] ) ) $a['host'] = $key;
+		if ( empty( $b['host'] ) ) $b['host'] = $key;
+
+		$key = array_diff( $a, $b );
+		return empty( $key ) ? TRUE : FALSE;
+	}
+
+	/**
 	 * Explod with multiple delimiter.
 	 *
 	 */

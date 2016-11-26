@@ -684,12 +684,7 @@ var ip_geo_block_time = new Date();
 			$(ID('@', 'response_code')).on('change', function (event) {
 				var res = parseInt($(this).val() / 100, 10),
 				    elm = $(this).closest('tr').nextAll('tr');
-				if (2 === res) { // 2xx
-					elm.each(function (index) {
-						if (index < 2) { $(this).hide(); }
-					});
-				}
-				else if (3 === res) { // 3xx
+				if (res <= 3) { // 2xx, 3xx
 					elm.each(function (index) {
 						if      (0 === index) { $(this).show(); } // redirect_uri
 						else if (1 === index) { $(this).hide(); } // response_msg

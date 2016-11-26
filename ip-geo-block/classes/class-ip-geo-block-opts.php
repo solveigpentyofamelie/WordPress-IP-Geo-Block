@@ -108,6 +108,7 @@ class IP_Geo_Block_Opts {
 			'plugins'     => array(), // for pliugins
 			'themes'      => array(), // for themes
 			// since version 3.0.0
+			'admin'       => array(), // for wp-admin
 			'public'      => array(   // for public facing pages
 				'bbp-new-topic', 'bbp-edit-topic',
 				'bbp-new-reply', 'bbp-edit-reply',
@@ -131,14 +132,14 @@ class IP_Geo_Block_Opts {
 			'postpass'     => TRUE,
 		),
 		// since version 3.0.0
-		'response_msg'    => 'You are not allowed to access this page.', // message on blocking
-		'redirect_uri'    => 'http://blackhole.webpagetest.org/',    // redirection on blocking
+		'response_msg'    => 'Sorry, your request cannot be accepted.', // message on blocking
+		'redirect_uri'    => 'http://blackhole.webpagetest.org/',   // redirection on blocking
 		'network_wide'    => FALSE,   // settings page on network dashboard
 		'public'          => array(
 			'matching_rule'  => -1,   // -1:follow, 0:white list, 1:black list
 			'white_list'     => NULL, // Comma separeted country code
 			'black_list'     => 'ZZ', // Comma separeted country code
-			'target_rule'    => 0,    // 0:all requests, 1:except for page and post type
+			'target_rule'    => 0,    // 0:all requests, 1:specify the target
 			'target_pages'   => array(), // blocking target of pages
 			'target_posts'   => array(), // blocking target of post types
 			'target_cates'   => array(), // blocking target of categories
@@ -274,6 +275,8 @@ class IP_Geo_Block_Opts {
 					$settings['rewrite'   ][ $tmp ] = $default['rewrite'   ][ $tmp ];
 					$settings['exception' ][ $tmp ] = $default['exception' ][ $tmp ];
 				}
+
+				$settings['exception']['admin'] = $default['exception']['admin'];
 			}
 
 			// save package version number
@@ -408,6 +411,7 @@ class IP_Geo_Block_Opts {
 	public static function get_validation_timing() {
 		if ( self::is_advanced_cache() )
 			return 2; // advanced-cache.php
+
 		elseif ( file_exists( WPMU_PLUGIN_DIR . '/ip-geo-block-mu.php' ) )
 			return 1; // mu-plugins
 

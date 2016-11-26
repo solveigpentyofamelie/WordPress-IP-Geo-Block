@@ -163,8 +163,8 @@ Also thanks for providing the following great services and REST APIs for free.
 
 Development of this plugin is promoted at 
     [WordPress-IP-Geo-Block](https://github.com/tokkonopapa/WordPress-IP-Geo-Block "tokkonopapa/WordPress-IP-Geo-Block - GitHub")
-and class libraries to handle geo-location database for Maxmind and IP2Location
-are developed separately as "add-in"s at 
+and class libraries to handle geo-location database are developed separately 
+as "add-in"s at 
     [WordPress-IP-Geo-API](https://github.com/tokkonopapa/WordPress-IP-Geo-API "tokkonopapa/WordPress-IP-Geo-API - GitHub").
 All contributions will always be welcome. Or visit my 
     [development blog](http://www.ipgeoblock.com/ "IP Geo Block").
@@ -347,7 +347,12 @@ Currently, the following caching plugins and configurations can be supported:
   Select "**Use PHP to serve cache files**" and enable "**Late init**".
 
 - [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/ "W3 Total Cache &mdash; WordPress Plugins")  
-  Select "**Disk: Basic**" and enable "**Late initialization**" for page cache.
+  Select "**Disk: Basic**" and enable "**Late initialization**" for page cache
+  or "**Disk: Enhanced**" in version 0.9.5.1.
+
+- [Vendi Cache](https://wordpress.org/plugins/vendi-cache/ "Vendi Cache &mdash; WordPress Plugins")  
+  This was formerly built in Wordfence. Select "**basic caching**" for Vendi 
+  Cache and **"mu-plugin" (ip-geo-block-mu.php)** for IP Geo Block.
 
 If your plugin serves caching by `mod_rewrite` in `.htaccess` (e.g. WP Fastest 
 Cache) or caching by `advanced-cache.php` drop-in (Comet Cache) or front-end 
@@ -484,23 +489,18 @@ For more details, see
 == Changelog ==
 
 = 3.0.0 =
-* **Important:** Update geo location api libraries for maxmind and ip2locatoin.
-  Please confirm the directory for local geo location dabase (`ip-geo-api`) can
-  be writable.
-* **New feature:** Add the function of blocking front-end.
+* **New feature:** Add the function of blocking on front-end.
 * **New feature:** Add cache of IP address and country code by cookie.
-* **New filter hook:** Add `ip-geo-block-public` to extend validattion of 
-  requests on front-end.
-* See more details at
-    [Call for testing 3.0.0 beta](http://www.ipgeoblock.com/changelog/call-for-testing-3.0.0b.html "Call for testing 3.0.0 beta | IP Geo Block")
-  and
-    [release 3.0.0](http://www.ipgeoblock.com/changelog/release-3.0.0.html "3.0.0 Release Note | IP Geo Block").
-
-= 2.2.9.2 =
-* **Improved:** Avoid conflict with "Open external links in a new window" 
+* **New filter hook:** Add `ip-geo-block-public` to extend validation on 
+  front-end.
+* **Improvement:** Avoid conflict with "Open external links in a new window" 
   plugin and some other reason to prevent duplicated window open. For more 
   detail, see 
   [this discussion at support forum](https://wordpress.org/support/topic/ip-geoblock-opens-2-windows-on-link-clicks-when-user-is-logged-in/ "Topic: IP Geoblock opens 2 windows on link clicks when user is logged in &laquo; WordPress.org Forums").
+* **Improvement:** Make the response compatible with WP original when it is 
+  requested by GET method.
+* See some details at
+  [release 3.0.0](http://www.ipgeoblock.com/changelog/release-3.0.0.html "3.0.0 Release Note | IP Geo Block").
 
 = 2.2.9.1 =
 * **Bug fix:** Blocking Wordfence scanning.

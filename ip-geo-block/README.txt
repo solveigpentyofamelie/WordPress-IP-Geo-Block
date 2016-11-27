@@ -348,7 +348,9 @@ Currently, the following caching plugins and configurations can be supported:
 
 - [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/ "W3 Total Cache &mdash; WordPress Plugins")  
   Select "**Disk: Basic**" and enable "**Late initialization**" for page cache
-  or "**Disk: Enhanced**" in version 0.9.5.1.
+  or "**Disk: Enhanced**" (where "**Late initialization**" is not available) 
+  in W3TC 0.9.5.1 seems to work good without any imcompatibility with this 
+  plugin.
 
 - [Vendi Cache](https://wordpress.org/plugins/vendi-cache/ "Vendi Cache &mdash; WordPress Plugins")  
   This was formerly built in Wordfence. Select "**basic caching**" for Vendi 
@@ -360,7 +362,20 @@ caching served by your hosting provider, "**Blocking on front-end**" feature
 might lead to generate inconsistent pages. 
 
 For more details, please refer to some documents at 
-[Blocking on front-end](http://www.ipgeoblock.com/codex/#blocking-on-front-end "Codex | IP Geo Block").
+"[Blocking on front-end](http://www.ipgeoblock.com/codex/#blocking-on-front-end 'Codex | IP Geo Block')".
+
+= How can I test this plugin works? =
+
+The easiest way is to use 
+  [free proxy browser addon](https://www.google.com/search?q=free+proxy+browser+addon "free proxy browser addon - Google Search").
+Another one is to use 
+  [http header browser addon](https://www.google.com/search?q=browser+add+on+modify+http+header "browser add on modify http header - Google Search").
+You can add an IP address to the `X-Forwarded-For` header to emulate the 
+access behind the proxy. In this case, you should add `HTTP_X_FORWARDED_FOR` 
+into the "**$_SERVER keys for extra IPs**" on "**Settings**" tab.
+
+See more details at 
+"[How to test prevention of attacks](http://www.ipgeoblock.com/codex/#how-to-test-prevention-of-attacks 'Codex | IP Geo Block')".
 
 = Do I have to turn on all the selection to enhance security? =
 
@@ -393,21 +408,6 @@ But there're exceptions: When you enable "**Force to load WP core**" for
 **Plugins area** or **Themes area**, a standalone PHP file becomes to be 
 able to be blocked. Sometimes this kind of file in a plugin or theme has 
 vulnerability. This function is provided against such a case.
-
-= How can I test this plugin works? =
-
-The easiest way is to use 
-  [free proxy browser addon](https://www.google.com/search?q=free+proxy+browser+addon "free proxy browser addon - Google Search").
-Another one is to use 
-  [http header browser addon](https://www.google.com/search?q=browser+add+on+modify+http+header "browser add on modify http header - Google Search").
-You can add an IP address to the `X-Forwarded-For` header to emulate the 
-access behind the proxy. In this case, you should add `HTTP_X_FORWARDED_FOR` 
-into the "**$_SERVER keys for extra IPs**" on "**Settings**" tab.
-
-See more details in 
-"[Using VPN browser addon](http://www.ipgeoblock.com/codex/using-vpn-browser-addon.html 'Using VPN browser addon | IP Geo Block')"
-and
-"[Using WordPress post simulator](http://www.ipgeoblock.com/codex/using-post-simulator.html 'Using WordPress post simulator | IP Geo Block')".
 
 = Some admin function doesn't work when WP-ZEP is enabled. =
 

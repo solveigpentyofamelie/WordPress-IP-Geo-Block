@@ -338,17 +338,16 @@ class IP_Geo_Block {
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', $settings['response_code'] );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', $settings['response_msg' ] ? $settings['response_msg'] : get_status_header_desc( $code ) );
 
+		nocache_headers(); // Set the headers to prevent caching for the different browsers.
+
 		if ( function_exists( 'trackback_response' ) )
 			trackback_response( $code, IP_Geo_Block_Util::kses( $mesg ) ); // @since 0.71
 
 		elseif ( defined( 'XMLRPC_REQUEST' ) && isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
-			header( 'Allow: POST' );
 			header( 'Content-Type: text/plain' );
 			die( 'XML-RPC server accepts POST requests only.' );
 		}
-
-		nocache_headers(); // Set the headers to prevent caching for the different browsers.
 
 		switch ( (int)substr( $code, 0, 1 ) ) {
 		  case 2: // 2xx Success

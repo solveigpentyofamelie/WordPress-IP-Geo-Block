@@ -331,6 +331,8 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function send_response( $hook, $settings ) {
+		require_once( ABSPATH . WPINC . '/functions.php' );
+
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
 		if ( ! defined( 'DONOTCACHEPAGE' ) )
 			define( 'DONOTCACHEPAGE', TRUE );
@@ -512,8 +514,7 @@ class IP_Geo_Block {
 		$actions = $settings['login_action'];
 
 		// the same rule is applied to login / logout
-		if ( ! empty( $actions['login'] ) )
-			$actions += array( 'logout' => 1 );
+		! empty( $actions['login'] ) and $actions += array( 'logout' => 1 );
 
 		// wp-includes/pluggable.php @since 2.5.0
 		add_action( 'wp_login_failed', array( $this, 'auth_fail' ), $settings['priority'] );

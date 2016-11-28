@@ -521,6 +521,7 @@ class IP_Geo_Block_API_Cookie extends IP_Geo_Block_API {
 
 		// no need to cache
 		unset( $cache['ip'] );
+		unset( $cache['cookie'] );
 
 		setcookie(
 			IP_Geo_Block::CACHE_NAME,
@@ -548,6 +549,7 @@ class IP_Geo_Block_API_Cookie extends IP_Geo_Block_API {
 					'fail' => $cache[5],
 					'call' => $cache[6],
 					'host' => $cache[7],
+					'cookie' => TRUE, // for deferred correction
 				);
 			}
 		}

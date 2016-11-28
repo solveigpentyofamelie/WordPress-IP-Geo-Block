@@ -271,9 +271,9 @@ class IP_Geo_Block {
 	 * @return array $result country code and so on
 	 */
 	public static function get_geolocation( $ip = NULL, $providers = array(), $callback = 'get_country' ) {
-		// make valid providers list
 		$settings = self::get_option();
-		if ( empty( $providers ) )
+
+		if ( empty( $providers ) ) // make valid providers list
 			$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
 
 		$result = self::_get_geolocation( $ip ? $ip : self::get_ip_address(), $settings, $providers, $callback );
@@ -511,18 +511,16 @@ class IP_Geo_Block {
 			$action = 'resetpass';
 
 		$settings = self::get_option();
-		$actions = $settings['login_action'];
+		$actions = &$settings['login_action'];
 
-		// the same rule is applied to login / logout
-		! empty( $actions['login'] ) and $actions += array( 'logout' => 1 );
+		// the same rule should be applied to login and logout
+		! empty( $actions['login'] ) and $actions['logout'] = TRUE;
 
 		// wp-includes/pluggable.php @since 2.5.0
 		add_action( 'wp_login_failed', array( $this, 'auth_fail' ), $settings['priority'] );
 
 		// enables to skip validation of country on login/out except BuddyPress signup
-		$this->validate_ip( 'login', $settings,
-			! empty( $actions[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 )
-		);
+		$this->validate_ip( 'login', $settings, ! empty( $actions[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 ) );
 	}
 
 	/**
@@ -658,10 +656,10 @@ class IP_Geo_Block {
 	public function check_fail( $validate, $settings ) {
 		$cache = IP_Geo_Block_API_Cache::get_cache( $validate['ip'] );
 
-		// if a number of fails is exceeded, then fail
-		if ( $cache && $cache['fail'] > max( 0, (int)$settings['login_fails'] ) ) {
+		// if number of fails is exceeded, then fail (it should be corrected as it would be deferred on 'cache by cookie')
+		if ( $cache && $cache['fail'] > max( 0, (int)$settings['login_fails'] - ( isset( $cache['cookie'] ) ? 1 : 0 ) ) ) {
 			if ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
-				$validate['result'] = 'failed'; // can't overwrite existing result
+				$validate['result'] = 'limited'; // can't overwrite existing result
 		}
 
 		return $validate;

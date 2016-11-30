@@ -300,7 +300,6 @@ class IP_Geo_Block_Admin_Ajax {
 			'[validation][postkey]',
 			'[update][auto]',
 			'[anonymize]',
-			'[cache_cookie]',            // 3.0.0
 			'[cache_time_gc]',           // 3.0.0
 			'[cache_hold]',
 			'[cache_time]',

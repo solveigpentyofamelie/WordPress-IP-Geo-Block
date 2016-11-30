@@ -75,19 +75,6 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * Encode / Decode string in cache
-	 *
-	 */
-	public static function cache_encode( $data ) {
-		return rtrim( base64_encode( convert_uuencode( $data ) ), '=' );
-	}
-
-	public static function cache_decode( $data ) {
-		$data = str_pad( $data, strlen( $data ) % 4, '=', STR_PAD_RIGHT );
-		return convert_uudecode( base64_decode( $data ) );
-	}
-
-	/**
 	 * Retrieve nonce from queries or referrer
 	 *
 	 */
@@ -136,13 +123,13 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_create_nonce() for mu-plugins
 	 *
 	 * Creates a cryptographic tied to the action, user, session, and time.
 	 * @source: wp-includes/pluggable.php
 	 */
-	public static function create_nonce( $action = -1, $ip_addr = NULL ) {
-		$uid = self::get_current_user( $ip_addr );
+	public static function create_nonce( $action = -1 ) {
+		$uid = self::get_current_user();
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -150,13 +137,13 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_verify_nonce() for mu-plugins
 	 *
 	 * Verify that correct nonce was used with time limit.
 	 * @source: wp-includes/pluggable.php
 	 */
-	public static function verify_nonce( $nonce, $action = -1, $ip_addr = NULL ) {
-		$uid = self::get_current_user( $ip_addr );
+	public static function verify_nonce( $nonce, $action = -1 ) {
+		$uid = self::get_current_user();
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -177,7 +164,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_hash() for mu-plugins
 	 *
 	 * Get hash of given string for nonce.
 	 * @source: wp-includes/pluggable.php
@@ -195,19 +182,19 @@ class IP_Geo_Block_Util {
 	private static function get_session_token() {
 		// Arrogating logged_in cookie never cause the privilege escalation.
 		$cookie = self::parse_auth_cookie( 'logged_in' );
-		return ! empty( $cookie['token'] ) ? $cookie['token'] : AUTH_KEY . AUTH_SALT;
+		return ! empty( $cookie['token'] ) ? $cookie['token'] : '';
 	}
 
 	/**
 	 * WP alternative function for mu-plugins
 	 *
-	 * Parse a cookie into its components.
-	 * @source: wp-includes/pluggable.php
+	 * Parse a cookie into its components. It assumes the key including $scheme.
+	 * @source: wp-includes/pluggable.php (after muplugins_loaded, it would be initialized)
 	 */
 	private static function parse_auth_cookie( $scheme ) {
-		static $cookie = NULL;
+		static $cookie = FALSE;
 
-		if ( NULL === $cookie ) {
+		if ( FALSE === $cookie ) {
 			foreach ( array_keys( $_COOKIE ) as $key ) {
 				if ( FALSE !== strpos( $key, $scheme ) ) {
 					if ( count( $elements = explode( '|', $_COOKIE[ $key ] ) ) === 4 ) {
@@ -232,47 +219,25 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_get_current_user() for mu-plugins
 	 *
 	 * Retrieve the current user identification.
 	 * @source: wp-includes/user.php
 	 */
-	private static function get_current_user( $ip_addr ) {
-		if ( $ip_addr ) {
-			require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
-
-			$num = '';
-			$sum = 0;
-
-			foreach ( unpack( 'C*', IP_Geo_Block_Lkup::inet_pton( $ip_addr ) ) as $byte ) {
-				$sum += $byte;
-				$num .= (string)( $byte % 10 );
-			}
-
-			$num += $sum;
-		}
-
-		elseif ( isset( $_COOKIE ) ) {
+	private static function get_current_user() {
+		if ( isset( $_COOKIE ) ) {
 			 foreach ( array_keys( $_COOKIE ) as $key ) {
 				if ( 0 === strpos( $key, 'wp-settings-' ) ) {
-					$num = substr( $key, 12 ); // get numerical characters
-					break;
+					return substr( $key, 12 ); // get numerical characters
 				}
 			}
 		}
-/*
-		// add something which a visitor can't control
-		$num .= substr( SECURE_AUTH_KEY, 1, 6 ); // @since 2.6
 
-		// add something unique
-		if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && is_string( $_SERVER['HTTP_USER_AGENT'] ) )
-			$num .= preg_replace( '/[^-,:!*+\.\/\w\s]/', '', $_SERVER['HTTP_USER_AGENT'] );
-*/
-		return isset( $num ) ? $num : '0';
+		return md5( $_SERVER['REMOTE_ADDR'], FALSE );
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of hash_equals() for mu-plugins
 	 *
 	 * Timing attack safe string comparison.
 	 * @source: http://php.net/manual/en/function.hash-equals.php#115635
@@ -286,17 +251,17 @@ class IP_Geo_Block_Util {
 		if( ( $i = strlen( $a ) ) !== strlen( $b ) )
 			return FALSE;
 
-		$exp = $a ^ $b; // 1 === strlen( 'a' ^ 'ab' )
+		$exp = $a ^ $b; // length of both $a and $b are same
 		$ret = 0;
 
-		while ( --$i >= 0 )
+		for ( $i -= 1; $i >= 0; $i-- )
 			$ret |= ord( $exp[ $i ] );
 
 		return ! $ret;
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of hash_hmac() for mu-plugins
 	 *
 	 * Generate a keyed hash value using the HMAC method.
 	 * @source: http://php.net/manual/en/function.hash-hmac.php#93440
@@ -327,7 +292,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_sanitize_redirect() for mu-plugins
 	 *
 	 * Sanitizes a URL for use in a redirect.
 	 * @source: wp-includes/pluggable.php
@@ -336,7 +301,7 @@ class IP_Geo_Block_Util {
 		return urlencode( $matches[0] );
 	}
 
-	private static function sanitize_redirect($location) {
+	private static function sanitize_redirect( $location ) {
 		$regex = '/
 			(
 				(?: [\xC2-\xDF][\x80-\xBF]        # double-byte sequences   110xxxxx 10xxxxxx
@@ -359,7 +324,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_redirect() for mu-plugins
 	 *
 	 * Redirects to another page.
 	 * @source: wp-includes/pluggable.php
@@ -387,7 +352,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_validate_redirect() for mu-plugins
 	 *
 	 * Validates a URL for use in a redirect.
 	 * @source: wp-includes/pluggable.php
@@ -433,7 +398,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_get_raw_referer() for mu-plugins
 	 *
 	 * Retrieves unvalidated referer from '_wp_http_referer' or HTTP referer.
 	 * @source: wp-includes/functions.php
@@ -446,11 +411,11 @@ class IP_Geo_Block_Util {
 		elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) )
 			return /*wp_unslash*/ stripslashes( $_SERVER['HTTP_REFERER'] ); // wp-includes/formatting.php
 
-		return false;
+		return FALSE;
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of wp_get_referer() for mu-plugins
 	 *
 	 * Retrieve referer from '_wp_http_referer' or HTTP referer.
 	 * @source: wp-includes/functions.php
@@ -460,13 +425,13 @@ class IP_Geo_Block_Util {
 		$req = /*wp_unslash*/ stripslashes( $_SERVER['REQUEST_URI'] );
 
 		if ( $ref && $ref !== $req && $ref !== home_url() . $req )
-			return self::validate_redirect( $ref, false );
+			return self::validate_redirect( $ref, FALSE );
 
-		return false;
+		return FALSE;
 	}
 
 	/**
-	 * WP alternative function for mu-plugins
+	 * WP alternative function of is_user_logged_in() for mu-plugins
 	 *
 	 * Checks if the current visitor is a logged in user.
 	 * @source: wp-includes/pluggable.php
@@ -496,7 +461,7 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function for advanced-cache.php
+	 * WP alternative function of wp_kses_no_null() for advanced-cache.php
 	 *
 	 * Removes any NULL characters in $string.
 	 * @source: wp-includes/kses.php
@@ -504,11 +469,12 @@ class IP_Geo_Block_Util {
 	private static function kses_no_null( $string ) {
 		$string = preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $string );
 		$string = preg_replace( '/\\\\+0+/', '', $string );
+
 		return $string;
 	}
 
 	/**
-	 * WP alternative function for advanced-cache.php
+	 * WP alternative function of _deep_replace() for advanced-cache.php
 	 *
 	 * Perform a deep string replace operation to ensure the values in $search are no longer present.
 	 * e.g. $subject = '%0%0%0DDD', $search ='%0D', $result ='' rather than the '%0%0DD' that str_replace would return

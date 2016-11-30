@@ -565,7 +565,7 @@ class IP_Geo_Block_Admin {
 		$default = IP_Geo_Block::get_default();
 
 		// checkboxes not on the form (added after 2.0.0, just in case)
-		foreach ( array( 'anonymize', 'cache_cookie', 'network_wide' ) as $key )
+		foreach ( array( 'anonymize', 'network_wide' ) as $key )
 			$output[ $key ] = 0;
 
 		// checkboxes not on the form

@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.0b13';
+	const VERSION = '3.0.0b14';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -342,7 +342,7 @@ class IP_Geo_Block {
 
 		nocache_headers(); // Set the headers to prevent caching for the different browsers.
 
-		if ( function_exists( 'trackback_response' ) )
+		if ( function_exists( 'trackback_response' ) ) // trackback_response() calls die()
 			trackback_response( $code, IP_Geo_Block_Util::kses( $mesg ) ); // @since 0.71
 
 		elseif ( defined( 'XMLRPC_REQUEST' ) && isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
@@ -434,27 +434,29 @@ class IP_Geo_Block {
 				break;
 		}
 
-		// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
-		$var = (int)apply_filters( self::PLUGIN_NAME . '-record-logs', $settings['validation']['reclogs'], $hook, $validate );
-		$block = ( 'passed' !== $validate['result'] );
-		if ( ( 1 === $var &&   $block ) || // blocked
-		     ( 2 === $var && ! $block ) || // passed
-		     ( 3 === $var && ! $validate['auth'] ) || // unauthenticated
-		     ( 4 === $var &&   $validate['auth'] ) || // authenticated
-		     ( 5 === $var ) ) { // all
-			IP_Geo_Block_Logs::record_logs( $hook, $validate, $settings, $block && $die );
+		if ( $auth ) {
+			// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
+			$var = (int)apply_filters( self::PLUGIN_NAME . '-record-logs', $settings['validation']['reclogs'], $hook, $validate );
+			$block = ( 'passed' !== $validate['result'] );
+			if ( ( 1 === $var &&   $block ) || // blocked
+				 ( 2 === $var && ! $block ) || // passed
+				 ( 3 === $var && ! $validate['auth'] ) || // unauthenticated
+				 ( 4 === $var &&   $validate['auth'] ) || // authenticated
+				 ( 5 === $var ) ) { // all
+				IP_Geo_Block_Logs::record_logs( $hook, $validate, $settings, $block && $die );
+			}
+
+			// update cache
+			IP_Geo_Block_API_Cache::update_cache( $hook, $validate, $settings, $block && $die );
+
+			// update statistics
+			if ( $settings['save_statistics'] )
+				IP_Geo_Block_Logs::update_stat( $hook, $validate, $settings, $block && $die );
+
+			// send response code to refuse
+			if ( $block && $die )
+				$this->send_response( $hook, $settings );
 		}
-
-		// update cache
-		IP_Geo_Block_API_Cache::update_cache( $hook, $validate, $settings, $block && $die );
-
-		// update statistics
-		if ( $auth && $settings['save_statistics'] )
-			IP_Geo_Block_Logs::update_stat( $hook, $validate, $settings, $block && $die );
-
-		// send response code to refuse
-		if ( $block && $die )
-			$this->send_response( $hook, $settings );
 
 		return $validate;
 	}
@@ -511,16 +513,16 @@ class IP_Geo_Block {
 			$action = 'resetpass';
 
 		$settings = self::get_option();
-		$actions = &$settings['login_action'];
+		$list = &$settings['login_action'];
 
 		// the same rule should be applied to login and logout
-		! empty( $actions['login'] ) and $actions['logout'] = TRUE;
+		! empty( $list['login'] ) and $list['logout'] = TRUE;
 
 		// wp-includes/pluggable.php @since 2.5.0
 		add_action( 'wp_login_failed', array( $this, 'auth_fail' ), $settings['priority'] );
 
 		// enables to skip validation of country on login/out except BuddyPress signup
-		$this->validate_ip( 'login', $settings, ! empty( $actions[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 ) );
+		$this->validate_ip( 'login', $settings, ! empty( $list[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 ) );
 	}
 
 	/**
@@ -634,7 +636,7 @@ class IP_Geo_Block {
 				$validate['result'] = 'multi';
 
 			$settings = self::get_option();
-			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // update 'fail'
+			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // count up 'fail'
 			$block = $cache['fail'] > max( 0, (int)$settings['login_fails'] ) || 'multi' === $validate['result'];
 
 			// (1) blocked, (3) unauthenticated, (5) all
@@ -646,7 +648,7 @@ class IP_Geo_Block {
 				if ( $settings['save_statistics'] )
 					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings, TRUE );
 
-				$this->send_response( $cache['hook'], $settings['response_code'] );
+				$this->send_response( $cache['hook'], $settings );
 			}
 		}
 
@@ -656,8 +658,8 @@ class IP_Geo_Block {
 	public function check_fail( $validate, $settings ) {
 		$cache = IP_Geo_Block_API_Cache::get_cache( $validate['ip'] );
 
-		// if number of fails is exceeded, then fail (it should be corrected as it would be deferred on 'cache by cookie')
-		if ( $cache && $cache['fail'] > max( 0, (int)$settings['login_fails'] - ( isset( $cache['cookie'] ) ? 1 : 0 ) ) ) {
+		// Check if number of fails reaches limit. Note this comparison needs '>='.
+		if ( $cache && $cache['fail'] >= max( 0, (int)$settings['login_fails'] ) ) {
 			if ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
 				$validate['result'] = 'limited'; // can't overwrite existing result
 		}

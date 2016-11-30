@@ -451,7 +451,10 @@ class IP_Geo_Block_API_IPInfoDB extends IP_Geo_Block_API {
  */
 class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 
-	public static function update_cache( $hook, $validate, $settings, $block ) {
+	// memory cache
+	protected static $memcache = array();
+
+	public static function update_cache( $hook, $validate, $settings, $force = FALSE ) {
 		$cache = self::get_cache( $ip = $validate['ip'] );
 
 		if ( $cache ) {
@@ -472,13 +475,9 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 			'fail' => $validate['auth'] ? 0 : $fail,
 			'call' => $settings['save_statistics'] ? $call : 0,
 			'host' => isset( $validate['host'] ) ? $validate['host'] : NULL,
-		), $block );
+		), $force );
 
-		// also update cache by cookie
-		if ( $settings['cache_cookie'] )
-			IP_Geo_Block_API_Cookie::update_cache( $cache, $settings );
-
-		return $cache;
+		return self::$memcache[ $ip ] = $cache;
 	}
 
 	public static function clear_cache() {
@@ -490,10 +489,10 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 	}
 
 	public static function get_cache( $ip ) {
-		if ( $cache = IP_Geo_Block_API_Cookie::get_cache( $ip ) )
-			return $cache;
-
-		return IP_Geo_Block_Logs::search_cache( $ip );
+		if ( ! empty( self::$memcache[ $ip ] ) )
+			return self::$memcache[ $ip ];
+		else
+			return self::$memcache[ $ip ] = IP_Geo_Block_Logs::search_cache( $ip );
 	}
 
 	public function get_location( $ip, $args = array() ) {
@@ -506,57 +505,6 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 	public function get_country( $ip, $args = array() ) {
 		return ( $cache = self::get_cache( $ip ) ) ? $cache['code'] : NULL;
 	}
-}
-
-/**
- * Class for Cache by cookie
- *
- * Input type  : IP address (IPv4, IPv6)
- * Output type : array
- */
-class IP_Geo_Block_API_Cookie extends IP_Geo_Block_API {
-
-	public static function update_cache( $cache, $settings ) {
-		$nonce = IP_Geo_Block_Util::create_nonce( $cache['code'], $cache['ip'] );
-
-		// no need to cache
-		unset( $cache['ip'] );
-		unset( $cache['cookie'] );
-
-		setcookie(
-			IP_Geo_Block::CACHE_NAME,
-			IP_Geo_Block_Util::cache_encode( $nonce . '|' . implode( '|', array_values( $cache ) ) ),
-			$_SERVER['REQUEST_TIME'] + $settings['cache_time'],
-			IP_Geo_Block_Util::slashit( IP_Geo_Block::$wp_path['home'] ),
-			'',
-			FALSE,
-			TRUE
-		);
-	}
-
-	public static function get_cache( $ip ) {
-		if ( isset( $_COOKIE[ IP_Geo_Block::CACHE_NAME ] ) ) {
-			$cache = explode( '|', IP_Geo_Block_Util::cache_decode( $_COOKIE[ IP_Geo_Block::CACHE_NAME ] ) );
-
-			// prevent to disguise country code
-			if ( count( $cache ) === 8 &&
-			     IP_Geo_Block_Util::verify_nonce( $cache[0], $cache[3], $ip ) ) {
-				return array(
-					'time' => $cache[1],
-					'hook' => $cache[2],
-					'code' => $cache[3],
-					'auth' => $cache[4],
-					'fail' => $cache[5],
-					'call' => $cache[6],
-					'host' => $cache[7],
-					'cookie' => TRUE, // for deferred correction
-				);
-			}
-		}
-
-		return NULL;
-	}
-
 }
 
 /**

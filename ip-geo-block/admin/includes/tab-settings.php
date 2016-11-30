@@ -1107,22 +1107,6 @@ endif;
 			$option_slug
 		);
 
-		// Cashe by cookie
-		$field = 'cache_cookie';
-		add_settings_field(
-			$option_name.'_'.$field,
-			__( '<dfn title="IP address and its country code protected by a dedicated key will be saved into the client cookie to reduce SQL queries.">Cache by cookie</dfn>', 'ip-geo-block' ),
-			array( $context, 'callback_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type' => 'checkbox',
-				'option' => $option_name,
-				'field' => $field,
-				'value' => ! empty( $options[ $field ] ) ? TRUE : FALSE,
-			)
-		);
-
 		// Expiration time [sec]
 		$field = 'cache_time';
 		add_settings_field(
@@ -1155,6 +1139,7 @@ endif;
 			)
 		);
 
+if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 		// Number of entries
 		$field = 'cache_hold';
 		add_settings_field(
@@ -1170,6 +1155,7 @@ endif;
 				'value' => $options[ $field ],
 			)
 		);
+endif;
 
 		/*----------------------------------------*
 		 * Submission settings

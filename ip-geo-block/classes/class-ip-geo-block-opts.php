@@ -35,7 +35,6 @@ class IP_Geo_Block_Opts {
 		'cache_time'      => HOUR_IN_SECONDS, // @since 3.5
 		// since version 3.0.0
 		'cache_time_gc'   => 900,     // Cache garbage collection time
-		'cache_cookie'    => TRUE,    // Cache IP address and country code by cookie
 		// since version 1.2, 1.3
 		'login_fails'     => 5,       // Limited number of login attempts
 		'validation'      => array(   // Action hook for validation
@@ -266,7 +265,7 @@ class IP_Geo_Block_Opts {
 			}
 
 			if ( version_compare( $version, '3.0.0' ) < 0 ) {
-				foreach ( array( 'cache_time_gc', 'cache_cookie', 'response_msg', 'redirect_uri', 'network_wide', 'public' ) as $tmp ) {
+				foreach ( array( 'cache_time_gc', 'response_msg', 'redirect_uri', 'network_wide', 'public' ) as $tmp ) {
 					$settings[ $tmp ] = $default[ $tmp ];
 				}
 

@@ -83,10 +83,16 @@ class IP_Geo_Block_Rewrite {
 
 		// update statistics
 		if ( $settings['save_statistics'] )
-			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings );
+			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings, TRUE );
+
+		// compose status code and message
+		if ( ! $exist && 404 != $settings['response_code'] ) {
+			$settings['response_code'] = 404;
+			$settings['response_msg' ] = 'Not Found';
+		}
 
 		// send response code to refuse
-		$context->send_response( 'admin', $exist ? $settings['response_code'] : 404 );
+		$context->send_response( 'admin', $settings );
 	}
 
 	/**

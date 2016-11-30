@@ -31,6 +31,7 @@ class IP_Geo_Block_Activate {
 
 			// kick off a cron job to download database immediately
 			IP_Geo_Block_Cron::start_update_db( $settings );
+			IP_Geo_Block_Cron::start_cache_gc( $settings );
 
 			// activate rewrite rules
 			IP_Geo_Block_Admin_Rewrite::activate_rewrite_all( $settings['rewrite'] );
@@ -75,6 +76,7 @@ class IP_Geo_Block_Activate {
 	public static function deactivate( $network_wide = FALSE ) {
 		// cancel schedule
 		IP_Geo_Block_Cron::stop_update_db();
+		IP_Geo_Block_Cron::stop_cache_gc();
 
 		// deactivate rewrite rules
 		IP_Geo_Block_Admin_Rewrite::deactivate_rewrite_all();

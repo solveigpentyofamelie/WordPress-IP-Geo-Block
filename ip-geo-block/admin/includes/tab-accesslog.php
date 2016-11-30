@@ -95,6 +95,7 @@ endif;
 			'xmlrpc'  => sprintf( $dfn, 'xmlrpc.php',           __( 'XML-RPC',            'ip-geo-block' ) ),
 			'login'   => sprintf( $dfn, 'wp-login.php',         __( 'Login form',         'ip-geo-block' ) ),
 			'admin'   => sprintf( $dfn, 'wp-admin/*.php',       __( 'Admin area',         'ip-geo-block' ) ),
+			'public'  => sprintf( $dfn, 'public facing pages',  __( 'Pubic facing pages', 'ip-geo-block' ) ),
 		);
 
 		foreach ( $target as $key => $val ) {

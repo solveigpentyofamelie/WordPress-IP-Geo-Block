@@ -28,7 +28,6 @@ class IP_Geo_Block_Uninstall {
 	 */
 	private static function delete_blog_options() {
 		delete_option( IP_Geo_Block::OPTION_NAME ); // @since 1.2.0
-		delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
 		IP_Geo_Block_Logs::delete_tables();
 	}
 

@@ -454,7 +454,7 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 	// memory cache
 	protected static $memcache = array();
 
-	public static function update_cache( $hook, $validate, $settings, $force = FALSE ) {
+	public static function update_cache( $hook, $validate, $settings ) {
 		$cache = self::get_cache( $ip = $validate['ip'] );
 
 		if ( $cache ) {
@@ -475,7 +475,7 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 			'fail' => $validate['auth'] ? 0 : $fail,
 			'call' => $settings['save_statistics'] ? $call : 0,
 			'host' => isset( $validate['host'] ) ? $validate['host'] : NULL,
-		), $force );
+		) );
 
 		return self::$memcache[ $ip ] = $cache;
 	}
@@ -682,7 +682,7 @@ if ( class_exists( 'IP_Geo_Block' ) ) {
 		$exclude = array( '.', '..' );
 		foreach ( $plugins as $plugin ) {
 			if ( ! in_array( $plugin, $exclude, TRUE ) && is_dir( $dir.$plugin ) ) {
-				@include( $dir.$plugin.'/class-'.$plugin.'.php' );
+				@include $dir.$plugin.'/class-'.$plugin.'.php';
 			}
 		}
 	}

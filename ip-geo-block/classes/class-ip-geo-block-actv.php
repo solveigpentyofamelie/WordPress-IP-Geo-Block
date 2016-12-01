@@ -10,11 +10,11 @@
  */
 
 // Stuff for resources
-require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php' );
-require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-opts.php' );
-require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php' );
-require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php' );
-require_once( IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-rewrite.php' );
+require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php';
+require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-opts.php';
+require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php';
+require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php';
+require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-rewrite.php';
 
 class IP_Geo_Block_Activate {
 
@@ -47,7 +47,7 @@ class IP_Geo_Block_Activate {
 	 */
 	public static function activate( $network_wide = FALSE ) {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) )
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 
 		if ( is_plugin_active_for_network( IP_GEO_BLOCK_BASE ) ) {
 			global $wpdb;

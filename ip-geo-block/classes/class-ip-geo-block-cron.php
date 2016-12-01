@@ -101,7 +101,7 @@ class IP_Geo_Block_Cron {
 	 */
 	private static function update_settings( $src, $keys = array() ) {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) )
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 
 		// for multisite
 		if ( is_plugin_active_for_network( IP_GEO_BLOCK_BASE ) ) {
@@ -186,7 +186,7 @@ class IP_Geo_Block_Cron {
 	 */
 	public static function download_zip( $url, $args, $filename, $modified ) {
 		if ( ! function_exists( 'download_url' ) )
-			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+			require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		// if the name of src file is changed, then update the dst
 		if ( basename( $filename ) !== ( $base = pathinfo( $url, PATHINFO_FILENAME ) ) ) {

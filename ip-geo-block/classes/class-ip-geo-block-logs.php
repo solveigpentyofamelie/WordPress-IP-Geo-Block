@@ -29,6 +29,8 @@ class IP_Geo_Block_Logs {
 		'daystats'  => array(),
 	);
 
+	private static $sqlist = array();
+
 	/**
 	 * Create
 	 *
@@ -186,9 +188,7 @@ class IP_Geo_Block_Logs {
 		$sql = $wpdb->prepare(
 			"UPDATE `$table` SET `data` = '%s'", serialize( $statistics )
 //			"REPLACE INTO `$table` (`No`, `data`) VALUES (%d, %s)", 1, serialize( $statistics )
-		) and $data = $wpdb->query( $sql ) or self::error( __LINE__ );
-
-		return empty( $data ) ? FALSE : TRUE;
+		) and self::add_sql( 'stat', $sql ); // $data = $wpdb->query( $sql ) or self::error( __LINE__ );
 	}
 
 	/**
@@ -474,7 +474,7 @@ class IP_Geo_Block_Logs {
 			$sql = $wpdb->prepare(
 				"DELETE FROM `$table` WHERE `hook` = '%s' ORDER BY `No` ASC LIMIT %d",
 				$hook, $count - $rows + 1
-			) and $wpdb->query( $sql ) or self::error( __LINE__ );
+			) and self::add_sql( 'logs', $sql ); // $wpdb->query( $sql ) or self::error( __LINE__ );
 		}
 
 		// insert into DB
@@ -492,7 +492,7 @@ class IP_Geo_Block_Logs {
 			$agent,
 			$heads,
 			$posts
-		) and $wpdb->query( $sql ) or self::error( __LINE__ );
+		) and self::add_sql( 'logs', $sql ); // $wpdb->query( $sql ) or self::error( __LINE__ );
 
 		// backup logs to text files
 		if ( $dir = apply_filters(
@@ -610,6 +610,7 @@ class IP_Geo_Block_Logs {
 		// sort by 'time'
 		foreach ( $cache as $key => $val )
 			$hash[ $key ] = $val['time'];
+
 		array_multisort( $hash, SORT_DESC, $cache );
 
 		return $cache;
@@ -619,7 +620,7 @@ class IP_Geo_Block_Logs {
 	 * Update cache
 	 *
 	 */
-	public static function update_cache( $cache, $force = FALSE ) {
+	public static function update_cache( $cache ) {
 		global $wpdb;
 		$table = $wpdb->prefix . IP_Geo_Block::CACHE_NAME;
 
@@ -643,9 +644,7 @@ class IP_Geo_Block_Logs {
 			$cache['fail'],
 			$cache['call'],
 			$cache['host']
-		) and $result = $wpdb->query( $sql ) or self::error( __LINE__ );
-
-		return $result;
+		) and self::add_sql( 'cache', $sql ); // $wpdb->query( $sql ) or self::error( __LINE__ );
 	}
 
 	/**
@@ -673,6 +672,29 @@ class IP_Geo_Block_Logs {
 			global $wpdb;
 			if ( $wpdb->last_error )
 				IP_Geo_Block_Admin::add_admin_notice( 'error', __FILE__ . ' (' . $line . ') ' . $wpdb->last_error );
+		}
+	}
+
+	/**
+	 * Stock SQL command for deferred execution.
+	 *
+	 */
+	private static function add_sql( $hook, $sql ) {
+//		global $wpdb; $wpdb->query( $sql ) or self::error( $hook );
+		self::$sqlist[ $hook ][] = $sql;
+	}
+
+	/**
+	 * Deferred execution of SQL command at shutdown process.
+	 *
+	 */
+	public static function exec_sql() {
+		global $wpdb;
+
+		foreach ( self::$sqlist as $key => $val ) {
+			foreach ( $val as $sql ) {
+				$wpdb->query( $sql ) or self::error( $key );
+			}
 		}
 	}
 }

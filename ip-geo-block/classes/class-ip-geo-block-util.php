@@ -33,7 +33,7 @@ class IP_Geo_Block_Util {
 	 *
 	 */
 	public static function download_zip( $url, $args, $filename, $modified ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php' );
+		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php';
 		return IP_Geo_Block_Cron::download_zip( $url, $args, $filename, $modified );
 	}
 

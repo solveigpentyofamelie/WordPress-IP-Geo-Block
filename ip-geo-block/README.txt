@@ -8,13 +8,13 @@ Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-It blocks any spams, login attempts and malicious access to the back-end 
+It blocks spam posts, login attempts and malicious access to the back-end 
 requested from the specific countries, and also prevents zero-day exploit.
 
 == Description ==
 
-A considerable number of WordPress plugin and theme vulnerabilities have been 
-disclosed every month. You can easily find them at 
+A considerable number of WordPress vulnerabilities in plugins and themes have 
+been disclosed every month. You can easily find them at 
   [WPScan Vulnerability Database](https://wpvulndb.com/ "WPScan Vulnerability Database") 
 and 
   [Exploits Database](https://www.exploit-db.com/ "Exploits Database by Offensive Security")
@@ -26,10 +26,10 @@ of your site not only by blocking requests from undesired countries but also
 with the original feature 'Zero-day Exploit Prevention' (WP-ZEP).
 
 And it also blocks undesired requests to the login form (login attempt), 
-comment form (spam and trackback) and XML-RPC (pingback).
+comment form (spam and trackback) and XML-RPC (login attempt and pingback).
 
 Up to version 2.x, this plugin had been dedicated to protect the back-end of 
-your site. From version 3.x, it becomes to be able to block accesses to your 
+your site. From version 3.x, it becomes to be able to block access to your 
 public facing pages, aka front-end. See 
   [this analysis](http://www.ipgeoblock.com/codex/analysis-of-attack-vectors.html "Analysis of Attack Vectors | IP Geo Block")
 about protection performance against 50 samples of vulnerable plugins.
@@ -484,6 +484,7 @@ Yes, you can find the list of all hooks and useful samples
   plugin and some other reason to prevent duplicated window open. For more 
   detail, see 
   [this discussion at support forum](https://wordpress.org/support/topic/ip-geoblock-opens-2-windows-on-link-clicks-when-user-is-logged-in/ "Topic: IP Geoblock opens 2 windows on link clicks when user is logged in &laquo; WordPress.org Forums").
+* **Improvement:** Deferred execution of SQL command to improve the response.
 * **Improvement:** Make the response compatible with WP original when it is 
   requested by GET method.
 * See some details at

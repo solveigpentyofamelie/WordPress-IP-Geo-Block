@@ -1072,7 +1072,7 @@ endif;
 		$section = $plugin_slug . '-cache';
 		add_settings_section(
 			$section,
-			__( 'Cache settings', 'ip-geo-block' ),
+			__( 'IP address cache settings', 'ip-geo-block' ),
 			NULL,
 			$option_slug
 		);

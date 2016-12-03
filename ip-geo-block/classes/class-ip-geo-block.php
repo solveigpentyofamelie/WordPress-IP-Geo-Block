@@ -537,7 +537,7 @@ class IP_Geo_Block {
 
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ) + array(
-			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
+			'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
 			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
 			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 		);
@@ -571,6 +571,7 @@ class IP_Geo_Block {
 		// analyze target in wp-includes, wp-content/(plugins|themes|language|uploads)
 		$path = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
 		$target = ( 'plugins' === $type || 'themes' === $type ? '[^\?\&\/]*' : '[^\?\&]*' );
+
 		preg_match( "/($path)($target)/", $this->request_uri, $target );
 		$target = empty( $target[2] ) ? $target[1] : $target[2];
 
@@ -580,9 +581,11 @@ class IP_Geo_Block {
 		$type = (int)$settings['validation'][ $type ];
 
 		if ( ! in_array( $target, $path, TRUE ) ) {
-			// register validation of nonce (2: WP-ZEP)
-			if ( 2 & $type )
+			if ( 2 & $type ) {
+				// redirect if valid nonce in referer, otherwise register WP-ZEP (2: WP-ZEP)
+				IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
+			}
 
 			// register validation of malicious signature
 			if ( ! IP_Geo_Block_Util::may_be_logged_in() )
@@ -656,10 +659,11 @@ class IP_Geo_Block {
 		$action = self::PLUGIN_NAME . '-auth-nonce';
 		$nonce = IP_Geo_Block_Util::retrieve_nonce( $action );
 
-		if ( ! IP_Geo_Block_Util::verify_nonce( $nonce, $action ) ) {
-			if ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
-				$validate['result'] = 'wp-zep'; // can't overwrite existing result
-		}
+		if ( IP_Geo_Block_Util::verify_nonce( $nonce, $action ) )
+			$validate['result'] = 'passed'; // should be passed if nonce is ok
+
+		elseif ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
+			$validate['result'] = 'wp-zep'; // can't overwrite existing result
 
 		return $validate;
 	}

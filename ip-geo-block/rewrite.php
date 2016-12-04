@@ -83,7 +83,7 @@ class IP_Geo_Block_Rewrite {
 
 		// update statistics
 		if ( $settings['save_statistics'] )
-			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings, TRUE );
+			IP_Geo_Block_Logs::update_stat( 'admin', $validate, $settings );
 
 		// compose status code and message
 		if ( ! $exist && 404 != $settings['response_code'] ) {

@@ -729,7 +729,7 @@ class IP_Geo_Block_Admin {
 			$output['public'][ $key ] = strtoupper( preg_replace( '/\s/', '', $output['public'][ $key ] ) );
 
 		// 3.0.0 exception : trim extra space and comma
-		foreach ( array( 'public', 'includes' ) as $key ) {
+		foreach ( array( 'admin', 'public', 'includes' ) as $key ) {
 			if ( empty( $output['exception'][ $key ] ) ) {
 				$output['exception'][ $key ] = $default['exception'][ $key ];
 			} else {

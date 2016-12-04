@@ -129,7 +129,7 @@ class IP_Geo_Block_Util {
 	 * @source: wp-includes/pluggable.php
 	 */
 	public static function create_nonce( $action = -1 ) {
-		$uid = self::get_current_user_id();
+		$uid = self::get_current_user_id( FALSE );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -143,7 +143,7 @@ class IP_Geo_Block_Util {
 	 * @source: wp-includes/pluggable.php
 	 */
 	public static function verify_nonce( $nonce, $action = -1 ) {
-		$uid = self::get_current_user_id();
+		$uid = self::get_current_user_id( FALSE );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -423,9 +423,9 @@ class IP_Geo_Block_Util {
 		return did_action( 'init' ) ? is_user_logged_in() : ( self::parse_auth_cookie( 'logged_in' ) ? TRUE : FALSE );
 	}
 
-	public static function get_current_user_id() {
+	public static function get_current_user_id( $strict = TRUE ) {
 		// unavailale before 'init' hook.
-		return did_action( 'init' ) ? get_current_user_id() : md5( $_SERVER['REMOTE_ADDR'], FALSE );
+		return did_action( 'init' ) ? get_current_user_id() : ( $strict ? 0 : md5( $_SERVER['REMOTE_ADDR'], FALSE ) );
 	}
 
 	/**

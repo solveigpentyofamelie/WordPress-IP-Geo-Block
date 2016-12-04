@@ -416,7 +416,7 @@ Please try 'Best practice' button for easy setup at the bottom of this
 plugin's setting page. And also see more details in 
 "[The best practice of target settings](http://www.ipgeoblock.com/codex/the-best-practice-of-target-settings.html 'The best practice of target settings | IP Geo Block')".
 
-= Does this plugin validate all the requests to the server? =
+= Does this plugin validate all the requests? =
 
 Unfortunately, no. This plugin can't handle the requests that are not 
 parsed by WordPress. In other words, a standalone file (PHP, CGI or 
@@ -463,7 +463,7 @@ Yes, you can find the list of all hooks and useful samples
 * From [WordPress 4.5](https://make.wordpress.org/core/2016/03/09/comment-changes-in-wordpress-4-5/ "Comment Changes in WordPress 4.5 &#8211; Make WordPress Core"),
   `rel=nofollow` attribute and value pair had no longer be added to relative 
   or same domain links within `comment_content`. This change prevents to block 
-  "Self Site Request Forgeries" (not Cross Site but a malicious link in the 
+  "Server Side Request Forgeries" (not Cross Site but a malicious link in the 
   comment field of own site).
 
 == Screenshots ==
@@ -484,6 +484,7 @@ Yes, you can find the list of all hooks and useful samples
   plugin and some other reason to prevent duplicated window open. For more 
   detail, see 
   [this discussion at support forum](https://wordpress.org/support/topic/ip-geoblock-opens-2-windows-on-link-clicks-when-user-is-logged-in/ "Topic: IP Geoblock opens 2 windows on link clicks when user is logged in &laquo; WordPress.org Forums").
+* **Improvement:** Better compatibility with some plugins, themes and widgets.
 * **Improvement:** Deferred execution of SQL command to improve the response.
 * **Improvement:** Make the response compatible with WP original when it is 
   requested by GET method.

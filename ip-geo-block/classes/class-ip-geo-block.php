@@ -537,7 +537,7 @@ class IP_Geo_Block {
 
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ) + array(
-			'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
+			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
 			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
 			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 		);
@@ -682,7 +682,7 @@ class IP_Geo_Block {
 
 		// validate malicious tags
 		if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query ) )
-			return $validate + array( 'result' => 'badtag' );
+			return $validate + array( 'result' => 'badtag' ); // can't overwrite existing result
 
 		return $validate;
 	}
@@ -762,11 +762,7 @@ class IP_Geo_Block {
 		// retrieve IP address of visitor via proxy services
 		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_proxy_ip' ), 20, 1 );
 
-		// validate bad signatures when an action is required
-		if ( isset( $_REQUEST['action'] ) && ! in_array( $_REQUEST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
-			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
-
-		// register user agent validation and malicious requests
+		// validate undesired user agent
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );
 
 		// validate country by IP address (block: true, die: false)

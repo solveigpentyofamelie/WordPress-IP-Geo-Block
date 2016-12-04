@@ -506,7 +506,7 @@ if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 				'option' => $option_name,
 				'field' => 'exception',
 				'sub-field' => $key,
-				'value' => $options['exception'][ $key ],
+				'value' => implode( ',', $options['exception'][ $key ] ),
 			)
 		);
 endif;

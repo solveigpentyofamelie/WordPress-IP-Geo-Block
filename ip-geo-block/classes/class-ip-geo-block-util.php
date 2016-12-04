@@ -33,7 +33,7 @@ class IP_Geo_Block_Util {
 	 *
 	 */
 	public static function download_zip( $url, $args, $filename, $modified ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php' );
+		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-cron.php';
 		return IP_Geo_Block_Cron::download_zip( $url, $args, $filename, $modified );
 	}
 
@@ -129,7 +129,7 @@ class IP_Geo_Block_Util {
 	 * @source: wp-includes/pluggable.php
 	 */
 	public static function create_nonce( $action = -1 ) {
-		$uid = self::get_current_user();
+		$uid = self::get_current_user_id( FALSE );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -143,7 +143,7 @@ class IP_Geo_Block_Util {
 	 * @source: wp-includes/pluggable.php
 	 */
 	public static function verify_nonce( $nonce, $action = -1 ) {
-		$uid = self::get_current_user();
+		$uid = self::get_current_user_id( FALSE );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -216,24 +216,6 @@ class IP_Geo_Block_Util {
 	 */
 	private static function nonce_tick() {
 		return ceil( time() / ( DAY_IN_SECONDS / 2 ) );
-	}
-
-	/**
-	 * WP alternative function of wp_get_current_user() for mu-plugins
-	 *
-	 * Retrieve the current user identification.
-	 * @source: wp-includes/user.php
-	 */
-	private static function get_current_user() {
-		if ( isset( $_COOKIE ) ) {
-			 foreach ( array_keys( $_COOKIE ) as $key ) {
-				if ( 0 === strpos( $key, 'wp-settings-' ) ) {
-					return substr( $key, 12 ); // get numerical characters
-				}
-			}
-		}
-
-		return md5( $_SERVER['REMOTE_ADDR'], FALSE );
 	}
 
 	/**
@@ -330,8 +312,8 @@ class IP_Geo_Block_Util {
 	 * @source: wp-includes/pluggable.php
 	 */
 	public static function redirect( $location, $status = 302 ) {
-		$_is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
-		$_is_IIS = !$_is_apache && (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
+		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
+		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 
 		// retrieve nonce from referer and add it to the location
 		$location = self::rebuild_nonce( $location, $status );
@@ -343,11 +325,11 @@ class IP_Geo_Block_Util {
 
 			header( "Location: $location", true, $status );
 
-			return true;
+			return TRUE;
 		}
 
 		else {
-			return false;
+			return FALSE;
 		}
 	}
 
@@ -441,9 +423,9 @@ class IP_Geo_Block_Util {
 		return did_action( 'init' ) ? is_user_logged_in() : ( self::parse_auth_cookie( 'logged_in' ) ? TRUE : FALSE );
 	}
 
-	public static function get_current_user_id() {
+	public static function get_current_user_id( $strict = TRUE ) {
 		// unavailale before 'init' hook.
-		return did_action( 'init' ) ? get_current_user_id() : 0;
+		return did_action( 'init' ) ? get_current_user_id() : ( $strict ? 0 : md5( $_SERVER['REMOTE_ADDR'], FALSE ) );
 	}
 
 	/**

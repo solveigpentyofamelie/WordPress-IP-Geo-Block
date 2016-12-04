@@ -510,7 +510,7 @@ if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 				'option' => $option_name,
 				'field' => 'exception',
 				'sub-field' => $key,
-				'value' => $options['exception'][ $key ],
+				'value' => implode( ',', $options['exception'][ $key ] ),
 			)
 		);
 endif;
@@ -1102,7 +1102,7 @@ endif;
 		$section = $plugin_slug . '-cache';
 		add_settings_section(
 			$section,
-			__( 'Cache settings', 'ip-geo-block' ),
+			__( 'IP address cache settings', 'ip-geo-block' ),
 			NULL,
 			$option_slug
 		);

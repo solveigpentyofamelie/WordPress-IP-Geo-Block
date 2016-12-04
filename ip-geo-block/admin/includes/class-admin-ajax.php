@@ -269,6 +269,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[rewrite][languages]',      // 3.0.0
 			'[exception][plugins][*]',   // 2.2.5
 			'[exception][themes][*]',    // 2.2.5
+			'[exception][admin][$]',     // 3.0.0
 			'[exception][public][$]',    // 3.0.0
 			'[exception][includes][$]',  // 3.0.0
 			'[exception][uploads][$]',   // 3.0.0
@@ -342,7 +343,7 @@ class IP_Geo_Block_Admin_Ajax {
 							foreach ( $input[ $m[1] ][ $m[2] ] as $val ) {
 								$json[ $prfx.'['.$m[1].']['.$m[2].']'.'['.$val.']' ] = 1;
 							}
-						} else {
+						} elseif ( is_array( $input[ $m[1] ][ $m[2] ] ) ) {
 							$json[ $prfx.'['.$m[1].']['.$m[2].']' ] = implode( ',', $input[ $m[1] ][ $m[2] ] );
 						}
 					}

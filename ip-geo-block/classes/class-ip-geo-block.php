@@ -629,7 +629,7 @@ class IP_Geo_Block {
 			// send response code to refuse immediately
 			if ( $block ) {
 				if ( $settings['save_statistics'] )
-					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings, TRUE );
+					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings );
 
 				$this->send_response( $cache['hook'], $settings );
 			}

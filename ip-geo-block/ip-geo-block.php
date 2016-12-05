@@ -99,8 +99,10 @@ endif; // ! class_exists( 'IP_Geo_Block' )
 
 /**
  * Invalidate blocking behavior in case yourself is locked out.
- * @note: activate the following code and upload this file via FTP.
- */ /* -- EDIT THIS LINE AND ACTIVATE THE FOLLOWING FUNCTIONS -- *
+ *
+ * How to use: Activate the following code and upload this file via FTP.
+ */
+/* -- EDIT THIS LINE AND ACTIVATE THE FOLLOWING FUNCTIONS -- *
 function ip_geo_block_emergency( $validate ) {
 	$validate['result'] = 'passed';
 	return $validate;

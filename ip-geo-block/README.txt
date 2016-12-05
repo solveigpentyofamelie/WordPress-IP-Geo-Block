@@ -322,8 +322,10 @@ it via FTP.
 
 `/**
  * Invalidate blocking behavior in case yourself is locked out.
- * @note: activate the following code and upload this file via FTP.
- */ /* -- EDIT THIS LINE AND ACTIVATE THE FOLLOWING FUNCTION -- */
+ *
+ * How to use: Activate the following code and upload this file via FTP.
+ */
+/* -- EDIT THIS LINE AND ACTIVATE THE FOLLOWING FUNCTION -- */
 function ip_geo_block_emergency( $validate ) {
     $validate['result'] = 'passed';
     return $validate;
@@ -335,7 +337,7 @@ add_filter( 'ip-geo-block-admin', 'ip_geo_block_emergency' );
 Then "**Clear cache**" at "**Statistics**" tab on your dashborad. Remember 
 that you should upload the original one to deactivate above feature.
 
-[This release note](http://www.ipgeoblock.com/changelog/release-2.1.3.html "2.1.3 Release Note")
+[This document](http://www.ipgeoblock.com/codex/what-should-i-do-when-i-m-locked-out.html "What should I do when I'm locked out? | IP Geo Block")
 can also help you.
 
 = How can I fix "Unable to write" error? =
@@ -412,8 +414,8 @@ follows:
 - **Bad signatures in query**  
   It blocks the request which has not been covered in the above three.
 
-Please try 'Best practice' button for easy setup at the bottom of this 
-plugin's setting page. And also see more details in 
+Please try "**Best practice**" button at the bottom of this plugin's setting 
+page for easy setup. And also see more details in 
 "[The best practice of target settings](http://www.ipgeoblock.com/codex/the-best-practice-of-target-settings.html 'The best practice of target settings | IP Geo Block')".
 
 = Does this plugin validate all the requests? =
@@ -425,8 +427,8 @@ by this plugin even if it is in the WordPress install directory.
 
 But there're exceptions: When you enable "**Force to load WP core**" for 
 **Plugins area** or **Themes area**, a standalone PHP file becomes to be 
-able to be blocked. Sometimes this kind of file in a plugin or theme has 
-vulnerability. This function is provided against such a case.
+able to be blocked. Sometimes this kind of file has some vulnerabilities.
+This function protects your site against such a case.
 
 = Some admin function doesn't work when WP-ZEP is enabled. =
 

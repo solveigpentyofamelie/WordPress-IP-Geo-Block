@@ -895,6 +895,12 @@ var ip_geo_block_time = new Date();
 				});
 			}
 
+			// Clear filter logs
+			$(ID('#', 'reset-filter')).on('click', function (event) {
+				$('.footable').trigger('footable_clear_filter');
+				return false;
+			});
+
 			// Validation logs
 			$(ID('@', 'clear_logs')).on('click', function (event) {
 				confirm(IP_GEO_BLOCK.msg[5], function () {

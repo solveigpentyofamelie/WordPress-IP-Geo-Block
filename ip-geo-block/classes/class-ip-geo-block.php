@@ -354,11 +354,11 @@ class IP_Geo_Block {
 		}
 
 		switch ( (int)substr( $code, 0, 1 ) ) {
-		  case 2: // 2xx Success
+		  case 2: // 2xx Success (HTTP header injection should be avoided)
 			header( 'Refresh: 0; url=' . esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), TRUE, $code ); // @since 2.8
 			exit;
 
-		  case 3: // 3xx Redirection
+		  case 3: // 3xx Redirection (HTTP header injection should be avoided)
 			IP_Geo_Block_Util::redirect( esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), $code ); // @since 2.8
 			exit;
 
@@ -419,7 +419,7 @@ class IP_Geo_Block {
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
 
 		// apply custom filter for validation
-		// @usage add_filter( 'ip-geo-block-$hook', 'my_validation', 10, 2 );
+		// @example add_filter( 'ip-geo-block-$hook', 'my_validation', 10, 2 );
 		// @param $validate = array(
 		//     'ip'       => $ip,       /* validated ip address                */
 		//     'auth'     => $auth,     /* authenticated or not                */

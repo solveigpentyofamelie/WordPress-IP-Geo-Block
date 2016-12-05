@@ -34,7 +34,7 @@ class IP_Geo_Block_Logs {
 	/**
 	 * Create
 	 *
-	 * @note creating mixed storage engine may cause troubles with some plugins.
+	 * @internal creating mixed storage engine may cause troubles with some plugins.
 	 */
 	public static function create_tables() {
 		global $wpdb;
@@ -199,7 +199,7 @@ class IP_Geo_Block_Logs {
 		$time = intval( $time );
 		$options = IP_Geo_Block::get_option();
 
-		if ( $time < 100 /* msec */ )
+		if ( $time < 90 /* msec */ )
 			return (int)$options['validation']['maxlogs'];
 
 		elseif ( $time < 200 /* msec */ )
@@ -211,7 +211,7 @@ class IP_Geo_Block_Logs {
 	/**
 	 * Validate string whether utf8
 	 *
-	 * @note code from wp_check_invalid_utf8() in wp-includes/formatting.php
+	 * @see  wp_check_invalid_utf8() in wp-includes/formatting.php
 	 * @link https://core.trac.wordpress.org/browser/trunk/src/wp-includes/formatting.php
 	 */
 	private static function validate_utf8( $str ) {
@@ -404,7 +404,7 @@ class IP_Geo_Block_Logs {
 	/**
 	 * Backup the validation log to text files
 	 *
-	 * @notice $path should not be in the public_html.
+	 * Note: $path should not be within the public_html.
 	 */
 	private static function backup_logs( $hook, $validate, $method, $agent, $heads, $posts, $path ) {
 		// $path should be absolute path to the directory
@@ -509,7 +509,7 @@ class IP_Geo_Block_Logs {
 	 * Restore the validation log
 	 *
 	 * @param string $hook type of log name
-	 * return array log data
+	 * @return array log data
 	 */
 	public static function restore_logs( $hook = NULL ) {
 		global $wpdb;

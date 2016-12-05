@@ -217,7 +217,7 @@ class IP_Geo_Block_Admin {
 	/**
 	 * Display global notice
 	 *
-	 * @notice: Sanitization should be done at the caller
+	 * Note: Sanitization should be done at the caller
 	 */
 	public function show_admin_notices() {
 		$key = IP_Geo_Block::PLUGIN_NAME . '-notice';
@@ -684,7 +684,7 @@ class IP_Geo_Block_Admin {
 						else {
 							$output[ $key ][ $sub ] = ( is_int( $default[ $key ][ $sub ] ) ?
 								(int)$input[ $key ][ $sub ] :
-								IP_Geo_Block_Util::kses( preg_replace( '/[^-,:!*#+=\.\/\w\s]/', '', $input[ $key ][ $sub ] ), FALSE )
+								IP_Geo_Block_Util::kses( trim( $input[ $key ][ $sub ] ), FALSE )
 							);
 						}
 					}
@@ -721,15 +721,17 @@ class IP_Geo_Block_Admin {
 		$output['signature'] = implode( ',', $this->trim( $output['signature'] ) );
 
 		// 2.2.5 exception : convert associative array to simple array
-		foreach ( array( 'plugins', 'themes' ) as $key )
+		foreach ( array( 'plugins', 'themes' ) as $key ) {
 			$output['exception'][ $key ] = array_keys( $output['exception'][ $key ] );
+		}
 
 		// 3.0.0 public : convert country code to upper case
-		foreach ( array( 'white_list', 'black_list' ) as $key )
+		foreach ( array( 'white_list', 'black_list' ) as $key ) {
 			$output['public'][ $key ] = strtoupper( preg_replace( '/\s/', '', $output['public'][ $key ] ) );
+		}
 
 		// 3.0.0 exception : trim extra space and comma
-		foreach ( array( 'admin', 'public', 'includes' ) as $key ) {
+		foreach ( array( 'admin', 'public', 'includes', 'uploads', 'languages' ) as $key ) {
 			if ( empty( $output['exception'][ $key ] ) ) {
 				$output['exception'][ $key ] = $default['exception'][ $key ];
 			} else {
@@ -737,10 +739,6 @@ class IP_Geo_Block_Admin {
 				$output['exception'][ $key ] : $this->trim( $output['exception'][ $key ] ) );
 			}
 		}
-
-		// 3.0.0 exception for other areas : set default factors
-		foreach ( array( 'uploads', 'languages' ) as $key )
-			$output['exception'][ $key ] = $default['exception'][ $key ];
 
 		return $output;
 	}

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-03 15:20+0900\n"
-"PO-Revision-Date: 2016-12-03 15:26+0900\n"
+"POT-Creation-Date: 2016-12-05 21:17+0900\n"
+"PO-Revision-Date: 2016-12-05 21:23+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -160,15 +160,15 @@ msgstr "トップに戻る"
 msgid "Enable"
 msgstr "有効"
 
-#: admin/class-ip-geo-block-admin.php:821
-#: admin/class-ip-geo-block-admin.php:834
+#: admin/class-ip-geo-block-admin.php:819
+#: admin/class-ip-geo-block-admin.php:832
 #: classes/class-ip-geo-block-cron.php:261
 #: classes/class-ip-geo-block-opts.php:310
 #, php-format
 msgid "Unable to write %s. Please check the permission."
 msgstr "%s に書き込めません。パーミッションを確認して下さい。"
 
-#: admin/class-ip-geo-block-admin.php:822
+#: admin/class-ip-geo-block-admin.php:820
 #, php-format
 msgid "Or please refer to %s to set it manually."
 msgid_plural "Or please refer to %s to set them manually."
@@ -183,90 +183,98 @@ msgstr "n/a"
 msgid "UNKNOWN"
 msgstr "不明"
 
-#: admin/includes/tab-accesslog.php:22 admin/includes/tab-accesslog.php:65
+#: admin/includes/tab-accesslog.php:22 admin/includes/tab-accesslog.php:82
 msgid "Validation logs"
 msgstr "検証のログ"
 
-#: admin/includes/tab-accesslog.php:30
+#: admin/includes/tab-accesslog.php:31
+msgid "Filter logs"
+msgstr "ログをフィルタ"
+
+#: admin/includes/tab-accesslog.php:40
+msgid "Reset"
+msgstr "リセット"
+
+#: admin/includes/tab-accesslog.php:47
 msgid "Clear logs"
 msgstr "ログのクリア"
 
-#: admin/includes/tab-accesslog.php:38 admin/includes/tab-statistics.php:171
+#: admin/includes/tab-accesslog.php:55 admin/includes/tab-statistics.php:171
 #: admin/includes/tab-statistics.php:275
 msgid "Clear now"
 msgstr "今すぐクリア"
 
-#: admin/includes/tab-accesslog.php:46
+#: admin/includes/tab-accesslog.php:63
 msgid "Export logs"
 msgstr "ログをエクスポート"
 
-#: admin/includes/tab-accesslog.php:52 admin/includes/tab-settings.php:1228
+#: admin/includes/tab-accesslog.php:69 admin/includes/tab-settings.php:1228
 msgid "Export to the local file"
 msgstr "ローカル・ファイルにエクスポートする"
 
-#: admin/includes/tab-accesslog.php:52
+#: admin/includes/tab-accesslog.php:69
 msgid "Export csv"
 msgstr "CSVをエクスポート"
 
-#: admin/includes/tab-accesslog.php:92 admin/includes/tab-settings.php:363
+#: admin/includes/tab-accesslog.php:109 admin/includes/tab-settings.php:363
 #, php-format
 msgid "<dfn title=\"Validate request to %s.\">%s</dfn>"
 msgstr "<dfn title=\"%sへのリクエストを検証します。\">%s</dfn>"
 
-#: admin/includes/tab-accesslog.php:94 admin/includes/tab-settings.php:365
+#: admin/includes/tab-accesslog.php:111 admin/includes/tab-settings.php:365
 msgid "Comment post"
 msgstr "コメント投稿"
 
-#: admin/includes/tab-accesslog.php:95 admin/includes/tab-settings.php:366
+#: admin/includes/tab-accesslog.php:112 admin/includes/tab-settings.php:366
 msgid "XML-RPC"
 msgstr "XML-RPC"
 
-#: admin/includes/tab-accesslog.php:96 admin/includes/tab-settings.php:367
+#: admin/includes/tab-accesslog.php:113 admin/includes/tab-settings.php:367
 msgid "Login form"
 msgstr "ログイン・フォーム"
 
-#: admin/includes/tab-accesslog.php:97 admin/includes/tab-settings.php:368
+#: admin/includes/tab-accesslog.php:114 admin/includes/tab-settings.php:368
 msgid "Admin area"
 msgstr "管理領域"
 
-#: admin/includes/tab-accesslog.php:98 admin/includes/tab-settings.php:370
+#: admin/includes/tab-accesslog.php:115 admin/includes/tab-settings.php:370
 msgid "Pubic facing pages"
 msgstr "一般公開ページ"
 
-#: admin/includes/tab-accesslog.php:104
+#: admin/includes/tab-accesslog.php:121
 msgid "Date"
 msgstr "日時"
 
-#: admin/includes/tab-accesslog.php:105 admin/includes/tab-geolocation.php:65
+#: admin/includes/tab-accesslog.php:122 admin/includes/tab-geolocation.php:65
 #: admin/includes/tab-statistics.php:217
 msgid "IP address"
 msgstr "IPアドレス"
 
-#: admin/includes/tab-accesslog.php:106
+#: admin/includes/tab-accesslog.php:123
 msgid "Code"
 msgstr "国"
 
-#: admin/includes/tab-accesslog.php:107
+#: admin/includes/tab-accesslog.php:124
 msgid "Result"
 msgstr "判定"
 
-#: admin/includes/tab-accesslog.php:108
+#: admin/includes/tab-accesslog.php:125
 msgid "Request"
 msgstr "リクエスト"
 
-#: admin/includes/tab-accesslog.php:109
+#: admin/includes/tab-accesslog.php:126
 msgid "User agent"
 msgstr "ユーザーエージェント"
 
-#: admin/includes/tab-accesslog.php:110
+#: admin/includes/tab-accesslog.php:127
 msgid "HTTP headers"
 msgstr "HTTPヘッダ"
 
-#: admin/includes/tab-accesslog.php:111
+#: admin/includes/tab-accesslog.php:128
 msgid "$_POST data"
 msgstr "$_POSTデータ"
 
-#: admin/includes/tab-accesslog.php:129
+#: admin/includes/tab-accesslog.php:146
 msgid ""
 "Current selection of [<strong>Record validation logs</strong>] on "
 "[<strong>Settings</strong>] tab is [<strong>Disable</strong>]."
@@ -274,7 +282,7 @@ msgstr ""
 "現在［<strong>設定</strong>］タブの［<strong>検証のログを記録</strong>］は"
 "［<strong>無効</strong>］が選択されています。"
 
-#: admin/includes/tab-accesslog.php:130
+#: admin/includes/tab-accesslog.php:147
 msgid ""
 "Please select the proper condition to record and analyze the validation logs."
 msgstr "検証のログを記録し分析するためには、適切な条件を選択して下さい。"

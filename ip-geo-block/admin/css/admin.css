@@ -301,6 +301,10 @@ table.ip-geo-block-table {
     word-wrap: break-word;
     word-break: break-all;
 }
+input#ip_geo_block_settings_filter_logs {
+    width: 16em;
+    padding-top: 3px;
+}
 
 /* Scan the country code */
 #ip-geo-block-scan-code {

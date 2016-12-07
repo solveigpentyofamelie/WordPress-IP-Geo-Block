@@ -409,8 +409,8 @@ class IP_Geo_Block {
 
 		// register auxiliary validation functions
 		$var = self::PLUGIN_NAME . '-' . $hook;
-		$auth and add_filter( $var, array( $this, 'check_auth' ), 9, 2 );
-		$auth and add_filter( $var, array( $this, 'check_fail' ), 8, 2 );
+		$auth and add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
+		$auth and add_filter( $var, array( $this, 'check_auth' ), 8, 2 );
 		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
 		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 7, 2 );
 		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 7, 2 );
@@ -635,20 +635,23 @@ class IP_Geo_Block {
 				'provider' => 'Cache',
 			) );
 
+			$settings = self::get_option();
+
+			if ( $cache['fail'] > max( 0, (int)$settings['login_fails'] ) )
+				$validate['result'] = 'limited';
+
 			// validate xmlrpc system.multicall
-			if ( defined( 'XMLRPC_REQUEST' ) && FALSE !== stripos( file_get_contents( 'php://input' ), 'system.multicall' ) )
+			elseif ( defined( 'XMLRPC_REQUEST' ) && FALSE !== stripos( file_get_contents( 'php://input' ), 'system.multicall' ) )
 				$validate['result'] = 'multi';
 
-			$settings = self::get_option();
 			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // count up 'fail'
-			$block = $cache['fail'] > max( 0, (int)$settings['login_fails'] ) || 'multi' === $validate['result'];
 
 			// (1) blocked, (3) unauthenticated, (5) all
 			if ( 1 & (int)$settings['validation']['reclogs'] )
-				IP_Geo_Block_Logs::record_logs( $cache['hook'], $validate, $settings, $block );
+				IP_Geo_Block_Logs::record_logs( $cache['hook'], $validate, $settings );
 
 			// send response code to refuse immediately
-			if ( $block ) {
+			if ( 'failed' !== $validate['result'] ) {
 				if ( $settings['save_statistics'] )
 					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings );
 
@@ -662,13 +665,8 @@ class IP_Geo_Block {
 	public function check_fail( $validate, $settings ) {
 		$cache = IP_Geo_Block_API_Cache::get_cache( $validate['ip'] );
 
-		// Check if number of fails reaches limit. Note this comparison needs '>='.
-		if ( $cache && $cache['fail'] >= max( 0, (int)$settings['login_fails'] ) ) {
-			if ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
-				$validate['result'] = 'limited'; // can't overwrite existing result
-		}
-
-		return $validate;
+		// check if number of fails reaches limit. can't overwrite existing result.
+		return $cache && $cache['fail'] >= max( 0, (int)$settings['login_fails'] ) ? $validate + array( 'result' => 'limited' ) : $validate;
 	}
 
 	public function check_auth( $validate, $settings ) {

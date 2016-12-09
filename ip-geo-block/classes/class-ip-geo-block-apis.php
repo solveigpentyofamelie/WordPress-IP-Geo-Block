@@ -472,7 +472,7 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 			'hook' => $hook,
 			'code' => $validate['code'],
 			'auth' => $validate['auth'], // get_current_user_id() > 0
-			'fail' => $validate['auth'] ? 0 : $fail,
+			'fail' => $fail, // $validate['auth'] ? 0 : $fail,
 			'call' => $settings['save_statistics'] ? $call : 0,
 			'host' => isset( $validate['host'] ) ? $validate['host'] : NULL,
 		) );
@@ -482,6 +482,7 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 
 	public static function clear_cache() {
 		IP_Geo_Block_Logs::clear_cache();
+		self::$memcache = array();
 	}
 
 	public static function get_cache_all() {
@@ -648,8 +649,7 @@ class IP_Geo_Block_Provider {
 
 		if ( 0 === $field )
 			return __(
-				'You need to select at least one IP geolocation service. Otherwise <strong>you\'ll be blocked</strong> after the cache expires.',
-				'ip-geo-block'
+				'You need to select at least one IP geolocation service. Otherwise <strong>you\'ll be blocked</strong> after the cache expires.', 'ip-geo-block'
 			);
 
 		return NULL;

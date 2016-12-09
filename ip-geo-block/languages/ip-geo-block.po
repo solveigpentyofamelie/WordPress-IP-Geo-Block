@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the IP Geo Block package.
 msgid ""
 msgstr ""
-"Project-Id-Version: IP Geo Block 3.0.0\n"
+"Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-05 21:17+0900\n"
-"PO-Revision-Date: 2016-12-05 21:18+0900\n"
+"POT-Creation-Date: 2016-12-09 20:52+0900\n"
+"PO-Revision-Date: 2016-12-09 20:54+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -58,7 +58,7 @@ msgid "Contribute at GitHub"
 msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:211
-#: admin/class-ip-geo-block-admin.php:365
+#: admin/class-ip-geo-block-admin.php:377
 msgid "Settings"
 msgstr ""
 
@@ -92,69 +92,82 @@ msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:313
 msgid ""
+"Once you logout, you will be unable to login again because the number of "
+"login attempts reaches the limit."
+msgstr ""
+
+#: admin/class-ip-geo-block-admin.php:315
+#, php-format
+msgid ""
+"Please execute \"<strong>Clear cache</strong>\" on <a href=\"%s\">Statistics "
+"tab</a> to prevent locking yourself out."
+msgstr ""
+
+#: admin/class-ip-geo-block-admin.php:325
+msgid ""
 "Once you logout, you will be unable to login again because your country code "
 "or IP address is in the blacklist."
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:314
+#: admin/class-ip-geo-block-admin.php:326
 msgid ""
 "Once you logout, you will be unable to login again because your country code "
 "or IP address is not in the whitelist."
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:317
+#: admin/class-ip-geo-block-admin.php:329
 #, php-format
 msgid "Please check your <a href=\"%s\">Validation rule settings</a>."
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:366
+#: admin/class-ip-geo-block-admin.php:378
 msgid "Statistics"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:367
+#: admin/class-ip-geo-block-admin.php:379
 msgid "Logs"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:368
+#: admin/class-ip-geo-block-admin.php:380
 msgid "Search"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:369
+#: admin/class-ip-geo-block-admin.php:381
 msgid "Attribution"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:381
+#: admin/class-ip-geo-block-admin.php:393
 msgid "Toggle all"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:405
+#: admin/class-ip-geo-block-admin.php:417
 msgid "Thanks for providing these great services for free."
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:406
+#: admin/class-ip-geo-block-admin.php:418
 msgid ""
 "(Most browsers will redirect you to each site <a href=\"http://www."
 "ipgeoblock.com/etc/referer.html\" title=\"Referer Checker\">without referrer "
 "when you click the link</a>.)"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:411
+#: admin/class-ip-geo-block-admin.php:423
 msgid "Back to top"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:503
+#: admin/class-ip-geo-block-admin.php:515
 msgid "Enable"
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:819
-#: admin/class-ip-geo-block-admin.php:832
+#: admin/class-ip-geo-block-admin.php:831
+#: admin/class-ip-geo-block-admin.php:844
 #: classes/class-ip-geo-block-cron.php:261
 #: classes/class-ip-geo-block-opts.php:310
 #, php-format
 msgid "Unable to write %s. Please check the permission."
 msgstr ""
 
-#: admin/class-ip-geo-block-admin.php:820
+#: admin/class-ip-geo-block-admin.php:832
 #, php-format
 msgid "Or please refer to %s to set it manually."
 msgid_plural "Or please refer to %s to set them manually."
@@ -951,7 +964,7 @@ msgid ""
 "statistics."
 msgstr ""
 
-#: classes/class-ip-geo-block-apis.php:651
+#: classes/class-ip-geo-block-apis.php:652
 msgid ""
 "You need to select at least one IP geolocation service. Otherwise "
 "<strong>you'll be blocked</strong> after the cache expires."

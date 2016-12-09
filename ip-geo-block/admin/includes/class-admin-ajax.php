@@ -6,7 +6,7 @@ class IP_Geo_Block_Admin_Ajax {
 	 *
 	 */
 	static public function search_ip( $which ) {
-		require_once( IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php' );
+		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php';
 
 		// check format
 		if ( filter_var( $ip = $_POST['ip'], FILTER_VALIDATE_IP ) ) {

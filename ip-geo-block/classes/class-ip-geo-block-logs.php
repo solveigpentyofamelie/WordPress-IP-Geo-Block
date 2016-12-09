@@ -595,6 +595,9 @@ class IP_Geo_Block_Logs {
 		global $wpdb;
 		$table = $wpdb->prefix . IP_Geo_Block::CACHE_NAME;
 		$wpdb->query( "TRUNCATE TABLE `$table`" ) or self::error( __LINE__ );
+
+		// cancel SQL command at shutdown process
+		self::$sqlist = array();
 	}
 
 	/**
@@ -622,7 +625,7 @@ class IP_Geo_Block_Logs {
 		$result = $wpdb->get_results( "SELECT * FROM `$table`", ARRAY_A ) or self::error( __LINE__ );
 
 		// transform DB to cache format
-		$cache = array();
+		$cache = $hash = array();
 		foreach ( $result as $key => $val ) {
 			$ip = $val['ip'];
 			unset( $val['ip'] );

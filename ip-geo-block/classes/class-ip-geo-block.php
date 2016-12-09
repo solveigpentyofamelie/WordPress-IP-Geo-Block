@@ -409,7 +409,7 @@ class IP_Geo_Block {
 
 		// register auxiliary validation functions
 		$var = self::PLUGIN_NAME . '-' . $hook;
-		$auth and add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
+		          add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
 		$auth and add_filter( $var, array( $this, 'check_auth' ), 8, 2 );
 		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
 		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 7, 2 );
@@ -644,18 +644,18 @@ class IP_Geo_Block {
 			elseif ( defined( 'XMLRPC_REQUEST' ) && FALSE !== stripos( file_get_contents( 'php://input' ), 'system.multicall' ) )
 				$validate['result'] = 'multi';
 
-			$cache = IP_Geo_Block_API_Cache::update_cache( $cache['hook'], $validate, $settings ); // count up 'fail'
+			$cache = IP_Geo_Block_API_Cache::update_cache( 'login', $validate, $settings ); // count up 'fail'
 
 			// (1) blocked, (3) unauthenticated, (5) all
 			if ( 1 & (int)$settings['validation']['reclogs'] )
-				IP_Geo_Block_Logs::record_logs( $cache['hook'], $validate, $settings );
+				IP_Geo_Block_Logs::record_logs( 'login', $validate, $settings );
 
 			// send response code to refuse immediately
 			if ( 'failed' !== $validate['result'] ) {
 				if ( $settings['save_statistics'] )
-					IP_Geo_Block_Logs::update_stat( $cache['hook'], $validate, $settings );
+					IP_Geo_Block_Logs::update_stat( 'login', $validate, $settings );
 
-				$this->send_response( $cache['hook'], $settings );
+				$this->send_response( 'login', $settings );
 			}
 		}
 
@@ -663,9 +663,8 @@ class IP_Geo_Block {
 	}
 
 	public function check_fail( $validate, $settings ) {
+		// check if number of fails reaches the limit. can't overwrite existing result.
 		$cache = IP_Geo_Block_API_Cache::get_cache( $validate['ip'] );
-
-		// check if number of fails reaches limit. can't overwrite existing result.
 		return $cache && $cache['fail'] >= max( 0, (int)$settings['login_fails'] ) ? $validate + array( 'result' => 'limited' ) : $validate;
 	}
 
@@ -675,16 +674,9 @@ class IP_Geo_Block {
 	}
 
 	public function check_nonce( $validate, $settings ) {
-		$action = self::PLUGIN_NAME . '-auth-nonce';
-		$nonce = IP_Geo_Block_Util::retrieve_nonce( $action );
-
-		if ( IP_Geo_Block_Util::verify_nonce( $nonce, $action ) )
-			$validate['result'] = 'passed'; // should be passed if nonce is ok
-
-		elseif ( empty( $validate['result'] ) || 'passed' === $validate['result'] )
-			$validate['result'] = 'wp-zep'; // can't overwrite existing result
-
-		return $validate;
+		// should be passed when nonce is valid. can't overwrite existing result
+		$nonce = IP_Geo_Block_Util::retrieve_nonce( $action = self::PLUGIN_NAME . '-auth-nonce' );
+		return $validate + array( 'result' => IP_Geo_Block_Util::verify_nonce( $nonce, $action ) ? 'passed' : 'wp-zep' );
 	}
 
 	public function check_signature( $validate, $settings ) {

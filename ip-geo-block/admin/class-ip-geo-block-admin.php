@@ -956,6 +956,11 @@ class IP_Geo_Block_Admin {
 			}
 			break;
 
+		  case 'show-info':
+			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
+			$res = IP_Geo_Block_Admin_Ajax::get_wp_info();
+			break;
+
 		  case 'create-table':
 		  case 'delete-table':
 			// Need to define `IP_GEO_BLOCK_DEBUG` to true

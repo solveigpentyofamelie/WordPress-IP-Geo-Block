@@ -698,6 +698,25 @@ var ip_geo_block_time = new Date();
 				}
 			}).trigger('change');
 
+			// Show WordPress installation info
+			$(ID('#', 'show-info')).on('click', function (event) {
+				$(ID('#', 'wp-info')).empty();
+				ajax_post('wp-info', {
+					cmd: 'show-info'
+				}, function (data) {
+					var key, val, res = [];
+					for (key in data) { // key: ipv4, ipv6
+						if (data.hasOwnProperty(key)) {
+							for (val in data[key]) {
+								res.push('- ' + val + ' ' + data[key][val]);
+							}
+						}
+					}
+					$(ID('#', 'wp-info')).html('<pre>' + sanitize(res.join("\n")) + '</pre>');
+					return false;
+				});
+			});
+
 			// Submit
 			$('#submit').on('click', function (event) {
 				var elm = $(ID('@', 'signature')),
@@ -912,7 +931,7 @@ var ip_geo_block_time = new Date();
 			// Export / Import settings
 			add_hidden_form('export-logs');
 
-			// Export settings
+			// Export logs
 			$(ID('#', 'export-logs')).on('click', function (event) {
 				$(ID('#', 'export-form')).trigger('submit');
 				return false;

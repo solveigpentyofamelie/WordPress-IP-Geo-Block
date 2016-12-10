@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-09 20:52+0900\n"
-"PO-Revision-Date: 2016-12-09 21:06+0900\n"
+"POT-Creation-Date: 2016-12-10 21:31+0900\n"
+"PO-Revision-Date: 2016-12-10 21:39+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -936,22 +936,42 @@ msgid "Best practice"
 msgstr "ベスト・プラクティス"
 
 #: admin/includes/tab-settings.php:1256
+msgid "Please copy &amp; paste when subscribing your issue to support forum."
+msgstr "サポートフォーラムに問題を投稿する際にコピー＆ペーストしてください。"
+
+#: admin/includes/tab-settings.php:1257
+msgid "Installation information"
+msgstr "インストール情報"
+
+#: admin/includes/tab-settings.php:1258
+msgid "Support forum"
+msgstr "サポートフォーラム"
+
+#: admin/includes/tab-settings.php:1266
+msgid "Show PHP, WordPress, theme and plugins information."
+msgstr "PHP、WordPress、テーマ、プラグインの情報を表示します。"
+
+#: admin/includes/tab-settings.php:1266
+msgid "Show information"
+msgstr "情報を表示"
+
+#: admin/includes/tab-settings.php:1276
 msgid "Delete DB table for validation logs"
 msgstr "検証のログ用データベース・テーブルの削除"
 
-#: admin/includes/tab-settings.php:1264
+#: admin/includes/tab-settings.php:1284
 msgid "Delete now"
 msgstr "今すぐ削除"
 
-#: admin/includes/tab-settings.php:1272
+#: admin/includes/tab-settings.php:1292
 msgid "Create DB table for validation logs"
 msgstr "検証のログ用データベース・テーブルの作成"
 
-#: admin/includes/tab-settings.php:1280
+#: admin/includes/tab-settings.php:1300
 msgid "Create now"
 msgstr "今すぐ作成"
 
-#: admin/includes/tab-settings.php:1295
+#: admin/includes/tab-settings.php:1315
 msgid ""
 "To enhance the protection ability, please refer to &#8220;<a href=\"http://"
 "www.ipgeoblock.com/codex/the-best-practice-of-target-settings.html\" title="
@@ -963,7 +983,7 @@ msgstr ""
 "best practice of target settings | IP Geo Block\">The best practice of "
 "target settings</a>&#8220;&thinsp;を参照してください。"
 
-#: admin/includes/tab-settings.php:1296
+#: admin/includes/tab-settings.php:1316
 msgid ""
 "If you have any troubles with these, please open an issue at <a class=\"ip-"
 "geo-block-link\" href=\"http://wordpress.org/support/plugin/ip-geo-block\" "
@@ -975,7 +995,7 @@ msgstr ""
 "Support &raquo; IP Geo Block\" target=_blank>サポート・フォーラム</a>へご報告"
 "ください。"
 
-#: admin/includes/tab-settings.php:1303
+#: admin/includes/tab-settings.php:1323
 msgid ""
 "While Maxmind and IP2Location will fetch the local database, others will "
 "pass an IP address to the APIs via HTTP."
@@ -983,12 +1003,12 @@ msgstr ""
 "MaxmindとIP2Locationはローカルのデータベースを検索しますが、他はHTTPを介して"
 "APIにIPアドレスを渡します。"
 
-#: admin/includes/tab-settings.php:1304
+#: admin/includes/tab-settings.php:1324
 msgid ""
 "Please select the appropriate APIs to fit the privacy law in your country."
 msgstr "自国のプライバシー関連法規に合わせ、適切なAPIを選択して下さい。"
 
-#: admin/includes/tab-settings.php:1311
+#: admin/includes/tab-settings.php:1331
 msgid ""
 "Please refer to the document &#8220;<a href=\"http://www.ipgeoblock.com/"
 "codex/#blocking-on-front-end\" title=\"Codex | IP Geo Block\" "
@@ -999,7 +1019,7 @@ msgstr ""
 "\"http://www.ipgeoblock.com/codex/#blocking-on-front-end\">Blocking on front-"
 "end</a> を参照してください。"
 
-#: admin/includes/tab-settings.php:1312
+#: admin/includes/tab-settings.php:1332
 msgid ""
 "If you find any issues or have something to suggest, please feel free to "
 "open an issue at <a class=\"ip-geo-block-link\" href=\"http://wordpress.org/"

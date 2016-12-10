@@ -342,6 +342,9 @@ input#ip_geo_block_settings_filter_logs {
     position: relative;
     top: 1px;
 }
+#ip-geo-block-wp-info pre {
+    margin-bottom: 0;
+}
 #ip-geo-block-cycle {
     height: 16px;
     width: 16px;

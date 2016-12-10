@@ -425,4 +425,34 @@ class IP_Geo_Block_Admin_Ajax {
 		);
 	}
 
+	static public function get_wp_info() {
+		$res = array();
+		$res[] = array( 'PHP' => PHP_VERSION );
+		$res[] = array( 'WordPress' => $GLOBALS['wp_version'] );
+		$res[] = array( 'Multisite' => is_multisite() ? 'yes' : 'no' );
+
+		$activated = wp_get_theme(); // @since 3.4.0
+		$res[] = array( $activated->get( 'Name' ) => $activated->get( 'Version' ) );
+
+		if ( $installed = $activated->get( 'Template' ) ) {
+			$activated = wp_get_theme( $installed );
+			$res[] = array( $activated->get( 'Name' ) => $activated->get( 'Version' ) );
+		}
+
+		$installed = get_plugins(); // @since 1.5.0
+		$activated = get_site_option( 'active_sitewide_plugins' ); // @since 2.8.0
+		! is_array( $activated ) and $activated = array();
+		$activated = array_merge( $activated, array_fill_keys( get_option( 'active_plugins' ), TRUE ) );
+
+		foreach ( $installed as $key => $val ) {
+			if ( isset( $activated[ $key ] ) ) {
+				$res[] = array(
+					$val['Name'] => $val['Version'],
+				);
+			}
+		}
+
+		return $res;
+	}
+
 }

@@ -865,6 +865,8 @@ class IP_Geo_Block_Admin {
 		// Check request origin, nonce, capability.
 		$this->check_admin_post( TRUE );
 
+		require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
+
 		$which = isset( $_POST['which'] ) ? $_POST['which'] : NULL;
 		switch ( isset( $_POST['cmd'  ] ) ? $_POST['cmd'  ] : NULL ) {
 		  case 'download':
@@ -874,13 +876,11 @@ class IP_Geo_Block_Admin {
 
 		  case 'search':
 			// Get geolocation by IP
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::search_ip( $which );
 			break;
 
 		  case 'scan-code':
 			// Fetch providers to get country code
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::scan_country();
 			break;
 
@@ -915,31 +915,26 @@ class IP_Geo_Block_Admin {
 
 		  case 'export-logs':
 			// Export logs from MySQL DB
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			IP_Geo_Block_Admin_Ajax::export_logs( $which );
 			break;
 
 		  case 'restore':
 			// Get logs from MySQL DB
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::restore_logs( $which );
 			break;
 
 		  case 'validate':
 			// Validate settings
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			IP_Geo_Block_Admin_Ajax::validate_settings( $this );
 			break;
 
 		  case 'import-default':
 			// Import initial settings
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::settings_to_json( IP_Geo_Block::get_default() );
 			break;
 
 		  case 'import-preferred':
 			// Import preference
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::preferred_to_json();
 			break;
 
@@ -957,7 +952,6 @@ class IP_Geo_Block_Admin {
 			break;
 
 		  case 'show-info':
-			require_once IP_GEO_BLOCK_PATH . 'admin/includes/class-admin-ajax.php';
 			$res = IP_Geo_Block_Admin_Ajax::get_wp_info();
 			break;
 
@@ -972,6 +966,7 @@ class IP_Geo_Block_Admin {
 			$res = array(
 				'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_NAME,
 			);
+			break;
 		}
 
 		if ( isset( $res ) ) // wp_send_json_{success,error}() @since 3.5.0

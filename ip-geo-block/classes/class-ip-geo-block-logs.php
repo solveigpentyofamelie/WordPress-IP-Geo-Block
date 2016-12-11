@@ -29,6 +29,7 @@ class IP_Geo_Block_Logs {
 		'daystats'  => array(),
 	);
 
+	// SQL commands to be executed at shutdown
 	private static $sqlist = array();
 
 	/**
@@ -221,13 +222,13 @@ class IP_Geo_Block_Logs {
 		$time = intval( $time );
 		$options = IP_Geo_Block::get_option();
 
-		if ( $time < 90 /* msec */ )
+		if ( $time < 150 /* msec */ )
 			return (int)$options['validation']['maxlogs'];
 
-		elseif ( $time < 200 /* msec */ )
-			return (int)($options['validation']['maxlogs'] / 2);
+		elseif ( $time < 250 /* msec */ )
+			return (int)( $options['validation']['maxlogs'] / 2 );
 
-		return (int)($options['validation']['maxlogs'] / 5);
+		return (int)( $options['validation']['maxlogs'] / 5 );
 	}
 
 	/**
@@ -701,12 +702,12 @@ class IP_Geo_Block_Logs {
 	}
 
 	/**
-	 * Stock SQL command for deferred execution.
+	 * Save SQL command for deferred execution.
 	 *
 	 */
 	private static function add_sql( $hook, $sql ) {
-//		global $wpdb; $wpdb->query( $sql ) or self::error( $hook );
-		self::$sqlist[ $hook ][] = $sql;
+		global $wpdb; $wpdb->query( $sql ) or self::error( $hook );
+//		self::$sqlist[ $hook ][] = $sql; // for deferred execution at shutdown
 	}
 
 	/**

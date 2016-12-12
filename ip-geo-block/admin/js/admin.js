@@ -4,8 +4,6 @@
  * Copyright (c) 2015-2016 tokkonopapa (tokkonopapa@yahoo.com)
  * This software is released under the MIT License.
  */
-var ip_geo_block_time = new Date();
-
 (function ($, window, document) {
 	'use strict';
 
@@ -364,19 +362,19 @@ var ip_geo_block_time = new Date();
 	}
 
 	$(function () {
-		// processing time for the browser's performance
-		ip_geo_block_time = new Date() - ip_geo_block_time;
+		// processing time for footable
+		var ip_geo_block_time = new Date(),
 
 		// Get tab number and check wpCookies in wp-includes/js/utils.js
-		var cookie = ('undefined' !== typeof wpCookies && wpCookies.getHash(ID('%', 'admin'))) || {},
-		    tabIndex = [0, 9, 10],
-		    tabNo = /&tab=(\d)/.exec(window.location.href);
-
-		tabNo = Number(tabNo && tabNo[1]);
+		cookie = ('undefined' !== typeof wpCookies && wpCookies.getHash(ID('%', 'admin'))) || {},
+		tabIndex = [0, 9, 10],
+		tabNo = /&tab=(\d)/.exec(window.location.href),
 
 		// Make form style with fieldset and legend
-		var fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
-		    legend = $('<legend></legend>');
+		fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
+		legend = $('<legend></legend>');
+
+		tabNo = Number(tabNo && tabNo[1]);
 
 		$('.form-table').each(function (index) {
 			var $this = $(this),
@@ -405,10 +403,10 @@ var ip_geo_block_time = new Date();
 			if ($(ID('#', 'chart-countries')).length) {
 				chart.drawChart();
 			}
-		};
+		},
 
 		// Click event handler to show/hide form-table
-		var toggle_section = function (title) {
+		toggle_section = function (title) {
 			var index = title.closest('fieldset').data('ip-geo-block');
 
 			// Show/Hide
@@ -708,7 +706,9 @@ var ip_geo_block_time = new Date();
 					for (key in data) { // key: ipv4, ipv6
 						if (data.hasOwnProperty(key)) {
 							for (val in data[key]) {
-								res.push('- ' + val + ' ' + data[key][val]);
+								if (data[key].hasOwnProperty(val)) {
+									res.push('- ' + val + ' ' + data[key][val]);
+								}
 							}
 						}
 					}
@@ -891,7 +891,7 @@ var ip_geo_block_time = new Date();
 				ajax_post('logs', {
 					cmd: 'restore',
 					which: null,
-					time: ip_geo_block_time
+					time: new Date() - ip_geo_block_time
 				}, function (data) {
 					var key;
 					for (key in data) {

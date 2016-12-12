@@ -420,25 +420,27 @@ class IP_Geo_Block_Admin_Ajax {
 	// Fallback function for PHP 5.3 and under
 	static private function convert_encoding( $matches ) {
 		return mb_convert_encoding(
-			pack( 'H*', str_replace( '\\u', '', $matches[0] ) ),
-			'UTF-8', 'UTF-16'
+			pack( 'H*', str_replace( '\\u', '', $matches[0] ) ), 'UTF-8', 'UTF-16'
 		);
 	}
 
 	static public function get_wp_info() {
+		// PHP, WordPress
 		$res = array();
 		$res[] = array( 'PHP' => PHP_VERSION );
 		$res[] = array( 'WordPress' => $GLOBALS['wp_version'] );
 		$res[] = array( 'Multisite' => is_multisite() ? 'yes' : 'no' );
 
+		// Child and parent themes
 		$activated = wp_get_theme(); // @since 3.4.0
-		$res[] = array( $activated->get( 'Name' ) => $activated->get( 'Version' ) );
+		$res[] = array( esc_html( $activated->get( 'Name' ) ) => esc_html( $activated->get( 'Version' ) ) );
 
 		if ( $installed = $activated->get( 'Template' ) ) {
 			$activated = wp_get_theme( $installed );
-			$res[] = array( $activated->get( 'Name' ) => $activated->get( 'Version' ) );
+			$res[] = array( esc_html( $activated->get( 'Name' ) ) => esc_html( $activated->get( 'Version' ) ) );
 		}
 
+		// Plugins
 		$installed = get_plugins(); // @since 1.5.0
 		$activated = get_site_option( 'active_sitewide_plugins' ); // @since 2.8.0
 		! is_array( $activated ) and $activated = array();
@@ -447,9 +449,19 @@ class IP_Geo_Block_Admin_Ajax {
 		foreach ( $installed as $key => $val ) {
 			if ( isset( $activated[ $key ] ) ) {
 				$res[] = array(
-					$val['Name'] => $val['Version'],
+					esc_html( $val['Name'] ) => esc_html( $val['Version'] )
 				);
 			}
+		}
+
+		// Logs (hook, time, ip, code, result, method, user_agent, headers, data)
+		$installed = IP_Geo_Block_Logs::search_logs( IP_Geo_Block::get_ip_address() );
+
+		foreach ( $installed as $val ) {
+			$res[] = array(
+				esc_html( IP_Geo_Block_Util::localdate( $val['time'] ) ) =>
+				esc_html( str_pad( $val['result'], 8 ) . preg_replace( '/\[\d+\]/', '', $val['method'] ) )
+			);
 		}
 
 		return $res;

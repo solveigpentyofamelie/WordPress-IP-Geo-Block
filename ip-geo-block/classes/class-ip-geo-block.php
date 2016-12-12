@@ -692,8 +692,8 @@ class IP_Geo_Block {
 		}
 
 		// validate malicious tags
-		if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query ) )
-			return $validate + array( 'result' => 'badtag' ); // can't overwrite existing result
+		// if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query ) )
+		//	return $validate + array( 'result' => 'badtag' ); // can't overwrite existing result
 
 		return $validate;
 	}

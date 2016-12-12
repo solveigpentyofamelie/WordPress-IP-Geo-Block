@@ -1,7 +1,7 @@
 === IP Geo Block ===
 Contributors: tokkonopapa
 Donate link:
-Tags: buddypress, bbPress, comment, pingback, trackback, spam, IP address, geo, geolocation, xmlrpc, login, wp-admin, admin, ajax, security, brute force, firewall, vulnerability
+Tags: security, firewall, brute force, vulnerability, login, wp-admin, admin, ajax, xmlrpc, comment, pingback, trackback, spam, IP address, geo, geolocation, buddypress, bbPress
 Requires at least: 3.7
 Tested up to: 4.7
 Stable tag: 3.0.0
@@ -64,7 +64,7 @@ about protection performance against 50 samples of vulnerable plugins.
   or themes can be blocked. A numerous such attacks can be found in 
     [this article](http://www.ipgeoblock.com/article/exposure-of-wp-config-php.html "Prevent exposure of wp-config.php").
 
-* ** Minimize server load against brute-force attacks:**  
+* **Minimize server load against brute-force attacks:**  
   You can configure this plugin as a 
     [Must Use Plugins](https://codex.wordpress.org/Must_Use_Plugins "Must Use Plugins &laquo; WordPress Codex")
   which would be loaded prior to regular plugins and can massively 
@@ -477,6 +477,12 @@ Yes, you can find the list of all hooks and useful samples
 5. **IP Geo Plugin** - Attribution.
 
 == Changelog ==
+
+= 3.0.1 =
+* **Improvement:** Add self blocking prevention with the same IP address used 
+  login attempts.
+* **New feature:** Add "**Installation information**" button to make it easy 
+  to subscribe issues at support forum.
 
 = 3.0.0 =
 * **New feature:** Add the function of blocking on front-end.

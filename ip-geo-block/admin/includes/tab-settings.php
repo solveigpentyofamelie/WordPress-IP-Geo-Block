@@ -91,8 +91,8 @@ class IP_Geo_Block_Admin_Tab {
 
 		$rule_desc = array(
 			__( 'Please select either &#8220;Whitelist&#8221; or &#8220;Blacklist&#8221;.', 'ip-geo-block' ),
-			__( '<dfn title="&#8220;Block by country&#8221; will be bypassed in case of empty. All the countries will be blocked in case you put &#8220;XX&#8221; only.">Whitelist of country code</dfn>', 'ip-geo-block' ) . '<br />(<a class="ip-geo-block-link" href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" title="ISO 3166-1 alpha-2 - Wikipedia, the free encyclopedia" target=_blank>ISO 3166-1 alpha-2</a>)',
-			__( '<dfn title="&#8220;Block by country&#8221; will be bypassed in case of empty. Please consider to include &#8220;ZZ&#8221; which means UNKNOWN country.">Blacklist of country code</dfn>', 'ip-geo-block' ) . '<br />(<a class="ip-geo-block-link" href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" title="ISO 3166-1 alpha-2 - Wikipedia, the free encyclopedia" target=_blank>ISO 3166-1 alpha-2</a>)',
+			__( '<dfn title="&#8220;Block by country&#8221; will be bypassed in case of empty. All the countries will be blocked in case you put &#8220;XX&#8221; only.">Whitelist of country code</dfn>', 'ip-geo-block' ) . '<br />(<a rel="noreferrer" href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" title="ISO 3166-1 alpha-2 - Wikipedia, the free encyclopedia">ISO 3166-1 alpha-2</a>)',
+			__( '<dfn title="&#8220;Block by country&#8221; will be bypassed in case of empty. Please consider to include &#8220;ZZ&#8221; which means UNKNOWN country.">Blacklist of country code</dfn>', 'ip-geo-block' ) . '<br />(<a rel="noreferrer" href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" title="ISO 3166-1 alpha-2 - Wikipedia, the free encyclopedia">ISO 3166-1 alpha-2</a>)',
 		);
 
 		$comma = array(
@@ -163,7 +163,7 @@ class IP_Geo_Block_Admin_Tab {
 		add_settings_field(
 			$option_name.'_'.$field.'_'.$key,
 			__( '<dfn title="e.g. &#8220;192.0.64.0/18&#8221; for Jetpack server, &#8220;69.46.36.0/27&#8221; for WordFence server">Whitelist of extra IP addresses prior to country code</dfn>', 'ip-geo-block' ) .
-			' (<a class="ip-geo-block-link" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" title="Classless Inter-Domain Routing - Wikipedia, the free encyclopedia" target=_blank>CIDR</a>)',
+			' (<a rel="noreferrer" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" title="Classless Inter-Domain Routing - Wikipedia, the free encyclopedia">CIDR</a>)',
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -182,7 +182,7 @@ class IP_Geo_Block_Admin_Tab {
 		add_settings_field(
 			$option_name.'_'.$field.'_'.$key,
 			__( '<dfn title="Server level access control is recommended (e.g. .htaccess).">Blacklist of extra IP addresses prior to country code</dfn>', 'ip-geo-block' ) .
-			' (<a class="ip-geo-block-link" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" title="Classless Inter-Domain Routing - Wikipedia, the free encyclopedia" target=_blank>CIDR</a>)',
+			' (<a rel="noreferrer" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" title="Classless Inter-Domain Routing - Wikipedia, the free encyclopedia">CIDR</a>)',
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -236,7 +236,7 @@ class IP_Geo_Block_Admin_Tab {
 		$field = 'response_code';
 		add_settings_field(
 			$option_name.'_'.$field,
-			sprintf( __( '<dfn title="You can put your original 403.php and so on into your theme directory.">Response code</dfn> %s', 'ip-geo-block' ), '(<a class="ip-geo-block-link" href="http://tools.ietf.org/html/rfc2616#section-10" title="RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1" target=_blank>RFC 2616</a>)' ),
+			sprintf( __( '<dfn title="You can put your original 403.php and so on into your theme directory.">Response code</dfn> %s', 'ip-geo-block' ), '(<a rel="noreferrer" href="http://tools.ietf.org/html/rfc2616#section-10" title="RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1">RFC 2616</a>)' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -343,7 +343,7 @@ class IP_Geo_Block_Admin_Tab {
 				),
 				'desc' => array(
 					 0 => __( 'Validate at &#8220;init&#8221; action hook in the same manner as typical plugins.', 'ip-geo-block' ),
-					 1 => __( 'Validate at an earlier phase than other typical plugins. It can reduce load on server but has <a href=\'http://www.ipgeoblock.com/codex/validation-timing.html\' title=\'Validation timing | IP Geo Block\'>some restrictions</a>.', 'ip-geo-block' ),
+					 1 => __( 'Validate at an earlier phase than other typical plugins. It can reduce load on server but has <a rel=\'noreferrer\' href=\'http://www.ipgeoblock.com/codex/validation-timing.html\' title=\'Validation timing | IP Geo Block\'>some restrictions</a>.', 'ip-geo-block' ),
 //					 2 => defined( 'WP_CACHE' ) && WP_CACHE ?
 //						__( 'Validate at a very early phase of WordPress core. It can minimize load on server but has <a href=\'http://www.ipgeoblock.com/codex/validation-timing.html\' title=\'Validation timing | IP Geo Block\'>some restrictions</a>.', 'ip-geo-block' ) :
 //						__( 'It doesn\'t work because <code>WP_CACHE</code> is undefined or false. Please select alternatives.', 'ip-geo-block' ),
@@ -371,7 +371,7 @@ class IP_Geo_Block_Admin_Tab {
 			'login'   => sprintf( $dfn, 'wp-login.php',         __( 'Login form',         'ip-geo-block' ) ),
 			'admin'   => sprintf( $dfn, 'wp-admin/*.php',       __( 'Admin area',         'ip-geo-block' ) ),
 			'others'  => sprintf( $dfn, 'executable files',     __( 'Other areas',        'ip-geo-block' ) ),
-			'public'  => sprintf( $dfn, 'public facing pages',  __( 'Pubic facing pages', 'ip-geo-block' ) ),
+			'public'  => sprintf( $dfn, __( 'pubic facing pages', 'ip-geo-block' ), __( 'Pubic facing pages', 'ip-geo-block' ) ),
 		);
 
 		// Comment post
@@ -912,7 +912,7 @@ endif;
 		if ( empty( $providers ) ) {
 			$context->add_admin_notice( 'error',
 				sprintf(
-					__( 'Please download <a href="https://github.com/tokkonopapa/WordPress-IP-Geo-API/archive/master.zip" title="Download the contents of tokkonopapa/WordPress-IP-Geo-API as a zip file">ZIP file</a> from <a href="https://github.com/tokkonopapa/WordPress-IP-Geo-API" title="tokkonopapa/WordPress-IP-Geo-API - GitHub">WordPress-IP-Geo-API</a> and upload <code>ip-geo-api</code> to <code>%s</code> with write permission.', 'ip-geo-block' ),
+					__( 'Please download <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API/archive/master.zip" title="Download the contents of tokkonopapa/WordPress-IP-Geo-API as a zip file">ZIP file</a> from <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API" title="tokkonopapa/WordPress-IP-Geo-API - GitHub">WordPress-IP-Geo-API</a> and upload <code>ip-geo-api</code> to <code>%s</code> with write permission.', 'ip-geo-block' ),
 					apply_filters( 'ip-geo-block-api-dir', basename( WP_CONTENT_DIR ) )
 				)
 			);
@@ -1273,7 +1273,7 @@ endif;
 				'type' => 'none',
 				'before' =>
 					'<a class="button button-secondary" id="ip-geo-block-default"   title="' . __( 'Import the default settings to revert to the &#8220;Right after installing&#8221; state', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Default settings', 'ip-geo-block' ) . '</a>&nbsp;' .
-					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Validation target settings&#8221;',   'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best practice',    'ip-geo-block' ) . '</a>',
+					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Validation target settings&#8221;',   'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best settings',    'ip-geo-block' ) . '</a>',
 				'after' => '<div id="ip-geo-block-pre-defined"></div>',
 			)
 		);
@@ -1282,11 +1282,7 @@ endif;
 		$field = 'show-info';
 		add_settings_field(
 			$option_name.'_'.$field,
-			sprintf( '<dfn title="%s">%s</dfn><br />[ <a href="https://wordpress.org/support/plugin/ip-geo-block" title="View: Plugin Support &laquo; WordPress.org Forums">%s</a> ]',
-				__( 'Please copy &amp; paste when subscribing your issue to support forum.', 'ip-geo-block' ),
-				__( 'Installation information', 'ip-geo-block' ),
-				__( 'Support forum', 'ip-geo-block' )
-			),
+			__( '<dfn title="Please copy &amp; paste when subscribing your issue to support forum.">Installation information</dfn><br />[ <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a> ]', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -1342,8 +1338,8 @@ endif;
 	public static function note_target() {
 		echo
 			'<ul class="ip-geo-block-note">', "\n",
-				'<li>', __( 'To enhance the protection ability, please refer to &#8220;<a href="http://www.ipgeoblock.com/codex/the-best-practice-of-target-settings.html" title="The best practice of target settings | IP Geo Block">The best practice of target settings</a>&#8221;.', 'ip-geo-block' ), '</li>', "\n",
-				'<li>', __( 'If you have any troubles with these, please open an issue at <a class="ip-geo-block-link" href="http://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block" target=_blank>support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
+				'<li>', __( 'To enhance the protection ability, please refer to &#8220;<a rel="noreferrer" href="http://www.ipgeoblock.com/codex/the-best-practice-for-target-settings.html" title="The best practice for target settings | IP Geo Block">The best practice for target settings</a>&#8221;.', 'ip-geo-block' ), '</li>', "\n",
+				'<li>', __( 'If you have any troubles with these, please open an issue at <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
 			'</ul>', "\n";
 	}
 
@@ -1358,8 +1354,8 @@ endif;
 	public static function note_public() {
 		echo
 			'<ul class="ip-geo-block-note">', "\n",
-				'<li>', __( 'Please refer to the document &#8220;<a href="http://www.ipgeoblock.com/codex/#blocking-on-front-end" title="Codex | IP Geo Block" target=_blank>Blocking on front-end</a>&#8221; for details, including restrictions on cache plugin.', 'ip-geo-block' ), '</li>', "\n",
-				'<li>', __( 'If you find any issues or have something to suggest, please feel free to open an issue at <a class="ip-geo-block-link" href="http://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block" target=_blank>support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
+				'<li>', __( 'Please refer to the document &#8220;<a rel="noreferrer" href="http://www.ipgeoblock.com/codex/#blocking-on-front-end" title="Codex | IP Geo Block">Blocking on front-end</a>&#8221; for details, including restrictions on cache plugin.', 'ip-geo-block' ), '</li>', "\n",
+				'<li>', __( 'If you find any issues or have something to suggest, please feel free to open an issue at <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
 			'</ul>', "\n";
 	}
 

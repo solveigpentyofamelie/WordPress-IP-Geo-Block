@@ -170,7 +170,7 @@ All contributions will always be welcome. Or visit my
 2. Search for 'IP Geo Block'
 3. Click 'Install Now'
 4. Activate the plugin on the Plugin dashboard
-5. Try 'Best practice' button for easy setup at the bottom of this plugin's 
+5. Try 'Best settings' button for easy setup at the bottom of this plugin's 
    setting page.
 
 Please refer to 
@@ -416,7 +416,7 @@ follows:
 
 Please try "**Best practice**" button at the bottom of this plugin's setting 
 page for easy setup. And also see more details in 
-"[The best practice of target settings](http://www.ipgeoblock.com/codex/the-best-practice-of-target-settings.html 'The best practice of target settings | IP Geo Block')".
+"[The best practice of target settings](http://www.ipgeoblock.com/codex/the-best-practice-for-target-settings.html 'The best practice of target settings | IP Geo Block')".
 
 = Does this plugin validate all the requests? =
 

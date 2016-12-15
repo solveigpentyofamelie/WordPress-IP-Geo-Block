@@ -479,6 +479,8 @@ Yes, you can find the list of all hooks and useful samples
 == Changelog ==
 
 = 3.0.1 =
+* **Bug fix:** Add exclude and share lock for local geolocation DBs to prevent 
+  potential fatal error.
 * **Improvement:** Add self blocking prevention with the same IP address used 
   login attempts.
 * **New feature:** Add "**Installation information**" button to make it easy 

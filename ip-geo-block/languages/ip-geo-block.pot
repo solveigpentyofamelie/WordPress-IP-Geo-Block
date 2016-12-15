@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-14 22:55+0900\n"
-"PO-Revision-Date: 2016-12-14 22:55+0900\n"
+"POT-Creation-Date: 2016-12-15 21:51+0900\n"
+"PO-Revision-Date: 2016-12-15 21:52+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -161,7 +161,8 @@ msgstr ""
 
 #: admin/class-ip-geo-block-admin.php:831
 #: admin/class-ip-geo-block-admin.php:844
-#: classes/class-ip-geo-block-cron.php:261
+#: classes/class-ip-geo-block-cron.php:260
+#: classes/class-ip-geo-block-cron.php:302
 #: classes/class-ip-geo-block-opts.php:313
 #, php-format
 msgid "Unable to write %s. Please check the permission."
@@ -667,7 +668,7 @@ msgstr ""
 msgid "database"
 msgstr ""
 
-#: admin/includes/tab-settings.php:910 classes/class-ip-geo-block-cron.php:306
+#: admin/includes/tab-settings.php:910 classes/class-ip-geo-block-cron.php:352
 #, php-format
 msgid "Last update: %s"
 msgstr ""
@@ -990,13 +991,20 @@ msgid ""
 "<strong>you'll be blocked</strong> after the cache expires."
 msgstr ""
 
-#: classes/class-ip-geo-block-cron.php:224
+#: classes/class-ip-geo-block-cron.php:223
 msgid "Your database file is up-to-date."
 msgstr ""
 
-#: classes/class-ip-geo-block-cron.php:253
+#: classes/class-ip-geo-block-cron.php:252
+#: classes/class-ip-geo-block-cron.php:294
 #, php-format
 msgid "Unable to read %s. Please check the permission."
+msgstr ""
+
+#: classes/class-ip-geo-block-cron.php:268
+#: classes/class-ip-geo-block-cron.php:310
+#, php-format
+msgid "Can't lock %s. Please try again after a while."
 msgstr ""
 
 #: classes/class-ip-geo-block-logs.php:144

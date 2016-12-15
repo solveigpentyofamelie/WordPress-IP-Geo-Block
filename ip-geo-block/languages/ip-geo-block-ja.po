@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-14 22:55+0900\n"
-"PO-Revision-Date: 2016-12-14 23:02+0900\n"
+"POT-Creation-Date: 2016-12-15 21:51+0900\n"
+"PO-Revision-Date: 2016-12-15 22:01+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -179,7 +179,8 @@ msgstr "有効"
 
 #: admin/class-ip-geo-block-admin.php:831
 #: admin/class-ip-geo-block-admin.php:844
-#: classes/class-ip-geo-block-cron.php:261
+#: classes/class-ip-geo-block-cron.php:260
+#: classes/class-ip-geo-block-cron.php:302
 #: classes/class-ip-geo-block-opts.php:313
 #, php-format
 msgid "Unable to write %s. Please check the permission."
@@ -762,7 +763,7 @@ msgstr "ローカル・データベースの設定"
 msgid "database"
 msgstr "ファイル"
 
-#: admin/includes/tab-settings.php:910 classes/class-ip-geo-block-cron.php:306
+#: admin/includes/tab-settings.php:910 classes/class-ip-geo-block-cron.php:352
 #, php-format
 msgid "Last update: %s"
 msgstr "最終更新：%s"
@@ -1118,14 +1119,21 @@ msgstr ""
 "少なくとも1つ以上の位置情報サービスを選択して下さい。未選択の場合、キャッシュ"
 "の有効期限切れと共にロックアウトされます。"
 
-#: classes/class-ip-geo-block-cron.php:224
+#: classes/class-ip-geo-block-cron.php:223
 msgid "Your database file is up-to-date."
 msgstr "データベース・ファイルは最新です。"
 
-#: classes/class-ip-geo-block-cron.php:253
+#: classes/class-ip-geo-block-cron.php:252
+#: classes/class-ip-geo-block-cron.php:294
 #, php-format
 msgid "Unable to read %s. Please check the permission."
-msgstr "%sが読めません。パーミッションを確認して下さい。"
+msgstr "%s が読めません。パーミッションを確認して下さい。"
+
+#: classes/class-ip-geo-block-cron.php:268
+#: classes/class-ip-geo-block-cron.php:310
+#, php-format
+msgid "Can't lock %s. Please try again after a while."
+msgstr "%s をロックできません。パーミッションを確認して下さい。"
 
 #: classes/class-ip-geo-block-logs.php:144
 #, php-format
@@ -1133,7 +1141,7 @@ msgid ""
 "Creating a DB table %s had failed. Once de-activate this plugin, and then "
 "activate again."
 msgstr ""
-"%s用のテーブルが作成されていません。一旦このプラグインを無効化し、再度有効化"
+"%s 用のテーブルが作成されていません。一旦このプラグインを無効化し、再度有効化"
 "して下さい。"
 
 #: wp-content/ip-geo-api/ip2location/class-ip2location.php:145

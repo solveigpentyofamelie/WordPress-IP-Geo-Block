@@ -285,8 +285,8 @@ class IP_Geo_Block_Opts {
 			$settings['version'] = IP_Geo_Block::VERSION;
 		}
 
-		// install addons for IP Geolocation database API
-		if ( ! $settings['api_dir'] || version_compare( $version, '2.2.9' ) < 0 )
+		// install addons for IP Geolocation database API @since 1.1.6
+		if ( ! $settings['api_dir'] || version_compare( $version, '3.0.1' ) < 0 )
 			$settings['api_dir'] = self::install_api( $settings );
 
 		// update option table

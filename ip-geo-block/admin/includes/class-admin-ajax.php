@@ -460,9 +460,13 @@ class IP_Geo_Block_Admin_Ajax {
 		$installed = IP_Geo_Block_Logs::search_logs( IP_Geo_Block::get_ip_address() );
 
 		foreach ( array_reverse( $installed ) as $val ) {
+			// hide port and nonce
+			$method = preg_replace( '/\[\d+\]/', '', $val['method'] );
+			$method = preg_replace( '/(' . IP_Geo_Block::PLUGIN_NAME . '-auth-nonce)(?:=|%3D)([\w]+)/', '$1=...', $method );
+
 			$res[] = array(
 				esc_html( IP_Geo_Block_Util::localdate( $val['time'], 'Y-m-d H:i:s' ) ) =>
-				esc_html( str_pad( $val['result'], 8 ) . preg_replace( '/\[\d+\]/', '', $val['method'] ) )
+				esc_html( str_pad( $val['result'], 8 ) . $method )
 			);
 		}
 

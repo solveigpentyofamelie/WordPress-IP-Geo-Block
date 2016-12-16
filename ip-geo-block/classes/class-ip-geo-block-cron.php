@@ -324,9 +324,9 @@ class IP_Geo_Block_Cron {
 				flock ( $fp, LOCK_UN ); // release the lock
 				fclose( $fp );
 			}
-			! empty ( $gz  ) and gzclose( $gz  );
-			@is_file( $src ) and @unlink( $src );
-			@is_file( $tmp ) and @unlink( $tmp );
+			! empty( $gz  ) and gzclose( $gz  );
+			! empty( $tmp ) && @is_file( $tmp ) and @unlink( $tmp );
+			! is_wp_error( $src ) && @is_file( $src ) and @unlink( $src );
 		}
 
 		// error handler
@@ -336,9 +336,9 @@ class IP_Geo_Block_Cron {
 				flock ( $fp, LOCK_UN ); // release the lock
 				fclose( $fp );
 			}
-			! empty ( $gz  ) and gzclose( $gz  );
-			@is_file( $src ) and @unlink( $src );
-			@is_file( $tmp ) and @unlink( $tmp );
+			! empty( $gz  ) and gzclose( $gz  );
+			! empty( $tmp ) && @is_file( $tmp ) and @unlink( $tmp );
+			! is_wp_error( $src ) && @is_file( $src ) and @unlink( $src );
 
 			return array(
 				'code' => $e->getCode(),

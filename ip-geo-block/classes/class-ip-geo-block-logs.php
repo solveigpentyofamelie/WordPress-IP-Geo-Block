@@ -126,7 +126,7 @@ class IP_Geo_Block_Logs {
 	 * Search table by specific IP address
 	 *
 	 */
-	private static function search_table( $table, $ip ) {
+	private static function search_table( $table, $ip, $type = FALSE ) {
 		global $wpdb;
 		$table = $wpdb->prefix . $table;
 
@@ -134,7 +134,10 @@ class IP_Geo_Block_Logs {
 			"SELECT * FROM `$table` WHERE `ip` = '%s'", $ip
 		) and $result = $wpdb->get_results( $sql, ARRAY_A ) or self::error( __LINE__ );
 
-		return ! empty( $result[0] ) ? $result[0] : NULL;
+		if ( ! $type )
+			return ! empty( $result[0] ) ? $result[0] : NULL; // for cache
+		else
+			return ! empty( $result ) ? $result : array(); // for logs
 	}
 
 	/**
@@ -558,8 +561,7 @@ class IP_Geo_Block_Logs {
 	 *
 	 */
 	public static function search_logs( $ip ) {
-		$ip = self::search_table( self::TABLE_LOGS, $ip );
-		return $ip ? $ip : array();
+		return self::search_table( self::TABLE_LOGS, $ip, TRUE );
 	}
 
 	/**
@@ -607,9 +609,6 @@ class IP_Geo_Block_Logs {
 		global $wpdb;
 		$table = $wpdb->prefix . IP_Geo_Block::CACHE_NAME;
 		$wpdb->query( "TRUNCATE TABLE `$table`" ) or self::error( __LINE__ );
-
-		// cancel SQL command at shutdown process
-		self::$sqlist = array();
 	}
 
 	/**

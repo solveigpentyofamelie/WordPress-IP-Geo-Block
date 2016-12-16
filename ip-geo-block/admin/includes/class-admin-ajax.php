@@ -428,6 +428,8 @@ class IP_Geo_Block_Admin_Ajax {
 		// PHP, WordPress
 		$res = array();
 		$res[] = array( 'PHP' => PHP_VERSION );
+		$res[] = array( 'BC Math' => (extension_loaded('gmp') ? 'gmp ' : '') . (function_exists('bcadd') ? 'yes' : 'no') );
+		$res[] = array( 'mb_strcut' => function_exists( 'mb_strcut' ) ? 'yes' : 'no' );
 		$res[] = array( 'WordPress' => $GLOBALS['wp_version'] );
 		$res[] = array( 'Multisite' => is_multisite() ? 'yes' : 'no' );
 
@@ -457,9 +459,9 @@ class IP_Geo_Block_Admin_Ajax {
 		// Logs (hook, time, ip, code, result, method, user_agent, headers, data)
 		$installed = IP_Geo_Block_Logs::search_logs( IP_Geo_Block::get_ip_address() );
 
-		foreach ( $installed as $val ) {
+		foreach ( array_reverse( $installed ) as $val ) {
 			$res[] = array(
-				esc_html( IP_Geo_Block_Util::localdate( $val['time'] ) ) =>
+				esc_html( IP_Geo_Block_Util::localdate( $val['time'], 'Y-m-d H:i:s' ) ) =>
 				esc_html( str_pad( $val['result'], 8 ) . preg_replace( '/\[\d+\]/', '', $val['method'] ) )
 			);
 		}

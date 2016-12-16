@@ -479,12 +479,12 @@ Yes, you can find the list of all hooks and useful samples
 == Changelog ==
 
 = 3.0.1 =
-* **Bug fix:** Add exclude and share lock for local geolocation DBs to prevent 
-  potential fatal error.
-* **Improvement:** Add self blocking prevention with the same IP address used 
-  login attempts.
+* **Bug fix:** Add lock mechanism for local geolocation DBs to avoid potential 
+  fatal error.
+* **Improvement:** Add self blocking prevention potentially caused by login 
+  attempts with the same IP address of logged in user.
 * **New feature:** Add "**Installation information**" button to make it easy 
-  to subscribe issues at support forum.
+  to submit an issue at support forum.
 
 = 3.0.0 =
 * **New feature:** Add the function of blocking on front-end.

@@ -377,7 +377,7 @@ class IP_Geo_Block {
 				FALSE !== ( @include get_stylesheet_directory() .'/'.$code.'.php' ) or // child  theme
 				FALSE !== ( @include get_template_directory()   .'/'.$code.'.php' ) or // parent theme
 				wp_die( // get_dashboard_url() @since 3.1.0
-					IP_Geo_Block_Util::kses( $mesg ) . ( $hook ? "\n<p><a href='" . esc_url( get_dashboard_url() ) . "'>&laquo; " . __( 'Dashboard' ) . "</a></p>" : '' ),
+					IP_Geo_Block_Util::kses( $mesg ) . ( $hook ? "\n<p><a rel='nofollow' href='" . esc_url( get_dashboard_url() ) . "'>&laquo; " . __( 'Dashboard' ) . "</a></p>" : '' ),
 					'', array( 'response' => $code, 'back_link' => ! $hook )
 				);
 			}
@@ -559,7 +559,7 @@ class IP_Geo_Block {
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ) + array(
 			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
-			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', // pluploader won't fire an event in "Media Library"
+			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', 'GOTMLS_logintime', // pluploader won't fire an event in "Media Library"
 			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 		);
 

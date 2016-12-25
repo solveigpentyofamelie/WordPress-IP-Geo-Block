@@ -81,10 +81,10 @@ class IP_Geo_Block_Logs {
 			`user_agent` varchar(" . IP_GEO_BLOCK_MAX_STR_LEN . ") NULL,
 			`headers` varchar("    . IP_GEO_BLOCK_MAX_TXT_LEN . ") NULL,
 			`data` text NULL,
-			PRIMARY KEY (`No`),
+			PRIMARY KEY  (`No`),
 			KEY `time` (`time`),
 			KEY `hook` (`hook`)
-			) CHARACTER SET " . $charset
+			) CHARACTER SET $charset"
 		) ) or self::error( __LINE__ ); // utf8mb4 ENGINE=InnoDB or MyISAM
 
 		// for statistics
@@ -92,8 +92,8 @@ class IP_Geo_Block_Logs {
 		$result &= ( FALSE !== $wpdb->query( "CREATE TABLE IF NOT EXISTS `$table` (
 			`No` tinyint(4) unsigned NOT NULL AUTO_INCREMENT,
 			`data` longtext NULL,
-			PRIMARY KEY (`No`)
-			) CHARACTER SET " . $charset
+			PRIMARY KEY  (`No`)
+			) CHARACTER SET $charset"
 		) ) or self::error( __LINE__ ); // utf8mb4 ENGINE=InnoDB or MyISAM
 
 		// Create 1 record if not exists
@@ -114,9 +114,9 @@ class IP_Geo_Block_Logs {
 			`fail` int(10) unsigned NOT NULL DEFAULT 0,
 			`call` int(10) unsigned NOT NULL DEFAULT 0,
 			`host` tinytext NOT NULL,
-			PRIMARY KEY (`No`),
-			UNIQUE (`ip`)
-			) CHARACTER SET " . $charset
+			PRIMARY KEY  (`No`),
+			UNIQUE KEY (`ip`)
+			) CHARACTER SET $charset"
 		) ) or self::error( __LINE__ ); // utf8mb4 ENGINE=InnoDB or MyISAM
 
 		return $result;
@@ -144,13 +144,15 @@ class IP_Geo_Block_Logs {
 	 * Delete
 	 *
 	 */
-	public static function delete_tables() {
+	public static function delete_tables( $which = 'all' ) {
 		global $wpdb;
 		$tables = array( self::TABLE_LOGS, self::TABLE_STAT, IP_Geo_Block::CACHE_NAME );
 
 		foreach ( $tables as $table ) {
-			$table = $wpdb->prefix . $table;
-			$wpdb->query( "DROP TABLE IF EXISTS `$table`" ) or self::error( __LINE__ );
+			if ( 'all' === $which || $table === $which ) {
+				$table = $wpdb->prefix . $table;
+				$wpdb->query( "DROP TABLE IF EXISTS `$table`" ) or self::error( __LINE__ );
+			}
 		}
 	}
 

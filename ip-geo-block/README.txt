@@ -340,6 +340,12 @@ that you should upload the original one to deactivate above feature.
 [This document](http://www.ipgeoblock.com/codex/what-should-i-do-when-i-m-locked-out.html "What should I do when I'm locked out? | IP Geo Block")
 can also help you.
 
+= How to resolve "You are not allowed to access this page"?
+
+If you encounter this message, please refer to 
+  [this document](http://www.ipgeoblock.com/codex/you-are-not-allowed-to-access.html "Why &ldquo;You are not allowed to access this page&rdquo; ? | IP Geo Block")
+to resolve your blocking issue. 
+
 = How can I fix "Unable to write" error? =
 
 When you enable "**Force to load WP core**" options, this plugin will try to 
@@ -352,7 +358,7 @@ to WordPress. In this case, you can configure these `.htaccess` files by your
 own hand instead of enabling "**Force to load WP core**" options.
 
 Please refer to 
-"[How can I fix permission troubles?](http://www.ipgeoblock.com/codex/how-can-i-fix-permission-troubles.html 'How can I fix permission troubles? | IP Geo Block')"
+  "[How can I fix permission troubles?](http://www.ipgeoblock.com/codex/how-can-i-fix-permission-troubles.html 'How can I fix permission troubles? | IP Geo Block')"
 in order to fix this error.
 
 = Does this plugin works well with caching? =

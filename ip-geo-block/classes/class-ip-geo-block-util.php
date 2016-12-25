@@ -131,7 +131,7 @@ class IP_Geo_Block_Util {
 	 * @source wp-includes/pluggable.php
 	 */
 	public static function create_nonce( $action = -1 ) {
-		$uid = self::get_current_user_id( TRUE );
+		$uid = self::get_current_user_id( 1 );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -145,7 +145,7 @@ class IP_Geo_Block_Util {
 	 * @source wp-includes/pluggable.php
 	 */
 	public static function verify_nonce( $nonce, $action = -1 ) {
-		$uid = self::get_current_user_id( TRUE );
+		$uid = self::get_current_user_id( 1 );
 		$tok = self::get_session_token();
 		$exp = self::nonce_tick();
 
@@ -225,6 +225,7 @@ class IP_Geo_Block_Util {
 	 *
 	 * Timing attack safe string comparison.
 	 * @source http://php.net/manual/en/function.hash-equals.php#115635
+	 * @see http://php.net/manual/en/language.operators.increment.php
 	 * @see wp-includes/compat.php
 	 */
 	private static function hash_equals( $a, $b ) {
@@ -238,7 +239,7 @@ class IP_Geo_Block_Util {
 		$exp = $a ^ $b; // length of both $a and $b are same
 		$ret = 0;
 
-		for ( $i -= 1; $i >= 0; $i-- )
+		while ( --$i >= 0 )
 			$ret |= ord( $exp[ $i ] );
 
 		return ! $ret;
@@ -425,9 +426,29 @@ class IP_Geo_Block_Util {
 		return did_action( 'init' ) ? is_user_logged_in() : ( self::parse_auth_cookie( 'logged_in' ) ? TRUE : FALSE );
 	}
 
-	public static function get_current_user_id( $ip_addr = FALSE ) {
-		// unavailale before 'init' hook.
-		return did_action( 'init' ) ? get_current_user_id() : ( $ip_addr ? md5( $_SERVER['REMOTE_ADDR'], FALSE ) : '0' );
+	/**
+	 * WP alternative function of get_current_user_id() for mu-plugins
+	 *
+	 * Get the current user's ID.
+	 * @source wp-includes/user.php
+	 */
+	public static function get_current_user_id( $type = 0 ) {
+		switch ( $type ) {
+		  case 0: // unavailale before 'init' hook
+			return did_action( 'init' ) ? get_current_user_id() : 0;
+
+		  case 1: // guess from cookie (same as 2.2.9.1)
+			if ( isset( $_COOKIE ) ) {
+				 foreach ( array_keys( $_COOKIE ) as $key ) {
+					if ( 0 === strpos( $key, 'wp-settings-' ) )
+						return (int)substr( $key, 12 ); // get numerical characters
+				}
+			}
+			return 0;
+
+		  case 2: // for cache in cookie
+			return md5( IP_Geo_Block::get_ip_address(), FALSE );
+		}
 	}
 
 	/**

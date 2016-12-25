@@ -703,7 +703,7 @@
 					cmd: 'show-info'
 				}, function (data) {
 					var key, val, res = [];
-					for (key in data) { // key: ipv4, ipv6
+					for (key in data) {
 						if (data.hasOwnProperty(key)) {
 							for (val in data[key]) {
 								if (data[key].hasOwnProperty(val)) {
@@ -712,7 +712,9 @@
 							}
 						}
 					}
-					$(ID('#', 'wp-info')).html('<pre>' + sanitize(res.join("\n")) + '</pre>');
+
+					// response should be escaped at server side
+					$(ID('#', 'wp-info')).html('<textarea rows="' + res.length + '">' + /*sanitize*/(res.join("\n")) + '</textarea>').find('textarea').select();
 					return false;
 				});
 			});

@@ -581,7 +581,7 @@ class IP_Geo_Block_Admin {
 			$output[ $key ] = 0;
 
 		// checkboxes not on the form
-		foreach ( array( 'admin', 'ajax', 'plugins', 'themes', 'public' ) as $key )
+		foreach ( array( 'login', 'admin', 'ajax', 'plugins', 'themes', 'public' ) as $key )
 			$output['validation'][ $key ] = 0;
 
 		// restore the 'signature' that might be transformed to avoid self blocking

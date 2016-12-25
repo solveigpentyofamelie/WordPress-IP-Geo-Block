@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-15 21:51+0900\n"
-"PO-Revision-Date: 2016-12-15 21:52+0900\n"
+"POT-Creation-Date: 2016-12-18 17:29+0900\n"
+"PO-Revision-Date: 2016-12-18 17:29+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -216,9 +216,9 @@ msgstr ""
 msgid "Export csv"
 msgstr ""
 
-#: admin/includes/tab-accesslog.php:109 admin/includes/tab-settings.php:363
+#: admin/includes/tab-accesslog.php:109
 #, php-format
-msgid "<dfn title=\"Validate request to %s.\">%s</dfn>"
+msgid "<dfn title=\"Validation log of request to %s.\">%s</dfn>"
 msgstr ""
 
 #: admin/includes/tab-accesslog.php:111 admin/includes/tab-settings.php:365
@@ -238,7 +238,11 @@ msgid "Admin area"
 msgstr ""
 
 #: admin/includes/tab-accesslog.php:115 admin/includes/tab-settings.php:370
-msgid "Pubic facing pages"
+msgid "public facing pages"
+msgstr ""
+
+#: admin/includes/tab-accesslog.php:115 admin/includes/tab-settings.php:370
+msgid "Public facing pages"
 msgstr ""
 
 #: admin/includes/tab-accesslog.php:121
@@ -467,12 +471,13 @@ msgstr ""
 msgid "Back-end target settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:369
-msgid "Other areas"
+#: admin/includes/tab-settings.php:363
+#, php-format
+msgid "<dfn title=\"Validate request to %s.\">%s</dfn>"
 msgstr ""
 
-#: admin/includes/tab-settings.php:370
-msgid "pubic facing pages"
+#: admin/includes/tab-settings.php:369
+msgid "Other areas"
 msgstr ""
 
 #: admin/includes/tab-settings.php:388 admin/includes/tab-settings.php:408
@@ -632,7 +637,7 @@ msgstr ""
 #: admin/includes/tab-settings.php:835
 msgid ""
 "It enables to simulate validation without deployment. The results can be "
-"found at &#8220;Pubic facing pages&#8221; in Logs."
+"found at &#8220;Public facing pages&#8221; in Logs."
 msgstr ""
 
 #: admin/includes/tab-settings.php:835
@@ -841,7 +846,7 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:1255
 msgid ""
-"<dfn title=\"Please copy &amp; paste when subscribing your issue to support "
+"<dfn title=\"Please copy &amp; paste when submitting your issue to support "
 "forum.\">Installation information</dfn><br />[ <a rel=\"noreferrer\" href="
 "\"https://wordpress.org/support/plugin/ip-geo-block\" title=\"WordPress "
 "&#8250; Support &raquo; IP Geo Block\">support forum</a> ]"
@@ -881,9 +886,11 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:1312
 msgid ""
-"If you have any troubles with these, please open an issue at <a rel="
-"\"noreferrer\" href=\"https://wordpress.org/support/plugin/ip-geo-block\" "
-"title=\"WordPress &#8250; Support &raquo; IP Geo Block\">support forum</a>."
+"If you have any troubles with these, please check FAQ at <a rel=\"noreferrer"
+"\" href=\"https://wordpress.org/plugins/ip-geo-block/faq/\" title=\"IP Geo "
+"Block &mdash; WordPress Plugins\">WordPress.org</a> and <a rel=\"noreferrer"
+"\" href=\"http://www.ipgeoblock.com/codex/#faq\" title=\"Codex | IP Geo Block"
+"\">Codex</a>."
 msgstr ""
 
 #: admin/includes/tab-settings.php:1319
@@ -1007,15 +1014,15 @@ msgstr ""
 msgid "Can't lock %s. Please try again after a while."
 msgstr ""
 
-#: classes/class-ip-geo-block-logs.php:144
+#: classes/class-ip-geo-block-logs.php:147
 #, php-format
 msgid ""
 "Creating a DB table %s had failed. Once de-activate this plugin, and then "
 "activate again."
 msgstr ""
 
-#: wp-content/ip-geo-api/ip2location/class-ip2location.php:145
-#: wp-content/ip-geo-api/ip2location/class-ip2location.php:174
+#: wp-content/ip-geo-api/ip2location/class-ip2location.php:147
+#: wp-content/ip-geo-api/ip2location/class-ip2location.php:176
 #: wp-content/ip-geo-api/maxmind/class-maxmind.php:149
 #: wp-content/ip-geo-api/maxmind/class-maxmind.php:178
 msgid "Database file does not exist."

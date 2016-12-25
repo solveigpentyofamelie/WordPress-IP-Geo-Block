@@ -458,11 +458,11 @@ class IP_Geo_Block_API_Cache extends IP_Geo_Block_API {
 		$cache = self::get_cache( $ip = $validate['ip'] );
 
 		if ( $cache ) {
-			$fail = $cache['fail'] + (int)isset( $validate['fail'] );
-			$call = $cache['call'] + (int)empty( $validate['fail'] );
+			$fail = $cache['fail'] + ( empty( $validate['fail'] ) ? 0 : 1 );
+			$call = $cache['call'] + ( empty( $validate['fail'] ) ? 1 : 0 );
 		} else { // if new cache then reset these values
-			$call = 1;
 			$fail = 0;
+			$call = 1;
 		}
 
 		// update elements

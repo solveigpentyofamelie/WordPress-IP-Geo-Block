@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-15 21:51+0900\n"
-"PO-Revision-Date: 2016-12-15 22:01+0900\n"
+"POT-Creation-Date: 2016-12-18 17:29+0900\n"
+"PO-Revision-Date: 2016-12-18 17:36+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -234,10 +234,10 @@ msgstr "ローカル・ファイルにエクスポートする"
 msgid "Export csv"
 msgstr "CSVをエクスポート"
 
-#: admin/includes/tab-accesslog.php:109 admin/includes/tab-settings.php:363
+#: admin/includes/tab-accesslog.php:109
 #, php-format
-msgid "<dfn title=\"Validate request to %s.\">%s</dfn>"
-msgstr "<dfn title=\"%sへのリクエストを検証します。\">%s</dfn>"
+msgid "<dfn title=\"Validation log of request to %s.\">%s</dfn>"
+msgstr "<dfn title=\"%s に対するリクエストの検証ログです。\">%s</dfn>"
 
 #: admin/includes/tab-accesslog.php:111 admin/includes/tab-settings.php:365
 msgid "Comment post"
@@ -256,7 +256,11 @@ msgid "Admin area"
 msgstr "管理領域"
 
 #: admin/includes/tab-accesslog.php:115 admin/includes/tab-settings.php:370
-msgid "Pubic facing pages"
+msgid "public facing pages"
+msgstr "一般公開ページ"
+
+#: admin/includes/tab-accesslog.php:115 admin/includes/tab-settings.php:370
+msgid "Public facing pages"
 msgstr "一般公開ページ"
 
 #: admin/includes/tab-accesslog.php:121
@@ -528,13 +532,14 @@ msgstr ""
 msgid "Back-end target settings"
 msgstr "バックエンドの設定"
 
+#: admin/includes/tab-settings.php:363
+#, php-format
+msgid "<dfn title=\"Validate request to %s.\">%s</dfn>"
+msgstr "<dfn title=\"%s へのリクエストを検証します。\">%s</dfn>"
+
 #: admin/includes/tab-settings.php:369
 msgid "Other areas"
 msgstr "その他のディレクトリ"
-
-#: admin/includes/tab-settings.php:370
-msgid "pubic facing pages"
-msgstr "一般公開ページ"
 
 #: admin/includes/tab-settings.php:388 admin/includes/tab-settings.php:408
 #: admin/includes/tab-settings.php:441 admin/includes/tab-settings.php:447
@@ -716,7 +721,7 @@ msgstr "除外するアクション"
 #: admin/includes/tab-settings.php:835
 msgid ""
 "It enables to simulate validation without deployment. The results can be "
-"found at &#8220;Pubic facing pages&#8221; in Logs."
+"found at &#8220;Public facing pages&#8221; in Logs."
 msgstr ""
 "機能を有効にする事なくリクエストの検証をシミュレートします。結果はログで確認"
 "する事が出来ます。"
@@ -944,7 +949,7 @@ msgstr "ベストな設定"
 
 #: admin/includes/tab-settings.php:1255
 msgid ""
-"<dfn title=\"Please copy &amp; paste when subscribing your issue to support "
+"<dfn title=\"Please copy &amp; paste when submitting your issue to support "
 "forum.\">Installation information</dfn><br />[ <a rel=\"noreferrer\" href="
 "\"https://wordpress.org/support/plugin/ip-geo-block\" title=\"WordPress "
 "&#8250; Support &raquo; IP Geo Block\">support forum</a> ]"
@@ -992,13 +997,17 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:1312
 msgid ""
-"If you have any troubles with these, please open an issue at <a rel="
-"\"noreferrer\" href=\"https://wordpress.org/support/plugin/ip-geo-block\" "
-"title=\"WordPress &#8250; Support &raquo; IP Geo Block\">support forum</a>."
+"If you have any troubles with these, please check FAQ at <a rel=\"noreferrer"
+"\" href=\"https://wordpress.org/plugins/ip-geo-block/faq/\" title=\"IP Geo "
+"Block &mdash; WordPress Plugins\">WordPress.org</a> and <a rel=\"noreferrer"
+"\" href=\"http://www.ipgeoblock.com/codex/#faq\" title=\"Codex | IP Geo Block"
+"\">Codex</a>."
 msgstr ""
-"何か問題が発生した場合は、<a rel=\"noreferrer\" href=\"http://wordpress.org/"
-"support/plugin/ip-geo-block\" title=\"WordPress &#8250; Support &raquo; IP "
-"Geo Block\">サポートフォーラム</a>&thinsp;へご報告ください。"
+"何か問題が発生した場合は、<a rel=\"noreferrer\" href=\"https://wordpress.org/"
+"plugins/ip-geo-block/faq/\" title=\"IP Geo Block &mdash; WordPress Plugins"
+"\">WordPress.org</a> か <a rel=\"noreferrer\" href=\"http://www.ipgeoblock."
+"com/codex/#faq\" title=\"Codex | IP Geo Block\">Codex</a> の FAQ を参照してく"
+"ださい。"
 
 #: admin/includes/tab-settings.php:1319
 msgid ""
@@ -1135,7 +1144,7 @@ msgstr "%s が読めません。パーミッションを確認して下さい。
 msgid "Can't lock %s. Please try again after a while."
 msgstr "%s をロックできません。パーミッションを確認して下さい。"
 
-#: classes/class-ip-geo-block-logs.php:144
+#: classes/class-ip-geo-block-logs.php:147
 #, php-format
 msgid ""
 "Creating a DB table %s had failed. Once de-activate this plugin, and then "
@@ -1144,8 +1153,8 @@ msgstr ""
 "%s 用のテーブルが作成されていません。一旦このプラグインを無効化し、再度有効化"
 "して下さい。"
 
-#: wp-content/ip-geo-api/ip2location/class-ip2location.php:145
-#: wp-content/ip-geo-api/ip2location/class-ip2location.php:174
+#: wp-content/ip-geo-api/ip2location/class-ip2location.php:147
+#: wp-content/ip-geo-api/ip2location/class-ip2location.php:176
 #: wp-content/ip-geo-api/maxmind/class-maxmind.php:149
 #: wp-content/ip-geo-api/maxmind/class-maxmind.php:178
 msgid "Database file does not exist."

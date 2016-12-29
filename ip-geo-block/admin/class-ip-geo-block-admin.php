@@ -373,6 +373,10 @@ class IP_Geo_Block_Admin {
 	 *
 	 */
 	public function display_plugin_admin_page() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) )
+			return;
+
 		$tabs = array(
 			0 => __( 'Settings',    'ip-geo-block' ),
 			1 => __( 'Statistics',  'ip-geo-block' ),

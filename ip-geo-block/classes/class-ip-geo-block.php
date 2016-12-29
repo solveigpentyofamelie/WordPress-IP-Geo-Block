@@ -359,7 +359,7 @@ class IP_Geo_Block {
 			exit;
 
 		  case 3: // 3xx Redirection (HTTP header injection should be avoided)
-			IP_Geo_Block_Util::redirect( esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), $code ); // @since 2.8
+			IP_Geo_Block_Util::safe_redirect( esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), $code ); // @since 2.8
 			exit;
 
 		  default: // 4xx Client Error, 5xx Server Error

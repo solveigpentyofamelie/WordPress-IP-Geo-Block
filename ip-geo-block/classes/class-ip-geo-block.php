@@ -121,6 +121,10 @@ class IP_Geo_Block {
 			}
 
 			if ( $validate['comment'] ) {
+				// wp-comments-post.php @since 2.8.0, wp-trackback.php @since 1.5.0
+				add_action( 'pre_comment_on_post', array( $this, 'validate_comment' ), $priority );
+				add_filter( 'preprocess_comment', array( $this, 'validate_comment' ), $priority );
+
 				// bbPress: prevent creating topic/relpy and rendering form
 				add_action( 'bbp_post_request_bbp-new-topic', array( $this, 'validate_comment' ), $priority );
 				add_action( 'bbp_post_request_bbp-new-reply', array( $this, 'validate_comment' ), $priority );
@@ -470,8 +474,12 @@ class IP_Geo_Block {
 	 * Validate on comment.
 	 *
 	 */
-	public function validate_comment() {
-		$this->validate_ip( 'comment', self::get_option() );
+	public function validate_comment( $comment = NULL ) {
+		// check comment type if it comes form wp-includes/wp_new_comment()
+		if ( ! is_array( $comment ) || in_array( $comment['comment_type'], array( 'trackback', 'pingback' ) ) )
+			$this->validate_ip( 'comment', self::get_option( 'settings' ) );
+
+		return $comment;
 	}
 
 	public function validate_front( $can_access = TRUE ) {

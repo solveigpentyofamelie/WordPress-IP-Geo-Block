@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2016-12-29 16:11+0900\n"
-"PO-Revision-Date: 2016-12-29 16:11+0900\n"
+"POT-Creation-Date: 2016-12-30 15:26+0900\n"
+"PO-Revision-Date: 2016-12-30 15:26+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -208,7 +208,7 @@ msgstr ""
 msgid "Export logs"
 msgstr ""
 
-#: admin/includes/tab-accesslog.php:69 admin/includes/tab-settings.php:1228
+#: admin/includes/tab-accesslog.php:69 admin/includes/tab-settings.php:1244
 msgid "Export to the local file"
 msgstr ""
 
@@ -789,62 +789,66 @@ msgid "Plugin settings"
 msgstr ""
 
 #: admin/includes/tab-settings.php:1183
+msgid "Network wide settings"
+msgstr ""
+
+#: admin/includes/tab-settings.php:1199
 msgid "Remove all settings at uninstallation"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1201
+#: admin/includes/tab-settings.php:1217
 msgid ""
 "<dfn title=\"Valid key for Google Maps JavaScript API\">Google Maps API key</"
 "dfn>"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1215
+#: admin/includes/tab-settings.php:1231
 msgid ""
 "You need to click the &#8220;Save Changes&#8221; button for imported "
 "settings to take effect."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1221
+#: admin/includes/tab-settings.php:1237
 msgid "Export / Import settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1228
+#: admin/includes/tab-settings.php:1244
 msgid "Export settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1229
+#: admin/includes/tab-settings.php:1245
 msgid "Import from the local file"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1229
+#: admin/includes/tab-settings.php:1245
 msgid "Import settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1238
+#: admin/includes/tab-settings.php:1254
 msgid "Import pre-defined settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1245
+#: admin/includes/tab-settings.php:1261
 msgid ""
 "Import the default settings to revert to the &#8220;Right after "
 "installing&#8221; state"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1245
+#: admin/includes/tab-settings.php:1261
 msgid "Default settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1246
+#: admin/includes/tab-settings.php:1262
 msgid ""
 "Import the preferred settings mainly for the &#8220;Validation target "
 "settings&#8221;"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1246
+#: admin/includes/tab-settings.php:1262
 msgid "Best settings"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1255
+#: admin/includes/tab-settings.php:1271
 msgid ""
 "<dfn title=\"Please copy &amp; paste when submitting your issue to support "
 "forum.\">Installation information</dfn><br />[ <a rel=\"noreferrer\" href="
@@ -852,31 +856,31 @@ msgid ""
 "&#8250; Support &raquo; IP Geo Block\">support forum</a> ]"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1262
+#: admin/includes/tab-settings.php:1278
 msgid "Show PHP, WordPress, theme and plugins information."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1262
+#: admin/includes/tab-settings.php:1278
 msgid "Show information"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1272
+#: admin/includes/tab-settings.php:1288
 msgid "Delete DB table for validation logs"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1280
+#: admin/includes/tab-settings.php:1296
 msgid "Delete now"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1288
+#: admin/includes/tab-settings.php:1304
 msgid "Create DB table for validation logs"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1296
+#: admin/includes/tab-settings.php:1312
 msgid "Create now"
 msgstr ""
 
-#: admin/includes/tab-settings.php:1311
+#: admin/includes/tab-settings.php:1327
 msgid ""
 "To enhance the protection ability, please refer to &#8220;<a rel=\"noreferrer"
 "\" href=\"http://www.ipgeoblock.com/codex/the-best-practice-for-target-"
@@ -884,7 +888,7 @@ msgid ""
 "\">The best practice for target settings</a>&#8221;."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1312
+#: admin/includes/tab-settings.php:1328
 msgid ""
 "If you have any troubles with these, please check FAQ at <a rel=\"noreferrer"
 "\" href=\"https://wordpress.org/plugins/ip-geo-block/faq/\" title=\"IP Geo "
@@ -893,18 +897,18 @@ msgid ""
 "\">Codex</a>."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1319
+#: admin/includes/tab-settings.php:1335
 msgid ""
 "While Maxmind and IP2Location will fetch the local database, others will "
 "pass an IP address to the APIs via HTTP."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1320
+#: admin/includes/tab-settings.php:1336
 msgid ""
 "Please select the appropriate APIs to fit the privacy law in your country."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1327
+#: admin/includes/tab-settings.php:1343
 msgid ""
 "Please refer to the document &#8220;<a rel=\"noreferrer\" href=\"http://www."
 "ipgeoblock.com/codex/#blocking-on-front-end\" title=\"Codex | IP Geo Block"
@@ -912,7 +916,7 @@ msgid ""
 "cache plugin."
 msgstr ""
 
-#: admin/includes/tab-settings.php:1328
+#: admin/includes/tab-settings.php:1344
 msgid ""
 "If you find any issues or have something to suggest, please feel free to "
 "open an issue at <a rel=\"noreferrer\" href=\"https://wordpress.org/support/"

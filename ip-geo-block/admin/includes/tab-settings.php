@@ -1206,6 +1206,22 @@ endif;
 			$option_slug
 		);
 
+		// Network wide configuration
+		$field = 'network_wide';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( 'Network wide settings', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'checkbox',
+				'option' => $option_name,
+				'field' => $field,
+				'value' => $options[ $field ],
+			)
+		);
+
 		// Remove all settings at uninstallation
 		$field = 'clean_uninstall';
 		add_settings_field(

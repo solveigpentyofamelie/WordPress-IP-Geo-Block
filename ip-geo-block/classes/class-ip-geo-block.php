@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2';
+	const VERSION = '3.0.2b';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -30,7 +30,6 @@ class IP_Geo_Block {
 
 	// Globals in this class
 	public static $wp_path;
-	private $query = '';
 	private $pagenow = NULL;
 	private $request_uri = NULL;
 	private $target_type = NULL;
@@ -65,7 +64,6 @@ class IP_Geo_Block {
 		$key = preg_replace( array( '!\.+/!', '!//+!' ), '/', $_SERVER['REQUEST_URI'] );
 		$this->request_uri = @parse_url( $key, PHP_URL_PATH ) or $this->request_uri = $key;
 		$this->pagenow = ! empty( $GLOBALS['pagenow'] ) ? $GLOBALS['pagenow'] : basename( $_SERVER['SCRIPT_NAME'] );
-		$this->query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
 
 		// setup the content folders
 		self::$wp_path = array( 'home' => IP_Geo_Block_Util::unslashit( parse_url( site_url(), PHP_URL_PATH ) ) ); // @since 2.6.0
@@ -109,6 +107,11 @@ class IP_Geo_Block {
 				$loader->add_action( 'init', array( $this, 'validate_' . $list[ $this->pagenow ] ), $priority );
 		}
 
+		// alternative of trackback
+		elseif ( $validate['comment'] && 'POST' === $_SERVER['REQUEST_METHOD'] && 'trackback' === basename( $this->request_uri ) ) {
+			$loader->add_action( 'init', array( $this, 'validate_comment' ), $priority );
+		}
+
 		else {
 			// public facing pages
 			if ( $validate['public'] /* && 'index.php' === $this->pagenow */ )
@@ -121,9 +124,9 @@ class IP_Geo_Block {
 			}
 
 			if ( $validate['comment'] ) {
-				// wp-comments-post.php @since 2.8.0, wp-trackback.php @since 1.5.0
-				add_action( 'pre_comment_on_post', array( $this, 'validate_comment' ), $priority );
-				add_filter( 'preprocess_comment', array( $this, 'validate_comment' ), $priority );
+				add_action( 'pre_comment_on_post', array( $this, 'validate_comment' ), $priority ); // wp-comments-post.php @since 2.8.0
+				add_action( 'pre_trackback_post',  array( $this, 'validate_comment' ), $priority ); // wp-trackback.php @since 4.7.0
+				add_filter( 'preprocess_comment',  array( $this, 'validate_comment' ), $priority ); // wp-includes/comment.php @since 1.5.0
 
 				// bbPress: prevent creating topic/relpy and rendering form
 				add_action( 'bbp_post_request_bbp-new-topic', array( $this, 'validate_comment' ), $priority );
@@ -689,11 +692,12 @@ class IP_Geo_Block {
 
 	public function check_signature( $validate, $settings ) {
 		$score = 0.0;
+		$query = strtolower( urldecode( serialize( array_values( $_GET + $_POST ) ) ) );
 
 		foreach ( IP_Geo_Block_Util::multiexplode( array( ",", "\n" ), $settings['signature'] ) as $sig ) {
 			$val = explode( ':', $sig, 2 );
 
-			if ( ( $sig = trim( $val[0] ) ) && FALSE !== strpos( $this->query, $sig ) ) {
+			if ( ( $sig = trim( $val[0] ) ) && FALSE !== strpos( $query, $sig ) ) {
 				if ( ( $score += ( empty( $val[1] ) ? 1.0 : (float)$val[1] ) ) > 0.99 )
 					return $validate + array( 'result' => 'badsig' ); // can't overwrite existing result
 			}

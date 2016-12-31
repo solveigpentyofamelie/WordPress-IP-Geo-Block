@@ -251,7 +251,7 @@ class IP_Geo_Block_Admin {
 	 * Register the administration menu into the WordPress Dashboard menu.
 	 *
 	 */
-	private function add_plugin_admin_page() {
+	private function add_plugin_admin_menu() {
 		// Add a settings page for this plugin to the Settings menu.
 		$hook = add_options_page(
 			__( 'IP Geo Block', 'ip-geo-block' ),
@@ -350,7 +350,7 @@ class IP_Geo_Block_Admin {
 	 */
 	public function setup_admin_page() {
 		$this->diagnose_admin_screen();
-		$this->add_plugin_admin_page();
+		$this->add_plugin_admin_menu();
 
 		// Register settings page only if it is needed
 		if ( ( isset( $_GET ['page'       ] ) && IP_Geo_Block::PLUGIN_NAME === $_GET ['page'       ] ) ||
@@ -373,10 +373,6 @@ class IP_Geo_Block_Admin {
 	 *
 	 */
 	public function display_plugin_admin_page() {
-		// check user capabilities
-		if ( ! current_user_can( 'manage_options' ) )
-			return;
-
 		$tabs = array(
 			0 => __( 'Settings',    'ip-geo-block' ),
 			1 => __( 'Statistics',  'ip-geo-block' ),

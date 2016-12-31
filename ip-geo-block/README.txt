@@ -484,6 +484,19 @@ Yes, you can find the list of all hooks and useful samples
 
 == Changelog ==
 
+= 3.0.1.1 =
+* **Bug fix:** Fix the issue where **Login form** could not be disabled on 
+  **Back-end target settings**.
+* **Bug fix:** Fix the issue where trackback and pingback could not be blocked 
+  since 2.2.4.
+* **Improved:** Apply the action hook 'pre_trackback_post' that was introduced 
+  in WP 4.7.0.
+* **Improved:** Use 'safe_redirect()' instead of 'redirect()' for secured 
+  internal redirection. If you set an external url for **Redirect URL**, please
+  use the filter hook 'allowed_redirect_hosts'.
+* **Improved:** Better compatibility with the plugin "Anti-Malware Security 
+  and Brute-Force Firewall".
+
 = 3.0.1 =
 * **Bug fix:** Add lock mechanism for local geolocation DBs to avoid potential 
   fatal error.

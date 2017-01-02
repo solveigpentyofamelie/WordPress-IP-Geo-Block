@@ -354,7 +354,7 @@ class IP_Geo_Block {
 
 		nocache_headers(); // Set the headers to prevent caching for the different browsers.
 
-		if ( defined( 'XMLRPC_REQUEST' ) && isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+		if ( defined( 'XMLRPC_REQUEST' ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
 			header( 'Content-Type: text/plain' );
 			die( 'XML-RPC server accepts POST requests only.' );

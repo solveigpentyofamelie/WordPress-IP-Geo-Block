@@ -32,6 +32,9 @@ class IP_Geo_Block_Admin_Tab {
 			array( $context, 'validate_settings' )
 		);
 
+		// @see https://vedovini.net/2015/10/using-the-wordpress-settings-api-with-network-admin-pages/
+		add_action( 'network_admin_edit_' . IP_Geo_Block::PLUGIN_NAME, array( $context, 'validate_network_settings' ) );
+
 		/**
 		 * Add new section to a new page inside the existing page.
 		 * @link http://codex.wordpress.org/Function_Reference/add_settings_section

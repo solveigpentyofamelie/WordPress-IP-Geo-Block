@@ -699,14 +699,14 @@ class IP_Geo_Block_Logs {
 	 *
 	 */
 	private static function error( $line ) {
-		if ( class_exists( 'IP_Geo_Block_Admin' ) ) {
-			global $wpdb;
-			if ( $wpdb->last_error )
+		global $wpdb;
+		if ( $wpdb->last_error ) {
+			if ( class_exists( 'IP_Geo_Block_Admin' ) )
 				IP_Geo_Block_Admin::add_admin_notice( 'error', __FILE__ . ' (' . $line . ') ' . $wpdb->last_error );
-		}
 
-		if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG )
-			error_log( __FILE__ . ' (' . $line . ') ' . $wpdb->last_error );
+			if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG )
+				error_log( __FILE__ . ' (' . $line . ') ' . $wpdb->last_error );
+		}
 	}
 
 }

@@ -450,6 +450,33 @@ class IP_Geo_Block_Util {
 	 */
 	public static function get_current_user_id() {
 		return did_action( 'init' ) ? get_current_user_id() : 0;
+/*		static $uid = -1;
+		if ( -1 === $uid ) {
+			switch ( $type ) {
+			  case 0: // for front-end (unavailale before 'init' hook)
+				$uid = did_action( 'init' ) ? get_current_user_id() : 0;
+				break;
+
+			  case 1: // for back-end (guess from cookie @since 2.2.9)
+				$uid = 0;
+				if ( did_action( 'init' ) ) {
+					$uid = get_current_user_id();
+				} elseif ( isset( $_COOKIE ) ) {
+					foreach ( array_keys( $_COOKIE ) as $key ) {
+						if ( 0 === strpos( $key, 'wp-settings-' ) ) {
+							$uid = (int)substr( strrchr( $key, '-' ), 1 ); // get numerical characters
+							break;
+						}
+					}
+				}
+				break;
+
+			  default: // for cache in cookie
+				$uid = md5( IP_Geo_Block::get_ip_address(), FALSE );
+			}
+		}
+
+		return $uid;*/
 	}
 
 	/**

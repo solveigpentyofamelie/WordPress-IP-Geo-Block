@@ -1,0 +1,5 @@
+/* This stylesheet is used to style the admin option form of the plugin. */
+#toplevel_page_ip-geo-block .wp-menu-image img {
+    height: 18px;
+    width: 18px;
+}

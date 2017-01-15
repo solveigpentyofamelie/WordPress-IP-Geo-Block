@@ -108,8 +108,9 @@ class IP_Geo_Block {
 		}
 
 		// alternative of trackback
-		elseif ( $validate['comment'] && 'POST' === $_SERVER['REQUEST_METHOD'] && 'trackback' === basename( $this->request_uri ) ) {
-			$loader->add_action( 'init', array( $this, 'validate_comment' ), $priority );
+		elseif ( 'POST' === $_SERVER['REQUEST_METHOD'] && 'trackback' === basename( $this->request_uri ) ) {
+			if ( $validate['comment'] )
+				$loader->add_action( 'init', array( $this, 'validate_comment' ), $priority );
 		}
 
 		else {
@@ -226,8 +227,7 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function logout_redirect( $uri ) {
-		if ( FALSE !== stripos( $uri, self::$wp_path['admin'] ) &&
-		     isset( $_REQUEST['action'] ) && 'logout' === $_REQUEST['action'] )
+		if ( isset( $_REQUEST['action'] ) && 'logout' === $_REQUEST['action'] && FALSE !== stripos( $uri, self::$wp_path['admin'] ) )
 			return esc_url_raw( add_query_arg( array( 'loggedout' => 'true' ), wp_login_url() ) );
 		else
 			return $uri;
@@ -784,7 +784,7 @@ class IP_Geo_Block {
 
 		// retrieve IP address of visitor via proxy services
 		add_filter( self::PLUGIN_NAME . '-ip-addr', array( $this, 'get_proxy_ip' ), 20, 1 );
-
+/*
 		// validate nonce if it exists to allow logged-in user
 		if ( isset( $_REQUEST[ self::PLUGIN_NAME . '-auth-nonce' ] ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_nonce' ), 4, 2 );
@@ -792,7 +792,7 @@ class IP_Geo_Block {
 		// validate bad signatures when an action is required
 		if ( empty( $_POST['action'] ) || ! in_array( $_POST['action'], apply_filters( self::PLUGIN_NAME . '-bypass-public', $settings['exception']['public'] ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_signature' ), 5, 2 );
-
+*/
 		// validate undesired user agent
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );
 

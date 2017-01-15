@@ -260,8 +260,13 @@ class IP_Geo_Block_Admin {
 		return $network ? network_admin_url( 'admin.php' ) : admin_url( 'options-general.php' );
 	}
 
-	private function is_single_page() {
+	private function is_single_settings() {
 		return 'options-general.php' === $GLOBALS['pagenow'];
+	}
+
+	private function get_main_blog_id() {
+		global $current_site; // @since 3.0.0 populated in wp-includes/ms-settings.php
+		return is_object( $current_site ) ? $current_site->blog_id : 1;
 	}
 
 	/**
@@ -275,11 +280,25 @@ class IP_Geo_Block_Admin {
 
 		$settings = IP_Geo_Block::get_option();
 
+		// Allocation of pages and tabs
 		if ( $settings['network_wide'] ) {
-			if ( $this->is_single_page() )
-				$this->admin_tab = max( $this->admin_tab, 1 );
-			elseif ( 1 === $this->admin_tab || 4 === $this->admin_tab )
+			if ( $this->is_single_settings() ) {
+				if ( ! empty( $_GET['settings-updated'] ) ) {
+					wp_safe_redirect( esc_url_raw(
+						add_query_arg(
+							array( 'page' => IP_Geo_Block::PLUGIN_NAME ),
+							$this->get_admin_url( TRUE )
+						)
+					) );
+					exit;
+				} else {
+					$this->admin_tab = max( $this->admin_tab, 1 );
+				}
+			}
+
+			elseif ( 1 === $this->admin_tab || 4 === $this->admin_tab ) {
 				$this->admin_tab = 0;
+			}
 		}
 
 		// Add a settings page for this plugin to the Settings menu.
@@ -307,7 +326,7 @@ class IP_Geo_Block_Admin {
 			if ( $hook ) {
 				wp_enqueue_style( IP_Geo_Block::PLUGIN_NAME . '-admin-all-styles',
 					plugins_url( ! defined( 'IP_GEO_BLOCK_DEBUG' ) || ! IP_GEO_BLOCK_DEBUG ?
-						'css/admin-all.min.css' : 'css/admin-all.css', __FILE__
+						'css/admin-network.min.css' : 'css/admin-network.css', __FILE__
 					),
 					array(), IP_Geo_Block::VERSION
 				);
@@ -358,7 +377,7 @@ class IP_Geo_Block_Admin {
 		// Check to finish updating matching rule
 		elseif ( 'done' === get_transient( IP_Geo_Block::CRON_NAME ) ) {
 			delete_transient( IP_Geo_Block::CRON_NAME );
-			self::add_admin_notice( 'updated', __( 'Local database and matching rule have been updated.', 'ip-geo-block' ) );
+			self::add_admin_notice( 'updated ', __( 'Local database and matching rule have been updated.', 'ip-geo-block' ) );
 		}
 
 		// Check self blocking
@@ -452,20 +471,24 @@ class IP_Geo_Block_Admin {
 
 		$settings = IP_Geo_Block::get_option();
 
-		if ( $settings['network_wide'] ) {
-			if ( $this->is_single_page() ) {
+		// Target page that depends on the network multisite or not.
+		if ( $this->is_single_settings() ) {
+			if ( $settings['network_wide'] ) {
 				unset( $tabs[0] ); // Settings
-			} else {
+			}
+			$title = get_admin_page_title();
+			$action = 'options.php';
+		} else {
+			if ( $settings['network_wide'] ) {
 				unset( $tabs[1] ); // Statistics
 				unset( $tabs[4] ); // Logs
 			}
+			$title = get_admin_page_title() . ' (' . __( 'Network Wide' ) . ')';
+			$action = 'edit.php?action=' . IP_Geo_Block::PLUGIN_NAME;
 		}
-
-		// Target page that depends on the network multisite or not.
-		$action = $this->is_single_page() ? 'options.php' : 'edit.php?action=' . IP_Geo_Block::PLUGIN_NAME;
 ?>
 <div class="wrap">
-	<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+	<h2><?php echo esc_html( $title ); ?></h2>
 	<h2 class="nav-tab-wrapper">
 <?php foreach ( $tabs as $key => $val ) {
 	echo '<a href="?page=', IP_Geo_Block::PLUGIN_NAME, '&amp;tab=', $key, '" class="nav-tab', ($tab === $key ? ' nav-tab-active' : ''), '">', $val, '</a>';
@@ -924,6 +947,9 @@ class IP_Geo_Block_Admin {
 
 		// Force to finish update matching rule
 		delete_transient( IP_Geo_Block::CRON_NAME );
+
+		// Network wide settings
+		//debug_log(get_blog_option($this->get_main_blog_id(), IP_Geo_Block::OPTION_NAME));
 
 		return $options;
 	}

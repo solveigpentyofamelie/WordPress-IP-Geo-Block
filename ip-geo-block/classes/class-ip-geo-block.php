@@ -343,7 +343,7 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function send_response( $hook, $settings ) {
-		require_once ABSPATH . WPINC . '/functions.php';
+		require_once ABSPATH . WPINC . '/functions.php'; // for get_status_header_desc() @since 2.3.0
 
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
 		if ( ! defined( 'DONOTCACHEPAGE' ) )
@@ -360,7 +360,7 @@ class IP_Geo_Block {
 			die( 'XML-RPC server accepts POST requests only.' );
 		}
 
-		switch ( (int)substr( $code, 0, 1 ) ) {
+		switch ( (int)substr( (string)$code, 0, 1 ) ) {
 		  case 2: // 2xx Success (HTTP header injection should be avoided)
 			header( 'Refresh: 0; url=' . esc_url_raw( $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ), TRUE, $code ); // @since 2.8
 			exit;
@@ -479,8 +479,8 @@ class IP_Geo_Block {
 	 */
 	public function validate_comment( $comment = NULL ) {
 		// check comment type if it comes form wp-includes/wp_new_comment()
-		if ( ! is_array( $comment ) || in_array( $comment['comment_type'], array( 'trackback', 'pingback' ) ) )
-			$this->validate_ip( 'comment', self::get_option( 'settings' ) );
+		if ( ! is_array( $comment ) || in_array( $comment['comment_type'], array( 'trackback', 'pingback' ), TRUE ) )
+			$this->validate_ip( 'comment', self::get_option() );
 
 		return $comment;
 	}
@@ -704,7 +704,7 @@ class IP_Geo_Block {
 		}
 
 		// validate malicious tags
-		// if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $this->query ) )
+		// if ( preg_match( '!<(script|svg|iframe|object|applet)[^>]*>\W*\w+[^<]*<\\\\*/\1[^>]*>!', $query ) )
 		//	return $validate + array( 'result' => 'badtag' ); // can't overwrite existing result
 
 		return $validate;

@@ -73,7 +73,7 @@ class IP_Geo_Block_Cron {
 
 			// if blocking may happen then disable validation
 			if ( -1 !== (int)$settings['matching_rule'] && 'passed' !== $validate['result'] &&
-			     FALSE === strpos( $_SERVER['HTTP_X_REQUESTED_FROM'], 'InfiniteWP' ) ) {
+			     ( empty( $_SERVER['HTTP_X_REQUESTED_FROM'] ) || FALSE === strpos( $_SERVER['HTTP_X_REQUESTED_FROM'], 'InfiniteWP' ) ) ) {
 				$settings['matching_rule'] = -1;
 			}
 

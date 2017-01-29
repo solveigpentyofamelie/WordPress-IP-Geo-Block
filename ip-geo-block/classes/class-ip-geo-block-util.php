@@ -94,7 +94,7 @@ class IP_Geo_Block_Util {
 		if ( self::may_be_logged_in() && empty( $_REQUEST[ $nonce ] ) &&
 		     self::retrieve_nonce( $nonce ) && 'GET' === $_SERVER['REQUEST_METHOD'] ) {
 			// add nonce at add_admin_nonce() to handle the client side redirection.
-			self::safe_redirect( esc_url_raw( $_SERVER['REQUEST_URI'] ), 302 );
+			self::redirect( esc_url_raw( $_SERVER['REQUEST_URI'] ), 302 );
 			exit;
 		}
 	}
@@ -313,7 +313,7 @@ class IP_Geo_Block_Util {
 	 * Redirects to another page.
 	 * @source wp-includes/pluggable.php
 	 */
-	private static function redirect( $location, $status = 302 ) {
+	public static function redirect( $location, $status = 302 ) {
 		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
 		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 

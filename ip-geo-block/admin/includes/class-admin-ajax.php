@@ -465,10 +465,14 @@ class IP_Geo_Block_Admin_Ajax {
 			$method = preg_replace( '/(' . IP_Geo_Block::PLUGIN_NAME . '-auth-nonce)(?:=|%3D)([\w]+)/', '$1=...', $method );
 
 			// add post data
+			$query = array();
 			foreach ( explode( ',', $val['data'] ) as $str ) {
 				if ( FALSE !== strpos( $str, '=' ) )
-					$method .= "($str)";
+					$query[] = $str;
 			}
+
+			if ( ! empty( $query ) )
+				$method .= '(' . implode( ',', $query ) . ')';
 
 			$res[] = array(
 				esc_html( IP_Geo_Block_Util::localdate( $val['time'], 'Y-m-d H:i:s' ) ) =>

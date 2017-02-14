@@ -313,7 +313,7 @@ class IP_Geo_Block_Util {
 	 * Redirects to another page.
 	 * @source wp-includes/pluggable.php
 	 */
-	private static function redirect( $location, $status = 302 ) {
+	public static function redirect( $location, $status = 302 ) {
 		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
 		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 
@@ -449,7 +449,22 @@ class IP_Geo_Block_Util {
 	 * @source wp-includes/user.php
 	 */
 	public static function get_current_user_id() {
-		return did_action( 'init' ) ? get_current_user_id() : 0;
+		static $uid = 0;
+
+		if ( ! $uid ) {
+			$uid = did_action( 'init' ) ? get_current_user_id() : 0;
+
+			if ( ! $uid && isset( $_COOKIE ) ) {
+				 foreach ( array_keys( $_COOKIE ) as $key ) {
+					if ( 0 === strpos( $key, 'wp-settings-' ) ) {
+						$uid = substr( $key, strrpos( $key, '-' ) + 1 ); // get numerical characters
+						break;
+					}
+				}
+			}
+		}
+
+		return $uid;
 	}
 
 	/**

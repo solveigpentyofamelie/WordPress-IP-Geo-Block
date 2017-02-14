@@ -45,7 +45,7 @@
 	}
 
 	function warning(status, msg) {
-		window.alert(status ? sanitize(status + ': ' + msg) : msg);
+		window.alert(status ? sanitize(status + ': ' + msg) : sanitize(msg));
 	}
 
 	function notice_html5() {
@@ -398,12 +398,18 @@
 	}
 
 	$(function () {
+<<<<<<< HEAD
 		// processing time for footable
 		var ip_geo_block_time = new Date(),
 
 		// Make form style with fieldset and legend
 		fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
 		legend = $('<legend></legend>'),
+=======
+		// Make form style with fieldset and legend
+		var fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
+		    legend = $('<legend></legend>'),
+>>>>>>> 2.2.9.8
 
 		// Get tab number and cookie
 		tabNo = Number(IP_GEO_BLOCK.tab) || 0,

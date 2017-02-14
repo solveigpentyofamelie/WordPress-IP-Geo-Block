@@ -4,6 +4,8 @@
  * Copyright (c) 2015-2016 tokkonopapa (tokkonopapa@yahoo.com)
  * This software is released under the MIT License.
  */
+var ip_geo_block_time = new Date();
+
 (function ($, window, document) {
 	'use strict';
 
@@ -398,18 +400,9 @@
 	}
 
 	$(function () {
-<<<<<<< HEAD
-		// processing time for footable
-		var ip_geo_block_time = new Date(),
-
-		// Make form style with fieldset and legend
-		fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
-		legend = $('<legend></legend>'),
-=======
 		// Make form style with fieldset and legend
 		var fieldset = $('<fieldset class="' + ID('field') + '"></fieldset>'),
 		    legend = $('<legend></legend>'),
->>>>>>> 2.2.9.8
 
 		// Get tab number and cookie
 		tabNo = Number(IP_GEO_BLOCK.tab) || 0,

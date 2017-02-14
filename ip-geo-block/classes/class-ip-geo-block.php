@@ -458,8 +458,8 @@ class IP_Geo_Block {
 	 */
 	public function validate_comment( $comment = NULL ) {
 		// check comment type if it comes form wp-includes/wp_new_comment()
-		if ( ! is_array( $comment ) || in_array( $comment['comment_type'], array( 'trackback', 'pingback' ) ) )
-			$this->validate_ip( 'comment', self::get_option( 'settings' ) );
+		if ( ! is_array( $comment ) || in_array( $comment['comment_type'], array( 'trackback', 'pingback' ), TRUE ) )
+			$this->validate_ip( 'comment', self::get_option() );
 
 		return $comment;
 	}

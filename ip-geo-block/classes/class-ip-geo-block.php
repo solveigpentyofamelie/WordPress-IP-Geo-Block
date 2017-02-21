@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2b';
+	const VERSION = '3.0.2';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -568,10 +568,12 @@ class IP_Geo_Block {
 		}
 
 		// list of request for specific action or page to bypass WP-ZEP
-		$list = apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ) + array(
-			'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
-			'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', 'GOTMLS_logintime', // pluploader won't fire an event in "Media Library"
-			'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
+		$list = array_merge(
+			apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ),
+			array( 'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
+				'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', 'GOTMLS_logintime', // pluploader won't fire an event in "Media Library"
+				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
+			)
 		);
 
 		$in_action = in_array( $action, $list, TRUE );

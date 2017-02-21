@@ -147,6 +147,7 @@ class IP_Geo_Block_Cron {
 		if ( ! function_exists( 'is_plugin_active' ) )
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
+		// the status is still inactive when this plugin is activated on dashboard.
 		if ( ! is_plugin_active( IP_GEO_BLOCK_BASE ) ) {
 			set_transient( IP_Geo_Block::CRON_NAME, IP_Geo_Block::get_ip_address(), MINUTE_IN_SECONDS );
 			self::schedule_cron_job( $settings['update'], NULL, TRUE );
@@ -234,6 +235,7 @@ class IP_Geo_Block_Cron {
 				'message' => $code.' '.$mssg,
 			);
 
+		// downloaded and unzip
 		try {
 			// download file
 			$src = download_url( $url );

@@ -182,7 +182,7 @@ class IP_Geo_Block_Util {
 	private static function get_session_token() {
 		// Arrogating logged_in cookie never cause the privilege escalation.
 		$cookie = self::parse_auth_cookie( 'logged_in' );
-		return ! empty( $cookie['token'] ) ? $cookie['token'] : '';
+		return ! empty( $cookie['token'] ) ? $cookie['token'] : AUTH_KEY . AUTH_SALT;
 	}
 
 	/**
@@ -449,34 +449,22 @@ class IP_Geo_Block_Util {
 	 * @source wp-includes/user.php
 	 */
 	public static function get_current_user_id() {
-		return did_action( 'init' ) ? get_current_user_id() : 0;
-/*		static $uid = -1;
-		if ( -1 === $uid ) {
-			switch ( $type ) {
-			  case 0: // for front-end (unavailale before 'init' hook)
-				$uid = did_action( 'init' ) ? get_current_user_id() : 0;
-				break;
+		static $uid = 0;
 
-			  case 1: // for back-end (guess from cookie @since 2.2.9)
-				$uid = 0;
-				if ( did_action( 'init' ) ) {
-					$uid = get_current_user_id();
-				} elseif ( isset( $_COOKIE ) ) {
-					foreach ( array_keys( $_COOKIE ) as $key ) {
-						if ( 0 === strpos( $key, 'wp-settings-' ) ) {
-							$uid = (int)substr( strrchr( $key, '-' ), 1 ); // get numerical characters
-							break;
-						}
+		if ( ! $uid ) {
+			$uid = did_action( 'init' ) ? get_current_user_id() : 0;
+
+			if ( ! $uid && isset( $_COOKIE ) ) {
+				 foreach ( array_keys( $_COOKIE ) as $key ) {
+					if ( 0 === strpos( $key, 'wp-settings-' ) ) {
+						$uid = substr( $key, strrpos( $key, '-' ) + 1 ); // get numerical characters
+						break;
 					}
 				}
-				break;
-
-			  default: // for cache in cookie
-				$uid = md5( IP_Geo_Block::get_ip_address(), FALSE );
 			}
 		}
 
-		return $uid;*/
+		return $uid;
 	}
 
 	/**
@@ -523,5 +511,36 @@ class IP_Geo_Block_Util {
 
 		return $subject;
 	}
+
+	/**
+	 * Output debug information into wp-content/debug.log
+	 *
+	 *//*
+	public static function debug_log( $msg, $file = null, $line = null, $trace = false ) {
+		$error_reporting = error_reporting();
+		$display_errors = ini_get( 'display_errors' );
+		$log_errors = ini_get( 'log_errors' );
+		$error_log = ini_get( 'error_log' );
+
+		error_reporting( E_ALL );
+		ini_set( 'display_errors', 0 ); // WP_DEBUG_DISPLAY false
+		ini_set( 'log_errors', 1 ); // WP_DEBUG_LOG true
+		ini_set( 'error_log', WP_CONTENT_DIR . '/debug.log' );
+
+		$file = basename( $file );
+
+		error_log(
+			( $file ? "$file "  : '' ) .
+			( $line ? "($line) " : '' ) .
+			trim( is_scalar( $msg ) ? "$msg" : print_r( $msg, true ) ) .
+			( $trace ? ' ' . print_r( debug_backtrace(), true ) : '' )
+		);
+
+		// debug off
+		error_reporting( $error_reporting );
+		ini_set( 'display_errors', $display_errors );
+		ini_set( 'log_errors', $log_errors );
+		ini_set( 'error_log', $error_log );
+	} //*/
 
 }

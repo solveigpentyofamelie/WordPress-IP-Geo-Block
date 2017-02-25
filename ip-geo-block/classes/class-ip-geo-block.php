@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2';
+	const VERSION = '3.0.2b';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -517,6 +517,18 @@ class IP_Geo_Block {
 	}
 
 	/**
+	 * Check exceptions
+	 *
+	 */
+	private function check_exceptions( $action, $page, $exceptions = array() ) {
+		$in_action = in_array( $action, $exceptions, TRUE );
+		$in_page   = in_array( $page,   $exceptions, TRUE );
+
+		return ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
+		       ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) ? FALSE : TRUE;
+	}
+
+	/**
 	 * Validate in admin area.
 	 *
 	 */
@@ -546,21 +558,21 @@ class IP_Geo_Block {
 			$type = (int)$settings['validation']['admin'];
 		}
 
+		// skip all validations if exceptions matches action or page
+		if ( $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
+			return;
+
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = array_merge(
-			apply_filters( self::PLUGIN_NAME . '-bypass-admins', $settings['exception']['admin'] ),
+			apply_filters( self::PLUGIN_NAME . '-bypass-admins', array() ),
 			array( 'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
 				'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', 'GOTMLS_logintime', // pluploader won't fire an event in "Media Library"
 				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 			)
 		);
 
-		$in_action = in_array( $action, $list, TRUE );
-		$in_page   = in_array( $page,   $list, TRUE );
-
 		// combination with vulnerable keys should be prevented to bypass WP-ZEP
-		if ( ( ( $action xor $page ) && ( ! $in_action and ! $in_page ) ) ||
-		     ( ( $action and $page ) && ( ! $in_action or  ! $in_page ) ) ) {
+		if ( ! $this->check_exceptions( $action, $page, $list ) ) {
 			if ( ( 2 & $type ) && $zep ) {
 				// redirect if valid nonce in referer, otherwise register WP-ZEP (2: WP-ZEP)
 				IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
@@ -590,7 +602,16 @@ class IP_Geo_Block {
 
 		// set validation type by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
 		$settings = self::get_option();
-		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", $settings['exception'][ $type ] );
+
+		// skip all validations if exceptions matches action or page
+		if ( in_array( $target, $settings['exception'][ $type ], TRUE ) )
+			return;
+
+		// list of request for specific action or page to bypass WP-ZEP
+		$path = array(
+			'includes' => array( 'ms-files.php', 'js/tinymce/wp-tinymce.php', ), // for wp-includes/
+		);
+		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", isset( $path[ $type ] ) ? $path[ $type ] : array() );
 		$type = (int)$settings['validation'][ $type ];
 
 		if ( ! in_array( $target, $path, TRUE ) ) {
@@ -742,8 +763,7 @@ class IP_Geo_Block {
 			return; // do not block
 
 		if ( $public['target_rule'] ) {
-			// postpone validation until 'wp' fires
-			if ( ! did_action( 'wp' ) ) {
+			if ( ! did_action( 'wp' ) ) { // deferred validation on 'wp' when the target is specified
 				add_action( 'wp', array( $this, 'validate_public' ) );
 				return;
 			}

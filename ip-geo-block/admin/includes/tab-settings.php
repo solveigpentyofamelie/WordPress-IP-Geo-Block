@@ -490,28 +490,14 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'list' => $list,
 				'desc' => $desc,
+				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . 
+					__( '<dfn title="Specify the name of action which causes undesired blocking in order to exclude from the validation target.">Exceptions</dfn>', 'ip-geo-block' )
+					. '<li style="display:none"><ul><li>' . "\n"
+					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
+					. $comma[0]
+					. "</li></ul></li></ul>\n",
 			)
 		);
-
-if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
-		// Excluded request for specific action or page to bypass WP-ZEP
-		$key = 'admin';
-		add_settings_field(
-			$option_name.'_exception_'.$key,
-			__( '<dfn title="Same effect as &#8220;ip-geo-block-bypass-admins&#8221; filter hook.">Exception for admin action and page</dfn>', 'ip-geo-block' ),
-			array( $context, 'callback_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type' => 'text',
-				'option' => $option_name,
-				'field' => 'exception',
-				'sub-field' => $key,
-				'value' => implode( ',', $options['exception'][ $key ] ),
-				'after' => $comma[0],
-			)
-		);
-endif;
 
 		array_unshift( $list, __( 'Disable', 'ip-geo-block' ) );
 		$desc = array(

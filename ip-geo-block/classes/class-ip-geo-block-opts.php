@@ -112,9 +112,7 @@ class IP_Geo_Block_Opts {
 				'bbp-new-topic', 'bbp-edit-topic',
 				'bbp-new-reply', 'bbp-edit-reply',
 			),
-			'includes'    => array(   // for wp-includes/
-				'ms-files.php', 'js/tinymce/wp-tinymce.php'
-			 ),
+			'includes'    => array(), // for wp-includes/
 			'uploads'     => array(), // for UPLOADS/uploads
 			'languages'   => array(), // for wp-content/language
 		),

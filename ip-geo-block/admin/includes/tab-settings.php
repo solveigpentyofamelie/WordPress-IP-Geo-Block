@@ -473,6 +473,46 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
+		// Get all the ajax/post actions
+		$exception = '';
+		$installed = array();
+
+		global $wp_filter;
+		foreach ( $wp_filter as $key => $val ) {
+			if ( FALSE !== strpos( $key, 'wp_ajax_' ) ) {
+				if ( 0 === strpos( $key, 'wp_ajax_nopriv_' ) ) {
+					$key = substr( $key, 15 );
+					$val = 2;
+				} else {
+					$key = substr( $key, 8 );
+					$val = 1;
+				}
+				$installed[ $key ] = isset( $installed[ $key ] ) ? $installed[ $key ] | $val : $val;
+			} elseif ( FALSE !== strpos( $key, 'admin_post_' ) ) {
+				if ( 0 === strpos( $key, 'admin_post_nopriv_' ) ) {
+					$key = substr( $key, 18 );
+					$val = 2;
+				} else {
+					$key = substr( $key, 11 );
+					$val = 1;
+				}
+				$installed[ $key ] = isset( $installed[ $key ] ) ? $installed[ $key ] | $val : $val;
+			}
+		}
+		unset( $installed['ip_geo_block'] );
+
+		$tmp = array(
+			__( 'for privileged users',     'ip-geo-block' ),
+			__( 'for non-privileged users', 'ip-geo-block' ),
+		);
+
+		foreach ( $installed as $key => $val ) {
+			$val = '';
+			$val .= $installed[ $key ] & 1 ? '<dfn title="' . $tmp[0] . '"><span class="dashicons dashicons-lock"></span></dfn>' : '';
+			$val .= $installed[ $key ] & 2 ? '<dfn title="' . $tmp[1] . '"><span class="dashicons dashicons-unlock"></span></dfn>' : '';
+			$exception .= '<li>' . esc_html( $key ) . ($val ? "&nbsp;$val" : '') . '</li>';
+		}
+
 		// Admin ajax/post
 		$key = 'ajax';
 		$val = esc_html( substr( IP_Geo_Block::$wp_path['admin'], 1 ) );
@@ -490,12 +530,15 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'list' => $list,
 				'desc' => $desc,
-				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . 
-					__( '<dfn title="Specify the name of action which causes undesired blocking in order to exclude from the validation target.">Exceptions</dfn>', 'ip-geo-block' )
+				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
+					. __( '<dfn title="Specify the name of action which causes undesired blocking in order to exclude from the validation target.">Exceptions</dfn>', 'ip-geo-block' )
 					. '<li style="display:none"><ul><li>' . "\n"
 					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
 					. $comma[0]
-					. "</li></ul></li></ul>\n",
+					. '</li><li><ul class="ip-geo-block-actions">'
+					. '<h4>' . __( 'Candidate actions', 'ip-geo-block' ) . '</h4>'
+					. $exception
+					. '</ul></li></ul></li></ul>' . "\n",
 			)
 		);
 

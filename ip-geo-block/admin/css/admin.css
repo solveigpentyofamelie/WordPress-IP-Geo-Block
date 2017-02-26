@@ -74,6 +74,17 @@ ul.ip_geo_block_settings_folding li:first-child {
     font-style:oblique !important;
 }
 
+ul.ip-geo-block-actions {
+    list-style-type: circle;
+    list-style-position: inside;
+}
+ul.ip-geo-block-actions dfn {
+    border: none;
+}
+ul.ip-geo-block-actions span.dashicons {
+    font-size: 90%;
+}
+
 .ip-geo-block-hide {
     display: none;
 }

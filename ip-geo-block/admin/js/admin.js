@@ -221,7 +221,7 @@ var ip_geo_block_time = new Date();
 					name = decodeURIComponent(key);
 					value = decodeURIComponent(json[key]);
 
-					if (!(name in data)) { // !data.hasOwnProperty(name)
+					if (!data.hasOwnProperty(name)) { // !(name in data)
 						data[name] = [];
 					}
 
@@ -256,6 +256,9 @@ var ip_geo_block_time = new Date();
 			// Additional edge case
 			var i = ID('%', 'settings[providers][IPInfoDB]');
 			$(ID('@', 'providers_IPInfoDB')).prop('checked', json[i] ? true : false);
+
+			// Exceptions
+			$(ID('@', 'exception_admin')).trigger('change');
 		}
 	}
 
@@ -664,7 +667,7 @@ var ip_geo_block_time = new Date();
 			});
 
 			// Folding list
-			$('ul.' + name + '_folding dfn').on('click', function (event) {
+			$('ul.' + name + '_folding>dfn').on('click', function (event) {
 				var $this = $(this).parent();
 				$this.children('li').toggle();
 				$this.toggleClass(ID('dropup')).toggleClass(ID('dropdown'));
@@ -723,6 +726,42 @@ var ip_geo_block_time = new Date();
 					return false;
 				});
 			});
+
+			// Exceptions
+			$(ID('@', 'exception_admin')).on('change', function (event) {
+				var actions = $.grep($(this).val().split(','), function (e){
+					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
+				});
+
+				$(ID('#', 'actions')).find('li').each(function (i, e) {
+					var $this = $(this);
+					if (-1 !== $.inArray($this.text().replace(/^\s+|\s+$/g, ''), actions)) {
+						$this.addClass(ID('$', 'checked'));
+					} else {
+						$this.removeClass(ID('$', 'checked'));
+					}
+				});
+			}).trigger('change');
+
+			$(ID('#', 'actions')).on('click', 'li', function (event) {
+				var i, $this = $(this),
+				    action = $this.text().replace(/^\s+|\s+$/g, ''), // trim()
+					$admin = $(ID('@', 'exception_admin')),
+				    actions = $.grep($admin.val().split(','), function (e){
+				    	return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
+				    });
+
+				// find the action
+				i = $.inArray(action, actions);
+
+				if (-1 === i) {
+					actions.push(action);
+				} else {
+					actions.splice(i, 1);
+				}
+
+				$admin.val(actions.join(',')).change();
+			})
 
 			// Submit
 			$('#submit').on('click', function (event) {

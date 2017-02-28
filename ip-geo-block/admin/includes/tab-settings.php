@@ -535,7 +535,7 @@ class IP_Geo_Block_Admin_Tab {
 					. '<li style="display:none"><ul><li>' . "\n"
 					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
 					. $comma[0]
-					. '</li><li><ul class="ip-geo-block-actions">'
+					. '</li><li><ul id="ip-geo-block-actions">'
 					. '<h4>' . __( 'Candidate actions', 'ip-geo-block' ) . '</h4>'
 					. $exception
 					. '</ul></li></ul></li></ul>' . "\n",
@@ -985,7 +985,7 @@ endif;
 		add_settings_section(
 			$section,
 			__( 'Record settings', 'ip-geo-block' ),
-			NULL,
+			array( __CLASS__, 'note_record' ),
 			$option_slug
 		);
 
@@ -1357,6 +1357,13 @@ endif;
 			'<ul class="ip-geo-block-note">', "\n",
 				'<li>', __( 'Please refer to the document &#8220;<a rel="noreferrer" href="http://www.ipgeoblock.com/codex/#blocking-on-front-end" title="Codex | IP Geo Block">Blocking on front-end</a>&#8221; for details, including restrictions on cache plugin.', 'ip-geo-block' ), '</li>', "\n",
 				'<li>', __( 'If you find any issues or have something to suggest, please feel free to open an issue at <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a>.', 'ip-geo-block' ), '</li>', "\n",
+			'</ul>', "\n";
+	}
+
+	public static function note_record() {
+		echo
+			'<ul class="ip-geo-block-note">', "\n",
+				'<li>', __( 'Please refer to the document &#8220;<a rel="noreferrer" href="http://www.ipgeoblock.com/codex/record-settings-and-logs.html" title="Codex | IP Geo Block">Record settings and logs</a>&#8221; for details.', 'ip-geo-block' ), '</li>', "\n",
 			'</ul>', "\n";
 	}
 

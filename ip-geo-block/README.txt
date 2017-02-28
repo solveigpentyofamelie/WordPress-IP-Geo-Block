@@ -347,14 +347,14 @@ can also help you.
 = How to resolve "Sorry, your request cannot be accepted."? =
 
 If you encounter this message, please refer to 
-  [this document](http://www.ipgeoblock.com/codex/you-are-not-allowed-to-access.html "Why &ldquo;You are not allowed to access this page&rdquo; ? | IP Geo Block")
+  [this document](http://www.ipgeoblock.com/codex/you-are-not-allowed-to-access.html "Why &ldquo;Sorry, your request cannot be accepted&rdquo; ? | IP Geo Block")
 to resolve your blocking issue. 
 
 = Some admin function doesn't work. How to solve it? =
 
 This could be happened because of the same reason as the previous FAQ. Please 
 follow the steps in
-  [this document](http://www.ipgeoblock.com/codex/you-are-not-allowed-to-access.html "Why &ldquo;You are not allowed to access this page&rdquo; ? | IP Geo Block").
+  [this document](http://www.ipgeoblock.com/codex/you-are-not-allowed-to-access.html "Why &ldquo;Sorry, your request cannot be accepted&rdquo; ? | IP Geo Block").
 
 If you can't solve your issue, please let me know about it on the
   [support forum](https://wordpress.org/support/plugin/ip-geo-block/ "View: Plugin Support &laquo;  WordPress.org Forums").

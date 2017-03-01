@@ -543,24 +543,20 @@ class IP_Geo_Block {
 		  case 'admin-ajax.php':
 			// if the request has an action for no privilege user, skip WP-ZEP
 			$zep = ! has_action( 'wp_ajax_nopriv_'.$action );
-			$type = (int)$settings['validation']['ajax'];
+			$rule = (int)$settings['validation']['ajax'];
 			break;
 
 		  case 'admin-post.php':
 			// if the request has an action for no privilege user, skip WP-ZEP
 			$zep = ! has_action( 'admin_post_nopriv' . ($action ? '_'.$action : '') );
-			$type = (int)$settings['validation']['ajax'];
+			$rule = (int)$settings['validation']['ajax'];
 			break;
 
 		  default:
 			// if the request has no page and no action, skip WP-ZEP
 			$zep = ( $page || $action ) ? TRUE : FALSE;
-			$type = (int)$settings['validation']['admin'];
+			$rule = (int)$settings['validation']['admin'];
 		}
-
-		// skip all validations if exceptions matches action or page
-		if ( $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
-			return;
 
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = array_merge(
@@ -571,21 +567,25 @@ class IP_Geo_Block {
 			)
 		);
 
+		// skip validation of country code if exceptions matches action or page
+		if ( $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
+			$rule = 0; // check only signature
+
 		// combination with vulnerable keys should be prevented to bypass WP-ZEP
-		if ( ! $this->check_exceptions( $action, $page, $list ) ) {
-			if ( ( 2 & $type ) && $zep ) {
+		elseif ( ! $this->check_exceptions( $action, $page, $list ) ) {
+			if ( ( 2 & $rule ) && $zep ) {
 				// redirect if valid nonce in referer, otherwise register WP-ZEP (2: WP-ZEP)
 				IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
 			}
-
-			// register validation of malicious signature (except in the comment and post)
-			if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
-				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 		}
 
+		// register validation of malicious signature (except in the comment and post)
+		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+
 		// validate country by IP address (1: Block by country)
-		$this->validate_ip( 'admin', $settings, 1 & $type );
+		$this->validate_ip( 'admin', $settings, 1 & $rule );
 	}
 
 	/**
@@ -595,39 +595,37 @@ class IP_Geo_Block {
 	public function validate_direct() {
 		// analyze target in wp-includes, wp-content/(plugins|themes|language|uploads)
 		$path = preg_quote( self::$wp_path[ $type = $this->target_type ], '/' );
-		$target = ( 'plugins' === $type || 'themes' === $type ? '[^\?\&\/]*' : '[^\?\&]*' );
+		$name = ( 'plugins' === $type || 'themes' === $type ? '[^\?\&\/]*' : '[^\?\&]*' );
 
-		preg_match( "/($path)($target)/", $this->request_uri, $target );
-		$target = empty( $target[2] ) ? $target[1] : $target[2];
+		preg_match( "/($path)($name)/", $this->request_uri, $name );
+		$name = empty( $name[2] ) ? $name[1] : $name[2];
 
-		// set validation type by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
+		// set validation rule by target (0: Bypass, 1: Block by country, 2: WP-ZEP)
 		$settings = self::get_option();
-
-		// skip all validations if exceptions matches action or page
-		if ( in_array( $target, $settings['exception'][ $type ], TRUE ) )
-			return;
+		$rule = (int)$settings['validation'][ $type ];
 
 		// list of request for specific action or page to bypass WP-ZEP
-		$path = array(
-			'includes' => array( 'ms-files.php', 'js/tinymce/wp-tinymce.php', ), // for wp-includes/
-		);
+		$path = array( 'includes' => array( 'ms-files.php', 'js/tinymce/wp-tinymce.php', ), /* for wp-includes */ );
 		$path = apply_filters( self::PLUGIN_NAME . "-bypass-{$type}", isset( $path[ $type ] ) ? $path[ $type ] : array() );
-		$type = (int)$settings['validation'][ $type ];
 
-		if ( ! in_array( $target, $path, TRUE ) ) {
-			if ( 2 & $type ) {
+		// skip validation of country code if exceptions matches action or page
+		if ( in_array( $name, $settings['exception'][ $type ], TRUE ) )
+			$rule = 0;
+
+		elseif ( ! in_array( $name, $path, TRUE ) ) {
+			if ( 2 & $rule ) {
 				// redirect if valid nonce in referer, otherwise register WP-ZEP (2: WP-ZEP)
 				IP_Geo_Block_Util::trace_nonce( self::PLUGIN_NAME . '-auth-nonce' );
 				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_nonce' ), 5, 2 );
 			}
-
-			// register validation of malicious signature
-			if ( ! IP_Geo_Block_Util::may_be_logged_in() )
-				add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 		}
 
+		// register validation of malicious signature
+		if ( ! IP_Geo_Block_Util::may_be_logged_in() )
+			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
+
 		// validate country by IP address (1: Block by country)
-		$validate = $this->validate_ip( 'admin', $settings, 1 & $type );
+		$validate = $this->validate_ip( 'admin', $settings, 1 & $rule );
 
 		// if the validation is successful, execute the requested uri via rewrite.php
 		if ( class_exists( 'IP_Geo_Block_Rewrite' ) )

@@ -63,7 +63,7 @@ class IP_Geo_Block_Lkup {
 	public static function gethostbyaddr( $ip ) {
 		// available on Windows platforms after PHP 5.3.0
 		if ( function_exists( 'gethostbyaddr' ) )
-			$host = gethostbyaddr( $ip );
+			$host = @gethostbyaddr( $ip );
 
 		// if not available
 		if ( empty( $host ) ) {

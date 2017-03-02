@@ -510,7 +510,11 @@ class IP_Geo_Block_Admin_Tab {
 			$val = '';
 			$val .= $installed[ $key ] & 1 ? '<dfn title="' . $tmp[0] . '"><span class="dashicons dashicons-lock"></span></dfn>' : '';
 			$val .= $installed[ $key ] & 2 ? '<dfn title="' . $tmp[1] . '"><span class="dashicons dashicons-unlock"></span></dfn>' : '';
-			$exception .= '<li>' . esc_html( $key ) . ($val ? "&nbsp;$val" : '') . '</li>';
+			$key = esc_attr( $key );
+			$exception .= '<li>'
+				. '<input id="ip_geo_block_' . $key . '" type="checkbox" value="1"' . checked( in_array( $key, $options['exception']['admin'] ), TRUE, FALSE ) . ' />'
+				. '<label for="ip_geo_block_' . $key . '">' . $key . '</label>' . $val
+				. '</li>' . "\n";
 		}
 
 		// Admin ajax/post

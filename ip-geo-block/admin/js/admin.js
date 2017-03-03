@@ -1,7 +1,7 @@
 /*jslint white: true */
 /*!
  * Project: WordPress IP Geo Block
- * Copyright (c) 2015-2016 tokkonopapa (tokkonopapa@yahoo.com)
+ * Copyright (c) 2015-2017 tokkonopapa (tokkonopapa@yahoo.com)
  * This software is released under the MIT License.
  */
 var ip_geo_block_time = new Date();
@@ -125,6 +125,17 @@ var ip_geo_block_time = new Date();
 		}
 	}
 
+	// Fold the contents
+	function fold_elements(obj, stat) { // obj: ul object
+		if (stat) {
+			obj.removeClass('folding-disable');
+		} else {
+			obj.children('li').hide();
+			obj.addClass('folding-disable');
+			obj.removeClass(ID('dropdown')).addClass(ID('dropup'));
+		}
+	}
+
 	// Show/Hide folding list
 	function show_folding_list($this, element, field, mask) {
 		var stat = false;
@@ -132,21 +143,18 @@ var ip_geo_block_time = new Date();
 		stat |= (0 === $this.prop('type').indexOf('select'  ) && '0' !== $this.val());
 
 		element.nextAll('.' + field + '_folding').each(function (i, obj) {
-			obj = $(obj);
-
-			// completely hide
-			// obj.css('display', mask ? 'block' : 'none');
-
-			// fold the contents
-			if (stat && mask) {
-				obj.removeClass('folding-disable');
-			} else {
-				obj.children('li').hide();
-				obj.addClass('folding-disable');
-				obj.removeClass(ID('dropdown')).addClass(ID('dropup'));
-			}
+			fold_elements($(obj), stat && mask);
 		});
 	}
+
+	// Show / Hide Exceptions
+	function show_folding_ajax(elem) {
+		var id = ID('@', 'validation_ajax_');
+		fold_elements(
+			elem.closest('ul').next(),
+			$(id + '1').is(':checked') || $(id + '2').is(':checked')
+		);
+	};
 
 	// Encode/Decode to prevent blocking before post ajax
 	function base64_encode(str) {
@@ -765,27 +773,16 @@ var ip_geo_block_time = new Date();
 			});
 
 			// Enable / Disable Exceptions
-			var check_ajax = function (elem) {
-				var obj = elem.closest('ul').next();
-				if ($(ID('@', 'validation_ajax_1')).is(':checked') ||
-				    $(ID('@', 'validation_ajax_2')).is(':checked')) {
-					obj.removeClass('folding-disable');
-				} else {
-					obj.children('li').hide();
-					obj.addClass('folding-disable');
-					obj.removeClass(ID('dropdown')).addClass(ID('dropup'));
-				}
-			};
+			show_folding_ajax($(ID('@', 'validation_ajax_1')));
 			$('input[id^="' + ID('%', 'settings_validation_ajax_') + '"]').on('click', function (event) {
-				check_ajax($(this));
+				show_folding_ajax($(this));
 			});
-			check_ajax($(ID('@', 'validation_ajax_1')));
 
 			// Submit
 			$('#submit').on('click', function (event) {
 				var elm = $(ID('@', 'signature')),
 				    str = elm.val();
-				if (str.search(/,/) !== -1) {
+				if (str.indexOf(',') !== -1) {
 					elm.val(encode_str(str));
 				}
 				return true;

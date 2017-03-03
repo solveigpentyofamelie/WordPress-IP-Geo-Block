@@ -535,7 +535,7 @@ class IP_Geo_Block_Admin_Tab {
 				'list' => $list,
 				'desc' => $desc,
 				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
-					. __( '<dfn title="Specify the name of action which causes undesired blocking in order to exclude from the validation target.">Exceptions</dfn>', 'ip-geo-block' )
+					. __( '<dfn title="Select the name of action which causes undesired blocking to skip &#8220;Block by country&#8221; and &#8220;Prevent Zero-day Exploit&#8220;. Also you can add text into the field for certain action which is implemented with a non-WordPress standard way.">Exceptions</dfn>', 'ip-geo-block' )
 					. '<li style="display:none"><ul><li>' . "\n"
 					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
 					. $comma[0]

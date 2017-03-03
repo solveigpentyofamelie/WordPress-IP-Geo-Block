@@ -735,7 +735,7 @@ var ip_geo_block_time = new Date();
 				});
 			});
 
-			// Exceptions
+			// Exceptions for Admin ajax/post
 			$(ID('@', 'exception_admin')).on('change', function (event) {
 				var actions = $.grep($(this).val().split(','), function (e){
 					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
@@ -752,6 +752,7 @@ var ip_geo_block_time = new Date();
 				});
 			}).trigger('change');
 
+			// Candidate actions
 			$(ID('#', 'actions')).on('click', 'input', function (event) {
 				var i, $this = $(this),
 				    action = $this.attr('id').replace(ID('%', ''), ''),

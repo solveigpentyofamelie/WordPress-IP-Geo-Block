@@ -686,9 +686,9 @@ class IP_Geo_Block {
 
 	public function check_nonce( $validate, $settings ) {
 		// should be passed when nonce is valid. can't overwrite existing result
-		if ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = self::PLUGIN_NAME . '-auth-nonce' ) ||
-		     $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_ajax_nonce' ) ||
-		     $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_wpnonce' ) )
+		if ( ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = self::PLUGIN_NAME . '-auth-nonce' ) ) ||
+		     ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_ajax_nonce' ) ) ||
+		     ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_wpnonce' ) ) )
 			return $validate + array( 'result' => IP_Geo_Block_Util::verify_nonce( $nonce, $action ) ? 'passed' : 'wp-zep' );
 		else
 			return $validate + array( 'result' => 'wp-zep' );

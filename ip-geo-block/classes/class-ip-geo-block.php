@@ -561,8 +561,8 @@ class IP_Geo_Block {
 		// list of request for specific action or page to bypass WP-ZEP
 		$list = array_merge(
 			apply_filters( self::PLUGIN_NAME . '-bypass-admins', array() ),
-			array( 'save-widget', 'wordfence_testAjax', 'wordfence_doScan', 'wp-compression-test', // wp-admin/includes/template.php
-				'upload-attachment', 'imgedit-preview', 'bp_avatar_upload', 'GOTMLS_logintime', // pluploader won't fire an event in "Media Library"
+			array( 'save-widget', 'wp-compression-test', 'upload-attachment', 'imgedit-preview',  // in wp-admin js/widget.js, includes/template.php, async-upload.php
+				'wordfence_testAjax', 'wordfence_doScan', 'bp_avatar_upload', 'GOTMLS_logintime', // Wordfence, bbPress, Anti-Malware Security and Brute-Force Firewall
 				'jetpack', 'authorize', 'jetpack_modules', 'atd_settings', 'bulk-activate', 'bulk-deactivate', // jetpack page & action
 			)
 		);
@@ -686,12 +686,8 @@ class IP_Geo_Block {
 
 	public function check_nonce( $validate, $settings ) {
 		// should be passed when nonce is valid. can't overwrite existing result
-		if ( ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = self::PLUGIN_NAME . '-auth-nonce' ) ) ||
-		     ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_ajax_nonce' ) ) ||
-		     ( $nonce = IP_Geo_Block_Util::retrieve_nonce( $action = '_wpnonce' ) ) )
-			return $validate + array( 'result' => IP_Geo_Block_Util::verify_nonce( $nonce, $action ) ? 'passed' : 'wp-zep' );
-		else
-			return $validate + array( 'result' => 'wp-zep' );
+		$nonce = IP_Geo_Block_Util::retrieve_nonce( $action = self::PLUGIN_NAME . '-auth-nonce' );
+		return $validate + array( 'result' => IP_Geo_Block_Util::verify_nonce( $nonce, $action ) ? 'passed' : 'wp-zep' );
 	}
 
 	public function check_signature( $validate, $settings ) {

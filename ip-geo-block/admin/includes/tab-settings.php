@@ -310,6 +310,7 @@ class IP_Geo_Block_Admin_Tab {
 				'field' => $field,
 				'value' => $options[ $field ],
 				'list' => array(
+					-1 => 'Disable',
 					 0 =>  0,
 					 1 =>  1,
 					 3 =>  3,

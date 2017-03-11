@@ -3,7 +3,7 @@ Contributors: tokkonopapa
 Donate link:
 Tags: security, firewall, brute force, vulnerability, login, wp-admin, admin, ajax, xmlrpc, comment, pingback, trackback, spam, IP address, geo, geolocation, buddypress, bbPress
 Requires at least: 3.7
-Tested up to: 4.7.2
+Tested up to: 4.7.3
 Stable tag: 3.0.2b
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -479,6 +479,10 @@ This function protects your site against such a case.
 * **New feature:** Add "Exceptions" for "Admin ajax/post" to specify the name 
   of action which causes undesired blocking (typically on the public facing 
   pages).
+* **Improvement:** Better compatibility with cron job or something like an 
+  internal http request to the server itself.
+* **Improvement:** Add "Disable" to "Max number of failed login attempts per 
+  IP address" to avoid conflict with other plugin.
 
 = 3.0.1.2 =
 * **Bug fix:** Fix the blocking issue in some environments when upgrading from 

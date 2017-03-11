@@ -395,11 +395,11 @@ class IP_Geo_Block {
 
 		// register auxiliary validation functions
 		$var = self::PLUGIN_NAME . '-' . $hook;
-		          add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
-		$auth and add_filter( $var, array( $this, 'check_auth' ), 8, 2 );
+		$settings['login_fails'] >= 0 and add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
+		$auth                         and add_filter( $var, array( $this, 'check_auth' ), 8, 2 );
 		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
-		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 7, 2 );
-		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 7, 2 );
+		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 4, 2 );
+		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 4, 2 );
 
 		// make valid provider name list
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
@@ -585,6 +585,7 @@ class IP_Geo_Block {
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
+		add_filter( self::PLUGIN_NAME . '-extra-ips', array( $this, 'add_extra_ips' ), 10, 2 );
 		$this->validate_ip( 'admin', $settings, 1 & $rule );
 	}
 
@@ -625,6 +626,7 @@ class IP_Geo_Block {
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
+		add_filter( self::PLUGIN_NAME . '-extra-ips', array( $this, 'add_extra_ips' ), 10, 2 );
 		$validate = $this->validate_ip( 'admin', $settings, 1 & $rule );
 
 		// if the validation is successful, execute the requested uri via rewrite.php
@@ -704,6 +706,16 @@ class IP_Geo_Block {
 		}
 
 		return $validate;
+	}
+
+	/**
+	 * Add local IP address for cron and self request
+	 *
+	 */
+	public function add_extra_ips( $extra_ips, $hook ) {
+		$extra_ips['white_list'] .= ( $extra_ips['white_list'] ? ',' : '' ) . IP_Geo_Block_Util::get_server_ip();
+
+		return $extra_ips;
 	}
 
 	/**

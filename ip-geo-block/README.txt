@@ -483,6 +483,8 @@ This function protects your site against such a case.
   internal http request to the server itself.
 * **Improvement:** Add "Disable" to "Max number of failed login attempts per 
   IP address" to avoid conflict with other plugin.
+* **Improvement:** Update geolocation database libraries to 1.1.7 for better 
+  compatibility with some platform.
 
 = 3.0.1.2 =
 * **Bug fix:** Fix the blocking issue in some environments when upgrading from 

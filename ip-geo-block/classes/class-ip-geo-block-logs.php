@@ -215,7 +215,7 @@ class IP_Geo_Block_Logs {
 	 */
 	public static function limit_rows( $time ) {
 		$options = IP_Geo_Block::get_option();
-		return (int)( $options['validation']['maxlogs'] / ((int)$time < 50 ? 1 : 2) );
+		return (int)( $options['validation']['maxlogs'] / (wp_is_mobile() ? 2 : 1) );
 	}
 
 	/**

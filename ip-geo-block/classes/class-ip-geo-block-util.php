@@ -514,7 +514,7 @@ class IP_Geo_Block_Util {
 	 *
 	 * @source wp-includes/vers.php
 	 */
-	private static function is_IIS( $version = 0 ) {
+	public static function is_IIS( $version = 0 ) {
 		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
 		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 
@@ -522,29 +522,6 @@ class IP_Geo_Block_Util {
 			$_is_IIS = $_is_IIS && intval( substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 ) ) >= $version;
 
 		return $_is_IIS;
-	}
-
-	/**
-	 * Get local IP address
-	 *
-	 * @link http://stackoverflow.com/questions/3219178/php-how-to-get-local-ip-of-system
-	 */
-	public static function get_server_ip() {
-		if ( TRUE )
-			$ip = self::is_IIS( 7 ) ? ( isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' ) : ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' );
-
-		elseif ( FALSE ) // only returns IPv4
-			$ip = function_exists( 'gethostname' ) ? gethostbyname( gethostname() ) : gethostbyname( php_uname('n') );
-
-		else {
-			// can get IPv4 and IPv6
-			$ip = $_SERVER['SERVER_ADDR']; // fallback but not secured
-			$sock = socket_create( AF_INET, SOCK_DGRAM, SOL_UDP );
-			if ( FALSE !== $sock && FALSE !== socket_connect( $sock, '8.8.8.8', 53 ) )
-				socket_getsockname( $sock, $ip );
-		}
-
-		return $ip;
 	}
 
 }

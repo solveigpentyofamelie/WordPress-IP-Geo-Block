@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2b';
+	const VERSION = '3.0.2rc';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -394,12 +394,22 @@ class IP_Geo_Block {
 		}
 
 		// register auxiliary validation functions
+		// priority high 1 check_ips_black
+		//               2 close_xmlrpc
+		//               4 check_host
+		//               5 check_nonce
+		//               6 check_signature
+		//               7 check_auth
+		//               8 check_fail
+		//               9 check_ips_white
+		// priority low 10 validate_country
 		$var = self::PLUGIN_NAME . '-' . $hook;
-		$settings['login_fails'] >= 0 and add_filter( $var, array( $this, 'check_fail' ), 9, 2 );
-		$auth                         and add_filter( $var, array( $this, 'check_auth' ), 8, 2 );
 		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
-		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 4, 2 );
-		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 4, 2 );
+		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 9, 2 );
+		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 1, 2 );
+		$settings['login_fails'] >= 0 and add_filter( $var, array( $this, 'check_fail' ), 8, 2 );
+		$auth                         and add_filter( $var, array( $this, 'check_auth' ), 7, 2 );
+		$auth                         and add_filter( $var, array( $this, 'check_host' ), 4, 2 );
 
 		// make valid provider name list
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
@@ -477,7 +487,7 @@ class IP_Geo_Block {
 		$settings = self::get_option();
 
 		if ( 2 === (int)$settings['validation']['xmlrpc'] ) // Completely close
-			add_filter( self::PLUGIN_NAME . '-xmlrpc', array( $this, 'close_xmlrpc' ), 6, 2 );
+			add_filter( self::PLUGIN_NAME . '-xmlrpc', array( $this, 'close_xmlrpc' ), 2, 2 );
 
 		else // wp-includes/class-wp-xmlrpc-server.php @since 3.5.0
 			add_filter( 'xmlrpc_login_error', array( $this, 'auth_fail' ), $settings['priority'] );
@@ -585,7 +595,6 @@ class IP_Geo_Block {
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
-		add_filter( self::PLUGIN_NAME . '-extra-ips', array( $this, 'add_extra_ips' ), 10, 2 );
 		$this->validate_ip( 'admin', $settings, 1 & $rule );
 	}
 
@@ -626,7 +635,6 @@ class IP_Geo_Block {
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
-		add_filter( self::PLUGIN_NAME . '-extra-ips', array( $this, 'add_extra_ips' ), 10, 2 );
 		$validate = $this->validate_ip( 'admin', $settings, 1 & $rule );
 
 		// if the validation is successful, execute the requested uri via rewrite.php
@@ -709,19 +717,15 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Add local IP address for cron and self request
-	 *
-	 */
-	public function add_extra_ips( $extra_ips, $hook ) {
-		$extra_ips['white_list'] .= ( $extra_ips['white_list'] ? ',' : '' ) . IP_Geo_Block_Util::get_server_ip();
-
-		return $extra_ips;
-	}
-
-	/**
 	 * Verify specific ip addresses with CIDR.
 	 *
 	 */
+	public function check_host( $validate, $settings ) {
+		// http://php.net/manual/en/reserved.variables.server.php#88418
+		$ip = IP_Geo_Block_Util::is_IIS( 7 ) ? ( isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' ) : ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' );
+		return $this->check_ips( $validate, $ip, 0 );
+	}
+
 	public function check_ips_white( $validate, $settings ) {
 		return $this->check_ips( $validate, $settings['extra_ips']['white_list'], 0 );
 	}

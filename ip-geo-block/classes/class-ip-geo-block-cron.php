@@ -342,6 +342,10 @@ class IP_Geo_Block_Cron {
 			! is_wp_error( $src ) && @is_file( $src ) and @unlink( $src );
 		}
 
+		else {
+			throw new Exception( __( 'gz or zip is not supported on your system.', 'ip-geo-block' ) );
+		}
+
 		// error handler
 		catch ( Exception $e ) {
 			if ( ! empty( $fp ) ) {

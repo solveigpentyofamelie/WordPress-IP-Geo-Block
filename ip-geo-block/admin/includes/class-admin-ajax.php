@@ -429,6 +429,8 @@ class IP_Geo_Block_Admin_Ajax {
 		$res = array();
 		$res[] = array( 'PHP' => PHP_VERSION );
 		$res[] = array( 'BC Math' => (extension_loaded('gmp') ? 'gmp ' : '') . (function_exists('bcadd') ? 'yes' : 'no') );
+		$res[] = array( 'Zlib' => function_exists( 'gzopen' ) ? 'yes' : 'no' );
+		$res[] = array( 'ZipArchive' => class_exists( 'ZipArchive' ) ? 'yes' : 'no' );
 		$res[] = array( 'mb_strcut' => function_exists( 'mb_strcut' ) ? 'yes' : 'no' );
 		$res[] = array( 'WordPress' => $GLOBALS['wp_version'] );
 		$res[] = array( 'Multisite' => is_multisite() ? 'yes' : 'no' );

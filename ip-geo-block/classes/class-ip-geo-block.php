@@ -722,8 +722,12 @@ class IP_Geo_Block {
 	 */
 	public function check_host( $validate, $settings ) {
 		// http://php.net/manual/en/reserved.variables.server.php#88418
-		$ip = IP_Geo_Block_Util::is_IIS( 7 ) ? ( isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' ) : ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' );
-		return $this->check_ips( $validate, $ip, 0 );
+		$iis = IP_Geo_Block_Util::is_IIS( 7 );
+		return $this->check_ips(
+			$validate,
+			FALSE === $iis ? ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' ) : ( $iis >= 0 && isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' ),
+			0
+		);
 	}
 
 	public function check_ips_white( $validate, $settings ) {

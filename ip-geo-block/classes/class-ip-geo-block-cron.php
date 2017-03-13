@@ -331,6 +331,10 @@ class IP_Geo_Block_Cron {
 				}
 			}
 
+			else {
+				throw new Exception( __( 'gz or zip is not supported on your system.', 'ip-geo-block' ) );
+			}
+
 			if ( ! empty( $fp ) ) {
 				fflush( $fp );          // flush output before releasing the lock
 				flock ( $fp, LOCK_UN ); // release the lock
@@ -340,10 +344,6 @@ class IP_Geo_Block_Cron {
 			! empty( $gz  ) and gzclose( $gz  );
 			! empty( $tmp ) && @is_file( $tmp ) and @unlink( $tmp );
 			! is_wp_error( $src ) && @is_file( $src ) and @unlink( $src );
-		}
-
-		else {
-			throw new Exception( __( 'gz or zip is not supported on your system.', 'ip-geo-block' ) );
 		}
 
 		// error handler

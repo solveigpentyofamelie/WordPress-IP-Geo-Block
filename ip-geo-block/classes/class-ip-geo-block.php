@@ -232,6 +232,12 @@ class IP_Geo_Block {
 		return apply_filters( self::PLUGIN_NAME . '-ip-addr', $_SERVER['REMOTE_ADDR'] );
 	}
 
+	public static function get_host_ip() {
+		// http://php.net/manual/en/reserved.variables.server.php#88418
+		$iis = IP_Geo_Block_Util::is_IIS( 7 );
+		return FALSE === $iis ? ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' ) : ( $iis >= 0 && isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' );
+	}
+
 	/**
 	 * Render a text message on the comment form.
 	 *
@@ -721,13 +727,7 @@ class IP_Geo_Block {
 	 *
 	 */
 	public function check_host( $validate, $settings ) {
-		// http://php.net/manual/en/reserved.variables.server.php#88418
-		$iis = IP_Geo_Block_Util::is_IIS( 7 );
-		return $this->check_ips(
-			$validate,
-			FALSE === $iis ? ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' ) : ( $iis >= 0 && isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' ),
-			0
-		);
+		return $this->check_ips( $validate, self::get_host_ip(), 0 );
 	}
 
 	public function check_ips_white( $validate, $settings ) {

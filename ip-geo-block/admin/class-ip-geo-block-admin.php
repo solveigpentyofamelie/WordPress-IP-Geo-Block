@@ -885,7 +885,7 @@ class IP_Geo_Block_Admin {
 
 		  case 'scan-code':
 			// Fetch providers to get country code
-			$res = IP_Geo_Block_Admin_Ajax::scan_country();
+			$res = IP_Geo_Block_Admin_Ajax::scan_country( $which );
 			break;
 
 		  case 'clear-statistics':

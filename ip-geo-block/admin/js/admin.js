@@ -154,7 +154,7 @@ var ip_geo_block_time = new Date();
 			elem.closest('ul').next(),
 			$(id + '1').is(':checked') || $(id + '2').is(':checked')
 		);
-	};
+	}
 
 	// Encode/Decode to prevent blocking before post ajax
 	function base64_encode(str) {
@@ -489,10 +489,13 @@ var ip_geo_block_time = new Date();
 		   *----------------------------------------*/
 		  case 0:
 			// Scan your country code
-			$(ID('#', 'scan-code')).on('click', function (event) {
-				var parent = $(this).parent();
-				ajax_post('scanning', {
-					cmd: 'scan-code'
+			$('[id^="' + ID('$', 'scan-') + '"]').on('click', function (event) {
+				var $this = $(this),
+				    id = $this.attr('id'),
+				    parent = $this.parent();
+				ajax_post(id.replace(/^.*(scan)/, 'scanning'), {
+					cmd: 'scan-code',
+					which: id.replace(ID('$', 'scan-'), '')
 				}, function (data) {
 					if (!parent.children('ul').length) {
 						parent.append('<ul id="' + ID('code-list') + '"></ul>');

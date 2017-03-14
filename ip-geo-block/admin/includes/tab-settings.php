@@ -13,9 +13,6 @@ class IP_Geo_Block_Admin_Tab {
 		$option_name = IP_Geo_Block::OPTION_NAME; // 'ip_geo_block_settings'
 		$options = IP_Geo_Block::get_option();
 
-		// Get the country code
-		$key = IP_Geo_Block::get_geolocation();
-
 		/**
 		 * Register a setting and its sanitization callback.
 		 * @link http://codex.wordpress.org/Function_Reference/register_setting
@@ -66,10 +63,14 @@ class IP_Geo_Block_Admin_Tab {
 		 * @param string $section The section of the settings page in which to show the box.
 		 * @param array $args Additional arguments that are passed to the $callback function.
 		 */
-		$field = 'ip_country';
+
+		// Get the country code
+		$key = IP_Geo_Block::get_geolocation( IP_Geo_Block::get_ip_address() );
+
+		$field = 'ip_client';
 		add_settings_field(
 			$option_name.'_'.$field,
-			__( '<dfn title="You can confirm the appropriate Geolocation APIs and country code by referring &#8220;Scan your country code&#8221;.">Your IP address / Country</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="You can confirm the appropriate Geolocation APIs and country code by referring &#8220;Scan country code&#8221;.">Your IP address / Country</dfn>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -77,10 +78,31 @@ class IP_Geo_Block_Admin_Tab {
 				'type' => 'html',
 				'option' => $option_name,
 				'field' => $field,
-				'value' => esc_html( $key['ip'] . ' / ' . ( $key['code'] && isset( $key['provider'] ) ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ),
-				'after' => '&nbsp;<a class="button button-secondary" id="ip-geo-block-scan-code" title="' . __( 'Scan all the APIs you selected at Geolocation API settings', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Scan your country code', 'ip-geo-block' ) . '</a><div id="ip-geo-block-scanning"></div>',
+				'value' => '<span class="ip-geo-block-ip-addr">' . esc_html( $key['ip'] . ' / ' . ( $key['code'] && isset( $key['provider'] ) ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ) . '</span>',
+				'after' => '&nbsp;<a class="button button-secondary" id="ip-geo-block-scan-' . $field . '" title="' . __( 'Scan all the APIs you selected at Geolocation API settings', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Scan country code', 'ip-geo-block' ) . '</a><div id="ip-geo-block-scanning-' . $field . '"></div>',
 			)
 		);
+
+if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
+		// Get the country code
+		$key = IP_Geo_Block::get_geolocation( IP_Geo_Block::get_host_ip() );
+
+		$field = 'ip_server';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="You can confirm the appropriate Geolocation APIs and country code by referring &#8220;Scan country code&#8221;.">Host IP address / Country</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'html',
+				'option' => $option_name,
+				'field' => $field,
+				'value' => '<span class="ip-geo-block-ip-addr">' . esc_html( $key['ip'] . ' / ' . ( $key['code'] && isset( $key['provider'] ) ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ) . '</span>',
+				'after' => '&nbsp;<a class="button button-secondary" id="ip-geo-block-scan-' . $field . '" title="' . __( 'Scan all the APIs you selected at Geolocation API settings', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Scan country code', 'ip-geo-block' ) . '</a><div id="ip-geo-block-scanning-' . $field . '"></div>',
+			)
+		);
+endif;
 
 		// If the matching rule is not initialized, then add a caution
 		$rule = array(

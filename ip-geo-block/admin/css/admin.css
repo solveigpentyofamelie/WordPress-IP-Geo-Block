@@ -84,6 +84,11 @@ ul#ip-geo-block-actions span.dashicons {
     list-style-type: disc;
 }
 
+.ip-geo-block-ip-addr {
+    display: inline-block;
+    padding-top: 5px;
+}
+
 .ip-geo-block-hide {
     display: none;
 }

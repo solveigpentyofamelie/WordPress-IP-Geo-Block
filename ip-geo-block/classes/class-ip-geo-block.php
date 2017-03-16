@@ -30,6 +30,7 @@ class IP_Geo_Block {
 
 	// Globals in this class
 	public static $wp_path;
+	private static $ip_client;
 	private $pagenow = NULL;
 	private $request_uri = NULL;
 	private $target_type = NULL;
@@ -41,13 +42,13 @@ class IP_Geo_Block {
 	 */
 	private function __construct() {
 		$settings = self::get_option();
-		$priority = &$settings['priority'];
-		$validate = &$settings['validation'];
-		$loader = new IP_Geo_Block_Loader();
+
+		// client IP address
+		$key = ! empty( $_SERVER[ $settings['ip_src'] ] ) ? explode( ',', $_SERVER[ $settings['ip_src'] ], 2 ) : array( $_SERVER['REMOTE_ADDR'] );
+		self::$ip_client = trim( array_shift( $key ) );
 
 		// include drop in if it exists
-		$key = IP_Geo_Block_Util::unslashit( $settings['api_dir'] ) . '/drop-in.php';
-		file_exists( $key ) and include( $key );
+		file_exists( $key = IP_Geo_Block_Util::unslashit( $settings['api_dir'] ) . '/drop-in.php' ) and include( $key );
 
 		// Garbage collection for IP address cache
 		add_action( self::CACHE_NAME, array( $this, 'exec_cache_gc' ) );
@@ -55,6 +56,11 @@ class IP_Geo_Block {
 		// the action hook which will be fired by cron job
 		if ( $settings['update']['auto'] )
 			add_action( self::CRON_NAME, array( $this, 'update_database' ) );
+
+		// setup loader to configure validation function
+		$priority = &$settings['priority'];
+		$validate = &$settings['validation'];
+		$loader = new IP_Geo_Block_Loader();
 
 		// check the package version and upgrade if needed (activation hook never fire on upgrade)
 		if ( version_compare( $settings['version'], self::VERSION ) < 0 || $settings['matching_rule'] < 0 )
@@ -229,7 +235,7 @@ class IP_Geo_Block {
 	 *
 	 */
 	public static function get_ip_address() {
-		return apply_filters( self::PLUGIN_NAME . '-ip-addr', $_SERVER['REMOTE_ADDR'] );
+		return apply_filters( self::PLUGIN_NAME . '-ip-addr', self::$ip_client );
 	}
 
 	public static function get_host_ip() {
@@ -554,6 +560,7 @@ class IP_Geo_Block {
 		$action = isset( $_REQUEST['task' ] ) ? 'task' : 'action';
 		$action = isset( $_REQUEST[$action] ) ? $_REQUEST[$action] : NULL;
 		$page   = isset( $_REQUEST['page' ] ) ? $_REQUEST['page' ] : NULL;
+		$login  = IP_Geo_Block_Util::may_be_logged_in();
 
 		switch ( $this->pagenow ) {
 		  case 'admin-ajax.php':
@@ -569,8 +576,8 @@ class IP_Geo_Block {
 			break;
 
 		  default:
-			// if the request has no page and no action, skip WP-ZEP
-			$zep = ( $page || $action ) ? TRUE : FALSE;
+			// if not logged in then WP-ZEP should be skipped
+			$zep = $login;
 			$rule = (int)$settings['validation']['admin'];
 		}
 
@@ -583,7 +590,7 @@ class IP_Geo_Block {
 			)
 		);
 
-		// skip validation of country code if exceptions matches action or page
+		// skip validation of country code and WP-ZEP if exceptions matches action or page
 		if ( ( $page || $action ) && $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
 			$rule = 0; // check only signature
 
@@ -597,7 +604,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature (except in the comment and post)
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+		if ( ! $login || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)

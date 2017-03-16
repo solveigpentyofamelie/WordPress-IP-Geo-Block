@@ -721,14 +721,10 @@ var ip_geo_block_time = new Date();
 				ajax_post('wp-info', {
 					cmd: 'show-info'
 				}, function (data) {
-					var key, val, res = [];
+					var key, res = [];
 					for (key in data) {
 						if (data.hasOwnProperty(key)) {
-							for (val in data[key]) {
-								if (data[key].hasOwnProperty(val)) {
-									res.push('- ' + val + ' ' + data[key][val]);
-								}
-							}
+							res.push('- ' + key + ' ' + data[key]);
 						}
 					}
 

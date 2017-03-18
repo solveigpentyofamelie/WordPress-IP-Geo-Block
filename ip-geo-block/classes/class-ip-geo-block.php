@@ -30,7 +30,6 @@ class IP_Geo_Block {
 
 	// Globals in this class
 	public static $wp_path;
-	private static $ip_client;
 	private $pagenow = NULL;
 	private $request_uri = NULL;
 	private $target_type = NULL;
@@ -42,10 +41,6 @@ class IP_Geo_Block {
 	 */
 	private function __construct() {
 		$settings = self::get_option();
-
-		// client IP address
-		$key = ! empty( $_SERVER[ $settings['ip_src'] ] ) ? explode( ',', $_SERVER[ $settings['ip_src'] ], 2 ) : array( $_SERVER['REMOTE_ADDR'] );
-		self::$ip_client = trim( array_shift( $key ) );
 
 		// include drop in if it exists
 		file_exists( $key = IP_Geo_Block_Util::unslashit( $settings['api_dir'] ) . '/drop-in.php' ) and include( $key );
@@ -235,13 +230,7 @@ class IP_Geo_Block {
 	 *
 	 */
 	public static function get_ip_address() {
-		return apply_filters( self::PLUGIN_NAME . '-ip-addr', self::$ip_client );
-	}
-
-	public static function get_host_ip() {
-		// http://php.net/manual/en/reserved.variables.server.php#88418
-		$iis = IP_Geo_Block_Util::is_IIS( 7 );
-		return FALSE === $iis ? ( isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] :  '' ) : ( $iis >= 0 && isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : '' );
+		return apply_filters( self::PLUGIN_NAME . '-ip-addr', $_SERVER['REMOTE_ADDR'] );
 	}
 
 	/**
@@ -408,7 +397,6 @@ class IP_Geo_Block {
 		// register auxiliary validation functions
 		// priority high 1 check_ips_black
 		//               2 close_xmlrpc
-		//               4 check_host
 		//               5 check_nonce
 		//               6 check_signature
 		//               7 check_auth
@@ -421,7 +409,6 @@ class IP_Geo_Block {
 		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 1, 2 );
 		$settings['login_fails'] >= 0 and add_filter( $var, array( $this, 'check_fail' ), 8, 2 );
 		$auth                         and add_filter( $var, array( $this, 'check_auth' ), 7, 2 );
-		$auth                         and add_filter( $var, array( $this, 'check_host' ), 4, 2 );
 
 		// make valid provider name list
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
@@ -733,10 +720,6 @@ class IP_Geo_Block {
 	 * Verify specific ip addresses with CIDR.
 	 *
 	 */
-	public function check_host( $validate, $settings ) {
-		return $this->check_ips( $validate, self::get_host_ip(), 0 );
-	}
-
 	public function check_ips_white( $validate, $settings ) {
 		return $this->check_ips( $validate, $settings['extra_ips']['white_list'], 0 );
 	}

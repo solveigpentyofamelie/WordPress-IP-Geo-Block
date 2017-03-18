@@ -83,27 +83,6 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
-if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
-		// Get the country code
-		$key = IP_Geo_Block::get_geolocation( IP_Geo_Block::get_host_ip() );
-
-		$field = 'ip_server';
-		add_settings_field(
-			$option_name.'_'.$field,
-			__( '<dfn title="You can confirm the appropriate Geolocation APIs and country code by referring &#8220;Scan country code&#8221;.">Host IP address / Country</dfn>', 'ip-geo-block' ),
-			array( $context, 'callback_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type' => 'html',
-				'option' => $option_name,
-				'field' => $field,
-				'value' => '<span class="ip-geo-block-ip-addr">' . esc_html( $key['ip'] . ' / ' . ( $key['code'] && isset( $key['provider'] ) ? $key['code'] . ' (' . $key['provider'] . ')' : __( 'UNKNOWN', 'ip-geo-block' ) ) ) . '</span>',
-				'after' => '&nbsp;<a class="button button-secondary" id="ip-geo-block-scan-' . $field . '" title="' . __( 'Scan all the APIs you selected at Geolocation API settings', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Scan country code', 'ip-geo-block' ) . '</a><div id="ip-geo-block-scanning-' . $field . '"></div>',
-			)
-		);
-endif;
-
 		// If the matching rule is not initialized, then add a caution
 		$rule = array(
 			-1 => NULL,
@@ -1306,22 +1285,6 @@ endif;
 			)
 		);
 
-		// Show WordPress installation info
-		$field = 'show-info';
-		add_settings_field(
-			$option_name.'_'.$field,
-			__( '<dfn title="Please copy &amp; paste when submitting your issue to support forum.">Installation information</dfn><br />[ <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a> ]', 'ip-geo-block' ),
-			array( $context, 'callback_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type' => 'none',
-				'before' =>
-					'<a class="button button-secondary" id="ip-geo-block-show-info" title="' . __( 'Show PHP, WordPress, theme and plugins information.', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Show information', 'ip-geo-block' ) . '</a>&nbsp;',
-				'after' => '<div id="ip-geo-block-wp-info"></div>',
-			)
-		);
-
 if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 		// Manipulate DB table for validation logs
 		$field = 'delete_table';
@@ -1356,6 +1319,22 @@ if ( defined( 'IP_GEO_BLOCK_DEBUG' ) && IP_GEO_BLOCK_DEBUG ):
 			)
 		);
 endif;
+
+		// Show WordPress installation info
+		$field = 'show-info';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="Please copy &amp; paste when submitting your issue to support forum.">Installation information</dfn><br />[ <a rel="noreferrer" href="https://wordpress.org/support/plugin/ip-geo-block" title="WordPress &#8250; Support &raquo; IP Geo Block">support forum</a> ]', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'none',
+				'before' =>
+					'<a class="button button-secondary" id="ip-geo-block-show-info" title="' . __( 'Show PHP, WordPress, theme and plugins information.', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Show information', 'ip-geo-block' ) . '</a>&nbsp;',
+				'after' => '<div id="ip-geo-block-wp-info"></div>',
+			)
+		);
 
 	}
 

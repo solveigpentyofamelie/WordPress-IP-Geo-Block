@@ -144,8 +144,6 @@ class IP_Geo_Block_Opts {
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,   // just simulate, never block
 		),
-		// since version 3.0.2
-		'ip_src' => 'REMOTE_ADDR', // REMOTE_ADDR, HTTP_CLIENT_IP, HTTP_CF_CONNECTING_IP, HTTP_X_FORWARDED_FOR
 	);
 
 	/**
@@ -280,9 +278,6 @@ class IP_Geo_Block_Opts {
 
 			if ( version_compare( $version, '3.0.1' ) < 0 )
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
-
-			if ( version_compare( $version, '3.0.2' ) < 0 )
-				$settings['ip_src'] = $default['ip_src'];
 
 			// save package version number
 			$settings['version'] = IP_Geo_Block::VERSION;

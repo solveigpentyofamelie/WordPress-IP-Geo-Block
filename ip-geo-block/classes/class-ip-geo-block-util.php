@@ -514,12 +514,12 @@ class IP_Geo_Block_Util {
 	 *
 	 * @source wp-includes/vers.php
 	 */
-	public static function is_IIS( $version = 0 ) {
+	private static function is_IIS() {
 		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
 		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 
-		if ( $_is_IIS && $version )
-			$_is_IIS = (int)substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 ) - (int)$version;
+		if ( $_is_IIS )
+			$_is_IIS = substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 );
 
 		return $_is_IIS;
 	}

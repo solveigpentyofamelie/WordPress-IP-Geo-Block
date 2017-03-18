@@ -479,12 +479,10 @@ This function protects your site against such a case.
 * **New feature:** Add "Exceptions" for "Admin ajax/post" to specify the name 
   of action which causes undesired blocking (typically on the public facing 
   pages).
-* **Improvement:** Better compatibility with cron job or something like an 
-  internal http request to the server itself.
 * **Improvement:** Add "Disable" to "Max number of failed login attempts per 
-  IP address" to avoid conflict with other plugin.
+  IP address" to avoid conflict with other similar plugin.
 * **Improvement:** Update geolocation database libraries to 1.1.7 for better 
-  compatibility with some platform.
+  compatibility on some platform.
 
 = 3.0.1.2 =
 * **Bug fix:** Fix the blocking issue in some environments when upgrading from 

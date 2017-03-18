@@ -37,7 +37,7 @@ class IP_Geo_Block_Admin_Ajax {
 	 */
 	static public function scan_country( $which ) {
 		// scan all the country code using selected APIs
-		$ip        = 'ip_client' === $which ? IP_Geo_Block::get_ip_address() : IP_Geo_Block::get_host_ip();
+		$ip        = IP_Geo_Block::get_ip_address();
 		$options   = IP_Geo_Block::get_option();
 		$args      = IP_Geo_Block::get_request_headers( $options );
 		$type      = IP_Geo_Block_Provider::get_providers( 'type', FALSE, FALSE );

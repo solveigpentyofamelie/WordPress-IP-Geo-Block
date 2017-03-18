@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2017-03-18 13:21+0900\n"
-"PO-Revision-Date: 2017-03-18 13:32+0900\n"
+"POT-Creation-Date: 2017-03-18 22:42+0900\n"
+"PO-Revision-Date: 2017-03-18 23:03+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -593,11 +593,11 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:507
 msgid "for privileged users"
-msgstr "権限を持つユーザー向け"
+msgstr "権限を持つユーザー用"
 
 #: admin/includes/tab-settings.php:508
 msgid "for non-privileged users"
-msgstr "権限を持たない一般訪問者向け"
+msgstr "権限を持たない一般訪問者用"
 
 #: admin/includes/tab-settings.php:527
 msgid "Admin ajax/post"
@@ -605,15 +605,18 @@ msgstr "管理領域&thinsp;ajax/post"
 
 #: admin/includes/tab-settings.php:540
 msgid ""
-"<dfn title=\"Select the name of action which causes undesired blocking to "
-"skip &#8220;Block by country&#8221; and &#8220;Prevent Zero-day "
-"Exploit&#8220;. Also you can add text into the field for certain action "
-"which is implemented with a non-WordPress standard way.\">Exceptions</dfn>"
+"<dfn title=\"Select actions that cause undesired blocking to skip &#8220;"
+"Prevent Zero-day Exploit&#8220; for privileged users, &#8220;Block by "
+"country&#8221; for non-privileged users. If you can not find the right one "
+"in the candidate list, you can put text into the field for certain actions "
+"which would be implemented with a non-WordPress standard way.\">Exceptions</"
+"dfn>"
 msgstr ""
-"<dfn title=\"「国コードで遮断」及び「ゼロデイ攻撃を遮断」が望ましくない遮断の"
-"原因となる場合は、該当するアクションを候補から選択してください。またアクショ"
-"ンが&thinsp;WordPress&thinsp;非標準の方法で実装されている場合は、テキストで指"
-"定することができます。\">除外する項目</dfn>"
+"<dfn title=\"「ゼロデイ攻撃を遮断（権限を持つユーザー用）」、「国コードで遮断"
+"（権限を持たない一般訪問者用）」をスキップするために、検証対象から除外するア"
+"クションを選択してください。アクションが&thinsp;WordPress&thinsp;非標準の方法"
+"で実装されている場合は候補に現れないため、テキストで指定してください。\">除外"
+"する項目</dfn>"
 
 #: admin/includes/tab-settings.php:545
 msgid "Candidate actions"

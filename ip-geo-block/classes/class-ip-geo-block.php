@@ -579,7 +579,7 @@ class IP_Geo_Block {
 
 		// skip validation of country code and WP-ZEP if exceptions matches action or page
 		if ( ( $page || $action ) && $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
-			$rule = 0; // check only signature
+			$rule = $zep ? 1 : 0; // still applied validation of bad signature
 
 		// combination with vulnerable keys should be prevented to bypass WP-ZEP
 		elseif ( ! $this->check_exceptions( $action, $page, $list ) ) {

@@ -4,7 +4,7 @@ Donate link:
 Tags: security, firewall, brute force, vulnerability, login, wp-admin, admin, ajax, xmlrpc, comment, pingback, trackback, spam, IP address, geo, geolocation, buddypress, bbPress
 Requires at least: 3.7
 Tested up to: 4.7.3
-Stable tag: 3.0.2rc
+Stable tag: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -483,6 +483,13 @@ This function protects your site against such a case.
   IP address" to avoid conflict with other similar plugin.
 * **Improvement:** Update geolocation database libraries to 1.1.7 for better 
   compatibility on some platform.
+* **Trial feature:** Add custom action hook `ip-geo-block-send-response`. This 
+  is useful to control firewall via 
+  [fail2ban](http://www.fail2ban.org/ "Fail2ban") 
+  like 
+  [WP fail2ban](https://wordpress.org/plugins/wp-fail2ban/ "WP fail2ban - WordPress Plugins").
+* See some details at
+  [release 3.0.2](http://www.ipgeoblock.com/changelog/release-3.0.2.html "3.0.2 Release Note | IP Geo Block").
 
 = 3.0.1.2 =
 * **Bug fix:** Fix the blocking issue in some environments when upgrading from 

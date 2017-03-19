@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2rc';
+	const VERSION = '3.0.2';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -322,7 +322,7 @@ class IP_Geo_Block {
 	 * Send response header with http status code and reason.
 	 *
 	 */
-	public function send_response( $hook, $settings ) {
+	public function send_response( $hook, $validate, $settings ) {
 		require_once ABSPATH . WPINC . '/functions.php'; // for get_status_header_desc() @since 2.3.0
 
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
@@ -332,7 +332,11 @@ class IP_Geo_Block {
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', $settings['response_code'] );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', $settings['response_msg' ] ? $settings['response_msg'] : get_status_header_desc( $code ) );
 
-		nocache_headers(); // Set the headers to prevent caching for the different browsers.
+		// custom action (for fail2ban) @since 1.2.0
+		do_action( self::PLUGIN_NAME . '-send-response', $hook, $code, $validate );
+
+		// Set the headers to prevent caching for the different browsers.
+		nocache_headers();
 
 		if ( defined( 'XMLRPC_REQUEST' ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
@@ -455,7 +459,7 @@ class IP_Geo_Block {
 
 			// send response code to refuse
 			if ( $block && $die )
-				$this->send_response( $hook, $settings );
+				$this->send_response( $hook, $validate, $settings );
 		}
 
 		return $validate;

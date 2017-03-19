@@ -854,7 +854,7 @@ msgstr ""
 
 #: admin/includes/tab-settings.php:1283
 msgid ""
-"Import the preferred settings mainly for the &#8220;Validation target "
+"Import the preferred settings mainly for the &#8220;Back-end target "
 "settings&#8221;"
 msgstr ""
 

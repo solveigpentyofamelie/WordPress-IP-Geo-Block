@@ -6,7 +6,7 @@
  * @author    tokkonopapa <tokkonopapa@yahoo.com>
  * @license   GPL-2.0+
  * @link      http://www.ipgeoblock.com/
- * @copyright 2013-2016 tokkonopapa
+ * @copyright 2013-2017 tokkonopapa
  */
 
 class IP_Geo_Block_Util {
@@ -314,15 +314,12 @@ class IP_Geo_Block_Util {
 	 * @source wp-includes/pluggable.php
 	 */
 	public static function redirect( $location, $status = 302 ) {
-		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
-		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
-
 		// retrieve nonce from referer and add it to the location
 		$location = self::rebuild_nonce( $location, $status );
 		$location = self::sanitize_redirect( $location );
 
 		if ( $location ) {
-			if ( ! $_is_IIS && PHP_SAPI != 'cgi-fcgi' )
+			if ( ! self::is_IIS() && PHP_SAPI != 'cgi-fcgi' )
 				status_header( $status ); // This causes problems on IIS and some FastCGI setups
 
 			header( "Location: $location", true, $status );
@@ -513,34 +510,54 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * Output debug information into wp-content/debug.log
+	 * Whether the server software is IIS or something else
 	 *
-	 *//*
-	public static function debug_log( $msg, $file = null, $line = null, $trace = false ) {
-		$error_reporting = error_reporting();
-		$display_errors = ini_get( 'display_errors' );
-		$log_errors = ini_get( 'log_errors' );
-		$error_log = ini_get( 'error_log' );
+	 * @source wp-includes/vers.php
+	 */
+	private static function is_IIS() {
+		$_is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== FALSE );
+		$_is_IIS = ! $_is_apache && ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS' ) !== FALSE || strpos( $_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer' ) !== FALSE );
 
-		error_reporting( E_ALL );
-		ini_set( 'display_errors', 0 ); // WP_DEBUG_DISPLAY false
-		ini_set( 'log_errors', 1 ); // WP_DEBUG_LOG true
-		ini_set( 'error_log', WP_CONTENT_DIR . '/debug.log' );
+		if ( $_is_IIS )
+			$_is_IIS = substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 );
 
-		$file = basename( $file );
+		return $_is_IIS;
+	}
 
-		error_log(
-			( $file ? "$file "  : '' ) .
-			( $line ? "($line) " : '' ) .
-			trim( is_scalar( $msg ) ? "$msg" : print_r( $msg, true ) ) .
-			( $trace ? ' ' . print_r( debug_backtrace(), true ) : '' )
-		);
+	/**
+	 * Handle client / server IP address
+	 *
+	 * @link http://php.net/manual/en/reserved.variables.server.php#88418
+	 */
+	private static $ip_src = array(
+		'REMOTE_ADDR',
+		'HTTP_CLIENT_IP',
+		'HTTP_X_FORWARDED_FOR',
+		'HTTP_CF_CONNECTING_IP'
+	);
 
-		// debug off
-		error_reporting( $error_reporting );
-		ini_set( 'display_errors', $display_errors );
-		ini_set( 'log_errors', $log_errors );
-		ini_set( 'error_log', $error_log );
-	} //*/
+	public static function check_env( $var ) {
+		return ! empty( $_SERVER[ $var ] );
+	}
+
+	public static function client_ip_src() {
+		$result = array_filter( $ip_src, array( __CLASS__, 'check_env' ) );
+		return array_pop( $result );
+	}
+
+	public static function get_ip_env( $id ) {
+		return ! empty( self::$ip_src[ $id ] ) ? self::$ip_src[ $id ] : 'REMOTE_ADDR';
+	}
+
+	public static function get_client_ip( $id = 0 ) {
+		$id = self::get_ip_env( $id );
+		return trim( ! empty( $_SERVER[ $id ] ) ? strtok( $_SERVER[ $id ], ',' ) : $_SERVER['REMOTE_ADDR'] );
+	}
+
+	public static function get_host_ip() {
+		return (int)self::is_IIS() >= 7 ?
+			( ! empty( $_SERVER['LOCAL_ADDR' ] ) ? $_SERVER['LOCAL_ADDR' ] : '' ) :
+			( ! empty( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : '' );
+	}
 
 }

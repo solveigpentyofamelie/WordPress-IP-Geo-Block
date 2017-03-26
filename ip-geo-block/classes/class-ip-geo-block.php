@@ -74,13 +74,13 @@ class IP_Geo_Block {
 		self::$wp_path = array( 'home' => IP_Geo_Block_Util::unslashit( parse_url( site_url(), PHP_URL_PATH ) ) ); // @since 2.6.0
 		$len = strlen( self::$wp_path['home'] );
 		$list = array(
-			'admin'     => 'admin_url',          // @since 2.6.0
-			'plugins'   => 'plugins_url',        // @since 2.6.0
-			'themes'    => 'get_theme_root_uri', // @since 1.5.0
-//			'content'   => 'content_url',        // @since 2.6.0
-//			'includes'  => 'includes_url',       // @since 2.6.0
-//			'uploads'   => array( $this, 'uploads_url' ),   // @since 2.2.0
-//			'languages' => array( $this, 'languages_url' ), // @since 2.6.0
+			'admin'     => 'admin_url',                     // @since 2.6.0 /wp-admin/
+			'plugins'   => 'plugins_url',                   // @since 2.6.0 /wp-content/plugins/
+			'themes'    => 'get_theme_root_uri',            // @since 1.5.0 /wp-content/themes/
+//			'uploads'   => array( $this, 'uploads_url' ),   // @since 2.2.0 /wp-content/uploads/
+//			'languages' => array( $this, 'languages_url' ), // @since 2.6.0 /wp-content/languages/
+//			'content'   => 'content_url',                   // @since 2.6.0 /wp-content/
+//			'includes'  => 'includes_url',                  // @since 2.6.0 /wp-includes/
 		);
 
 		// analize the validation target (admin|plugins|themes|includes)

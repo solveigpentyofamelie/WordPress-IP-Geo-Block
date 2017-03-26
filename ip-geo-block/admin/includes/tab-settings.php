@@ -544,7 +544,7 @@ class IP_Geo_Block_Admin_Tab {
 				'list' => $list,
 				'desc' => $desc,
 				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
-					. __( '<dfn title="Select the name of action which causes undesired blocking to skip &#8220;Block by country&#8221; and &#8220;Prevent Zero-day Exploit&#8220;. Also you can add text into the field for certain action which is implemented with a non-WordPress standard way.">Exceptions</dfn>', 'ip-geo-block' )
+					. __( '<dfn title="Select actions that cause undesired blocking to skip &#8220;Prevent Zero-day Exploit&#8220; for privileged users, &#8220;Block by country&#8221; for non-privileged users. If you can not find the right one in the candidate list, you can put text into the field for certain actions which would be implemented with a non-WordPress standard way.">Exceptions</dfn>', 'ip-geo-block' )
 					. '<li style="display:none"><ul><li>' . "\n"
 					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
 					. $comma[0]
@@ -1329,7 +1329,7 @@ endif;
 				'type' => 'none',
 				'before' =>
 					'<a class="button button-secondary" id="ip-geo-block-default"   title="' . __( 'Import the default settings to revert to the &#8220;Right after installing&#8221; state', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Default settings', 'ip-geo-block' ) . '</a>&nbsp;' .
-					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Validation target settings&#8221;',   'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best settings',    'ip-geo-block' ) . '</a>',
+					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Back-end target settings&#8221;',     'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best settings',    'ip-geo-block' ) . '</a>',
 				'after' => '<div id="ip-geo-block-pre-defined"></div>',
 			)
 		);

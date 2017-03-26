@@ -101,7 +101,7 @@ endif; // ! class_exists( 'IP_Geo_Block' )
  *
  * How to use: Activate the following code and upload this file via FTP.
  */
-/* -- EDIT THIS LINE AND ACTIVATE THE FOLLOWING FUNCTIONS -- *
+/* -- ADD `/` TO THE TOP OR END OF THIS LINE TO ACTIVATE THE FOLLOWINGS -- *
 function ip_geo_block_emergency( $validate ) {
 	$validate['result'] = 'passed';
 	return $validate;

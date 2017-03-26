@@ -57,8 +57,8 @@ class IP_Geo_Block {
 			add_action( self::CRON_NAME, array( $this, 'update_database' ) );
 
 		// setup loader to configure validation function
-		$priority = &$settings['priority'];
-		$validate = &$settings['validation'];
+		$priority = $settings['priority'];
+		$validate = $settings['validation'];
 		$loader = new IP_Geo_Block_Loader();
 
 		// check the package version and upgrade if needed (activation hook never fire on upgrade)
@@ -77,6 +77,7 @@ class IP_Geo_Block {
 			'admin'     => 'admin_url',          // @since 2.6.0
 			'plugins'   => 'plugins_url',        // @since 2.6.0
 			'themes'    => 'get_theme_root_uri', // @since 1.5.0
+//			'content'   => 'content_url',        // @since 2.6.0
 //			'includes'  => 'includes_url',       // @since 2.6.0
 //			'uploads'   => array( $this, 'uploads_url' ),   // @since 2.2.0
 //			'languages' => array( $this, 'languages_url' ), // @since 2.6.0
@@ -306,6 +307,10 @@ class IP_Geo_Block {
 	 *
 	 */
 	private static function _get_geolocation( $ip, $settings, $providers, $callback = 'get_country' ) {
+		// check loop back / private address
+		if ( IP_Geo_Block_Util::is_private_ip( $ip ) )
+			return self::make_validation( $ip, array( 'time' => 0, 'provider' => 'Loopback', 'code' => 'XX' ) );
+
 		// set arguments for wp_remote_get()
 		$args = self::get_request_headers( $settings );
 
@@ -328,16 +333,18 @@ class IP_Geo_Block {
 	 *
 	 */
 	public static function validate_country( $hook, $validate, $settings, $block = TRUE ) {
-		if ( $block && 0 === (int)$settings['matching_rule'] ) {
-			// 'ZZ' will be blocked if it's not in the $list.
-			if ( ( $list = $settings['white_list'] ) && FALSE === strpos( $list, $validate['code'] ) )
-				return $validate + array( 'result' => 'blocked' ); // can't overwrite existing result
-		}
+		if ( 'XX' !== $validate['code'] ) { // 'XX' is for localhost or inside of load balancer etc
+			if ( $block && 0 === (int)$settings['matching_rule'] ) {
+				// 'ZZ' will be blocked if it's not in the $list.
+				if ( ( $list = $settings['white_list'] ) && FALSE === strpos( $list, $validate['code'] ) )
+					return $validate + array( 'result' => 'blocked' ); // can't overwrite existing result
+			}
 
-		elseif( $block && 1 === (int)$settings['matching_rule'] ) {
-			// 'ZZ' will NOT be blocked if it's not in the $list.
-			if ( ( $list = $settings['black_list'] ) && FALSE !== strpos( $list, $validate['code'] ) )
-				return $validate + array( 'result' => 'blocked' ); // can't overwrite existing result
+			elseif( $block && 1 === (int)$settings['matching_rule'] ) {
+				// 'ZZ' will NOT be blocked if it's not in the $list.
+				if ( ( $list = $settings['black_list'] ) && FALSE !== strpos( $list, $validate['code'] ) )
+					return $validate + array( 'result' => 'blocked' ); // can't overwrite existing result
+			}
 		}
 
 		return $validate + array( 'result' => 'passed' ); // can't overwrite existing result
@@ -347,7 +354,7 @@ class IP_Geo_Block {
 	 * Send response header with http status code and reason.
 	 *
 	 */
-	public function send_response( $hook, $settings ) {
+	public function send_response( $hook, $validate, $settings ) {
 		require_once ABSPATH . WPINC . '/functions.php'; // for get_status_header_desc() @since 2.3.0
 
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
@@ -357,7 +364,11 @@ class IP_Geo_Block {
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', $settings['response_code'] );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', $settings['response_msg' ] ? $settings['response_msg'] : get_status_header_desc( $code ) );
 
-		nocache_headers(); // Set the headers to prevent caching for the different browsers.
+		// custom action (for fail2ban) @since 1.2.0
+		do_action( self::PLUGIN_NAME . '-send-response', $hook, $code, $validate );
+
+		// Set the headers to prevent caching for the different browsers.
+		nocache_headers();
 
 		if ( defined( 'XMLRPC_REQUEST' ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
@@ -400,9 +411,11 @@ class IP_Geo_Block {
 	/**
 	 * Validate ip address.
 	 *
-	 * @param string $hook a name to identify action hook applied in this call.
-	 * @param array $settings option settings
-	 * @param boolean $die send http response and die if validation fails
+	 * @param string  $hook     a name to identify action hook applied in this call.
+	 * @param array   $settings option settings
+	 * @param boolean $block    block                      if validation fails (for simulate)
+	 * @param boolean $die      send http response and die if validation fails (for validate_front )
+	 * @param boolean $auth     block and save log         if validation fails (for admin dashboard)
 	 */
 	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $auth = TRUE ) {
 		// set IP address to be validated
@@ -423,17 +436,18 @@ class IP_Geo_Block {
 		// priority high 1 check_ips_black
 		//               2 close_xmlrpc
 		//               5 check_nonce
-		//               6 check_signature
+		//               6 check_upload, check_signature
 		//               7 check_auth
 		//               8 check_fail
 		//               9 check_ips_white
 		// priority low 10 validate_country
 		$var = self::PLUGIN_NAME . '-' . $hook;
 		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
-		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 9, 2 );
 		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 1, 2 );
-		$settings['login_fails'] >= 0 and add_filter( $var, array( $this, 'check_fail' ), 8, 2 );
-		$auth                         and add_filter( $var, array( $this, 'check_auth' ), 7, 2 );
+		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 9, 2 );
+		$settings['login_fails'] >= 0        and add_filter( $var, array( $this, 'check_fail'      ), 8, 2 );
+		$auth                                and add_filter( $var, array( $this, 'check_auth'      ), 7, 2 );
+		$auth                                and add_filter( $var, array( $this, 'check_upload'    ), 6, 2 );
 
 		// make valid provider name list
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
@@ -480,7 +494,7 @@ class IP_Geo_Block {
 
 			// send response code to refuse
 			if ( $block && $die )
-				$this->send_response( $hook, $settings );
+				$this->send_response( $hook, $validate, $settings );
 		}
 
 		return $validate;
@@ -538,7 +552,7 @@ class IP_Geo_Block {
 			$action = 'resetpass';
 
 		$settings = self::get_option();
-		$list = &$settings['login_action'];
+		$list = $settings['login_action'];
 
 		// the same rule should be applied to login and logout
 		! empty( $list['login'] ) and $list['logout'] = TRUE;
@@ -604,7 +618,7 @@ class IP_Geo_Block {
 
 		// skip validation of country code and WP-ZEP if exceptions matches action or page
 		if ( ( $page || $action ) && $this->check_exceptions( $action, $page, $settings['exception']['admin'] ) )
-			$rule = 0; // check only signature
+			$rule &= ~ ( $zep ? 2 : 3 ); // 2: WP-ZEP, 1: Block by country (validation of bad signature is still in effective)
 
 		// combination with vulnerable keys should be prevented to bypass WP-ZEP
 		elseif ( ! $this->check_exceptions( $action, $page, $list ) ) {
@@ -745,6 +759,17 @@ class IP_Geo_Block {
 		return $validate;
 	}
 
+	public function check_upload( $validate, $settings ) {
+		if ( ! empty( $_FILES ) ) {
+			foreach ( $_FILES as $key => $val ) {
+				if ( ! empty( $val['name'] ) && FALSE !== strripos( urldecode( $val['name'] ), '.php', -4 ) )
+					return $validate + array( 'result' => 'upload' ); // can't overwrite existing result
+			}
+		}
+
+		return $validate;
+	}
+
 	/**
 	 * Verify specific ip addresses with CIDR.
 	 *
@@ -793,7 +818,7 @@ class IP_Geo_Block {
 	 */
 	public function validate_public() {
 		$settings = self::get_option();
-		$public = &$settings['public'];
+		$public = $settings['public'];
 
 		// avoid redirection loop
 		if ( $settings['response_code'] < 400 && IP_Geo_Block_Util::compare_url( $_SERVER['REQUEST_URI'], $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ) )
@@ -846,7 +871,7 @@ class IP_Geo_Block {
 
 	public function check_page( $validate, $settings ) {
 		global $post;
-		$public = &$settings['public'];
+		$public = $settings['public'];
 
 		if ( $post ) {
 			// check page
@@ -888,7 +913,7 @@ class IP_Geo_Block {
 			list( $name, $code ) = array_pad( IP_Geo_Block_Util::multiexplode( array( ':', '#' ), $pat ), 2, '' );
 
 			if ( $name && ( '*' === $name || FALSE !== strpos( $u_agent, $name ) ) ) {
-				$which = ( FALSE === strpos( $pat, ':' ) );     // 0: pass (':'), 1: block ('#')
+				$which = ( FALSE !== strpos( $pat, '#' ) );     // 0: pass (':'), 1: block ('#')
 				$not   = ( '!' === $code[0] );                  // 0: positive, 1: negative
 				$code  = ( $not ? substr( $code, 1 ) : $code ); // qualification identifier
 
@@ -917,7 +942,7 @@ class IP_Geo_Block {
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );
 				}
 
-				elseif ( preg_match( '!^[a-f\d\.:/]+$!', $code ) ) {
+				elseif ( preg_match( '!^[a-f\d\.:/]+$!', $code = substr( $pat, strpos( $pat, $code ) ) ) ) {
 					$name = $this->check_ips( $validate, $code, $which );
 					if ( $not xor isset( $name['result'] ) )
 						return $validate + array( 'result' => $which ? 'blocked' : 'passed' );

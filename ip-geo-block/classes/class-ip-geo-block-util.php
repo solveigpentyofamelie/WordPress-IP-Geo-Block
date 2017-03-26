@@ -560,4 +560,14 @@ class IP_Geo_Block_Util {
 			( ! empty( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : '' );
 	}
 
+	/**
+	 * Check the IP address is private or not
+	 *
+	 * @link https://en.wikipedia.org/wiki/Localhost
+	 * @link https://en.wikipedia.org/wiki/Private_network
+	 */
+	public static function is_private_ip( $ip ) {
+		return ( 0 === strpos( $ip, '127.0.0.' ) || 0 === strpos( $ip, '10.0.0.' ) || '::1' === $ip );
+	}
+
 }

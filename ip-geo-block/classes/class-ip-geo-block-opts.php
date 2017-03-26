@@ -60,6 +60,8 @@ class IP_Geo_Block_Opts {
 			'uploads'     => 3,       // for UPLOADS/uploads
 			'languages'   => 3,       // for WP_CONTENT_DIR/language
 			'public'      => 0,       // Validate on public facing pages
+			// since version 3.0.3
+//			'content'     => 3,       // for WP_CONTENT_DIR
 		),
 		'update'          => array(   // Updating IP address DB
 			'auto'        => TRUE,    // Auto updating of DB file
@@ -115,6 +117,8 @@ class IP_Geo_Block_Opts {
 			'includes'    => array(), // for wp-includes/
 			'uploads'     => array(), // for UPLOADS/uploads
 			'languages'   => array(), // for wp-content/language
+			// since version 3.0.3
+//			'content'     => array(), // for WP_CONTENT_DIR
 		),
 		// since version 2.2.7
 		'api_key'         => array(   // API key
@@ -284,6 +288,11 @@ class IP_Geo_Block_Opts {
 			if ( version_compare( $version, '3.0.2' ) < 0 )
 				$settings['ip_src'] = $default['ip_src'];
 
+			/*if ( version_compare( $version, '3.0.3' ) < 0 ) {
+				$settings['validation']['content'] = $default['validation']['content'];
+				$settings['exception' ]['content'] = $default['exception' ]['content'];
+			}*/
+
 			// save package version number
 			$settings['version'] = IP_Geo_Block::VERSION;
 		}
@@ -291,8 +300,8 @@ class IP_Geo_Block_Opts {
 		// configure the source of IP address in $_SERVER
 		$settings['ip_src'] = IP_Geo_Block_Util::client_ip_src();
 
-		// install addons for IP Geolocation database API ver. 1.1.7
-		if ( ! $settings['api_dir'] || version_compare( $version, '3.0.2' ) < 0 )
+		// install addons for IP Geolocation database API ver. 1.1.8
+		if ( ! $settings['api_dir'] || version_compare( $version, '3.0.3' ) < 0 )
 			$settings['api_dir'] = self::install_api( $settings );
 
 		// update option table

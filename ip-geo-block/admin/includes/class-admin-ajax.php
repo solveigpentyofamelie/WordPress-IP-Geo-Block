@@ -4,6 +4,7 @@ class IP_Geo_Block_Admin_Ajax {
 	/**
 	 * Admin ajax sub functions
 	 *
+	 * @param string $which name of the geolocation api provider
 	 */
 	static public function search_ip( $which ) {
 		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php';
@@ -34,6 +35,7 @@ class IP_Geo_Block_Admin_Ajax {
 	/**
 	 * Get country code from providers
 	 *
+	 * @param string $which 'ip_client' or 'ip_server'
 	 */
 	static public function scan_country( $which ) {
 		// scan all the country code using selected APIs
@@ -82,6 +84,7 @@ class IP_Geo_Block_Admin_Ajax {
 	/**
 	 * Export logs from MySQL DB
 	 *
+	 * @param string $which 'comment', 'xmlrpc', 'login', 'admin' or 'public'
 	 */
 	static public function export_logs( $which ) {
 		$csv = '';
@@ -110,6 +113,7 @@ class IP_Geo_Block_Admin_Ajax {
 	/**
 	 * Restore logs from MySQL DB
 	 *
+	 * @param string $which 'comment', 'xmlrpc', 'login', 'admin' or 'public'
 	 */
 	static public function restore_logs( $which ) {
 		// if js is slow then limit the number of rows
@@ -262,6 +266,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[validation][uploads]',     // 3.0.0
 			'[validation][languages]',   // 3.0.0
 			'[validation][public]',      // 3.0.0
+			'[validation][content]',     // 3.0.3
 			'[rewrite][plugins]',
 			'[rewrite][themes]',
 			'[rewrite][includes]',       // 3.0.0
@@ -274,6 +279,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[exception][includes][$]',  // 3.0.0
 			'[exception][uploads][$]',   // 3.0.0
 			'[exception][languages][$]', // 3.0.0
+			'[exception][content][$]',   // 3.0.3
 			'[public][matching_rule]',   // 3.0.0
 			'[public][white_list]',      // 3.0.0
 			'[public][black_list]',      // 3.0.0

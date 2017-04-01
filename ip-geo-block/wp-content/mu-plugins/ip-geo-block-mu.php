@@ -56,7 +56,7 @@ if ( is_plugin_active( $plugin ) || is_plugin_active_for_network( $plugin ) ) {
 	}
 
 	else {
-		add_action( 'admin_notices', 'ip_geo_block_mu_admin_notice' );
+		add_action( 'admin_notices', 'ip_geo_block_mu_notice' );
 	}
 
 }
@@ -67,7 +67,7 @@ unset( $plugin );
  * Show global notice.
  *
  */
-function ip_geo_block_mu_admin_notice() {
+function ip_geo_block_mu_notice() {
 	echo '<div class="notice notice-error is-dismissible"><p>';
 	echo sprintf(
 		__( 'Can\'t find IP Geo Block in your plugins directory. Please remove <code>%s</code> or re-install %s.', 'ip-geo-block' ),

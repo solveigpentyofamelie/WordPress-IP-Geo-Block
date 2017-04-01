@@ -61,7 +61,7 @@ class IP_Geo_Block_Opts {
 			'languages'   => 3,       // for WP_CONTENT_DIR/language
 			'public'      => 0,       // Validate on public facing pages
 			// since version 3.0.3
-//			'content'     => 3,       // for WP_CONTENT_DIR
+			'content'     => 3,       // for WP_CONTENT_DIR
 		),
 		'update'          => array(   // Updating IP address DB
 			'auto'        => TRUE,    // Auto updating of DB file
@@ -118,7 +118,7 @@ class IP_Geo_Block_Opts {
 			'uploads'     => array(), // for UPLOADS/uploads
 			'languages'   => array(), // for wp-content/language
 			// since version 3.0.3
-//			'content'     => array(), // for WP_CONTENT_DIR
+			'content'     => array(), // for WP_CONTENT_DIR
 		),
 		// since version 2.2.7
 		'api_key'         => array(   // API key
@@ -288,10 +288,10 @@ class IP_Geo_Block_Opts {
 			if ( version_compare( $version, '3.0.2' ) < 0 )
 				$settings['ip_src'] = $default['ip_src'];
 
-			/*if ( version_compare( $version, '3.0.3' ) < 0 ) {
+			if ( version_compare( $version, '3.0.3' ) < 0 ) {
 				$settings['validation']['content'] = $default['validation']['content'];
 				$settings['exception' ]['content'] = $default['exception' ]['content'];
-			}*/
+			}
 
 			// save package version number
 			$settings['version'] = IP_Geo_Block::VERSION;

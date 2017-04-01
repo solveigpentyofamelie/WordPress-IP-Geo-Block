@@ -41,7 +41,11 @@ class IP_Geo_Block {
 	 * 
 	 */
 	private function __construct() {
+		// setup loader to configure validation function
 		$settings = self::get_option();
+		$priority = $settings['priority'];
+		$validate = $settings['validation'];
+		$loader = new IP_Geo_Block_Loader();
 
 		// client IP address
 		self::$ip_client = IP_Geo_Block_Util::get_client_ip( $settings['ip_src'] );
@@ -55,11 +59,6 @@ class IP_Geo_Block {
 		// the action hook which will be fired by cron job
 		if ( $settings['update']['auto'] )
 			add_action( self::CRON_NAME, array( $this, 'update_database' ) );
-
-		// setup loader to configure validation function
-		$priority = $settings['priority'];
-		$validate = $settings['validation'];
-		$loader = new IP_Geo_Block_Loader();
 
 		// check the package version and upgrade if needed (activation hook never fire on upgrade)
 		if ( version_compare( $settings['version'], self::VERSION ) < 0 || $settings['matching_rule'] < 0 )
@@ -79,8 +78,8 @@ class IP_Geo_Block {
 			'themes'    => 'get_theme_root_uri',            // @since 1.5.0 /wp-content/themes/
 //			'uploads'   => array( $this, 'uploads_url' ),   // @since 2.2.0 /wp-content/uploads/
 //			'languages' => array( $this, 'languages_url' ), // @since 2.6.0 /wp-content/languages/
-//			'content'   => 'content_url',                   // @since 2.6.0 /wp-content/
-//			'includes'  => 'includes_url',                  // @since 2.6.0 /wp-includes/
+			'content'   => 'content_url',                   // @since 2.6.0 /wp-content/
+			'includes'  => 'includes_url',                  // @since 2.6.0 /wp-includes/
 		);
 
 		// analize the validation target (admin|plugins|themes|includes)
@@ -586,7 +585,6 @@ class IP_Geo_Block {
 		$action = isset( $_REQUEST['task' ] ) ? 'task' : 'action';
 		$action = isset( $_REQUEST[$action] ) ? $_REQUEST[$action] : NULL;
 		$page   = isset( $_REQUEST['page' ] ) ? $_REQUEST['page' ] : NULL;
-		$login  = IP_Geo_Block_Util::may_be_logged_in();
 
 		switch ( $this->pagenow ) {
 		  case 'admin-ajax.php':
@@ -602,8 +600,8 @@ class IP_Geo_Block {
 			break;
 
 		  default:
-			// if not logged in then WP-ZEP should be skipped
-			$zep = $login;
+			// if the request has no page and no action, skip WP-ZEP
+			$zep = ( $page || $action ) ? TRUE : FALSE;
 			$rule = (int)$settings['validation']['admin'];
 		}
 
@@ -630,7 +628,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature (except in the comment and post)
-		if ( ! $login || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)

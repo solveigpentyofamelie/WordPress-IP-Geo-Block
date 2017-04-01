@@ -487,16 +487,18 @@ This function protects your site against such a case.
 == Changelog ==
 
 = 3.0.2.1 =
-This is a maintenance release.
+This is a maintenance release addressing some issues.
 
 * **Update:** Net_DNS2 (FreeBSD License) to 1.4.3.
 * **Update:** Net_IPv6 (FreeBSD License) to 1.3.0b2.
 * **Update:** Net_IPv4 to be compatible with GPLv2 or later.
-* **Update:** Geolocation database API for Maxmind and IP2Location.
+* **Update:** Geolocation database API for Maxmind and IP2Location to 1.1.8.
+* **Update:** Bring back the priority of validation for wp-zep and badsig 
+  as same as 3.0.2 and before.
 * **Improvement:** Handle some of loop back and private IP addresses for 
-  localhost, host inside load balancer and etc.
+  localhost and host inside load balancer.
 * **Bug fix:** Fix the blocking issue of admin ajax/post on front-end.
-* **Bug fix:** Fix improper handling of IPv6 on setting page.
+* **Bug fix:** Fix the issue of improper IPv6 handling on setting page.
 
 = 3.0.2 =
 * **New feature:** Add "Exceptions" for "Admin ajax/post" to specify the name 

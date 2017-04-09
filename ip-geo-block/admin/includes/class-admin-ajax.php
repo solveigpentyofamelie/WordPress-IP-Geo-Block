@@ -242,6 +242,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[extra_ips][white_list]',
 			'[extra_ips][black_list]',
 			'[signature]',
+			'[extension]',               // 3.0.3
 			'[login_fails]',
 			'[response_code]',
 			'[response_msg]',            // 3.0.0
@@ -374,12 +375,13 @@ class IP_Geo_Block_Admin_Ajax {
 				    'admin'       => 3,       // Validate on admin (1:country 2:ZEP)
 				    'ajax'        => 3,       // Validate on ajax/post (1:country 2:ZEP)
 				    'xmlrpc'      => 1,       // Validate on xmlrpc (1:country 2:close)
-				    'postkey'     => 'action,comment,log,pwd', // Keys in $_POST
+				    'postkey'     => 'action,comment,log,pwd,FILES', // Keys in $_POST and $_FILES
 				    'plugins'     => 2,       // Validate on wp-content/plugins
 				    'themes'      => 2,       // Validate on wp-content/themes
 				    'timing'      => 1,       // 0:init, 1:mu-plugins, 2:drop-in
 				),
 				'signature'       => "../,/wp-config.php,/passwd\ncurl,wget,eval,base64\nselect:.5,where:.5,union:.5\nload_file:.5,create:.6,password:.4",
+				'extension'       => "php,phtml,php3,cgi,pl,py,jsp,asp,html,htm,shtml,sh",
 				'rewrite'         => array(   // Apply rewrite rule
 				    'plugins'     => TRUE,    // for wp-content/plugins
 				    'themes'      => TRUE,    // for wp-content/themes

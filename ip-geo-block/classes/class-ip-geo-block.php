@@ -120,7 +120,7 @@ class IP_Geo_Block {
 
 		else {
 			// public facing pages
-			if ( $validate['public'] /* && 'index.php' === $this->pagenow */ )
+			if ( $validate['public'] || ! empty( $_FILES ) /* && 'index.php' === $this->pagenow */ )
 				$loader->add_action( 'init', array( $this, 'validate_public' ), $priority );
 
 			// message text on comment form
@@ -760,7 +760,7 @@ class IP_Geo_Block {
 	public function check_upload( $validate, $settings ) {
 		if ( ! empty( $_FILES ) ) {
 			foreach ( $_FILES as $key => $val ) {
-				if ( ! empty( $val['name'] ) && FALSE !== strripos( urldecode( $val['name'] ), '.php', -4 ) )
+				if ( ! empty( $val['name'] ) && FALSE !== stripos( $settings['extension'], pathinfo( urldecode( $val['name'] ), PATHINFO_EXTENSION ) ) )
 					return $validate + array( 'result' => 'upload' ); // can't overwrite existing result
 			}
 		}
@@ -854,7 +854,7 @@ class IP_Geo_Block {
 		add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_bots' ), 6, 2 );
 
 		// validate country by IP address (block: true, die: false)
-		$this->validate_ip( 'public', $settings, TRUE, ! $public['simulate'] );
+		$this->validate_ip( 'public', $settings, 1 & $settings['validation']['public'], ! $public['simulate'] );
 	}
 
 	public function get_proxy_ip( $ip ) {

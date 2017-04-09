@@ -219,6 +219,23 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
+		// Bad extensions
+		$field = 'extension';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="It validates uploading file with malicious extension independently of &#8220;Block by country&#8221; and &#8220;Prevent Zero-day Exploit&#8221;.">Bad extensions in $_FILES</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $field,
+				'value' => $options[ $field ],
+				'after' => $comma[0],
+			)
+		);
+
 		// Bad signatures
 		$field = 'signature';
 		add_settings_field(
@@ -952,7 +969,7 @@ endif;
 		if ( empty( $providers ) ) {
 			$context->add_admin_notice( 'error',
 				sprintf(
-					__( 'Please download <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API/archive/master.zip" title="Download the contents of tokkonopapa/WordPress-IP-Geo-API as a zip file">ZIP file</a> from <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API" title="tokkonopapa/WordPress-IP-Geo-API - GitHub">WordPress-IP-Geo-API</a> and upload <code>ip-geo-api</code> to <code>%s</code> with write permission.', 'ip-geo-block' ),
+					__( 'Can not find geolocation API libraries in <code>%s</code>. It seems to have failed downloading <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API/archive/master.zip" title="Download the contents of tokkonopapa/WordPress-IP-Geo-API as a zip file">ZIP file</a> from <a rel="noreferrer" href="https://github.com/tokkonopapa/WordPress-IP-Geo-API" title="tokkonopapa/WordPress-IP-Geo-API - GitHub">WordPress-IP-Geo-API</a>. Please refer to the <a rel="noreferrer" href="http://www.ipgeoblock.com/codex/how-to-fix-permission-troubles.html" title="How can I fix permission troubles? | IP Geo Block">FAQ</a> to install <code>ip-geo-api</code> with write permission.', 'ip-geo-block' ),
 					apply_filters( 'ip-geo-block-api-dir', basename( WP_CONTENT_DIR ) )
 				)
 			);
@@ -1328,8 +1345,8 @@ endif;
 			array(
 				'type' => 'none',
 				'before' =>
-					'<a class="button button-secondary" id="ip-geo-block-default"   title="' . __( 'Import the default settings to revert to the &#8220;Right after installing&#8221; state', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Default settings', 'ip-geo-block' ) . '</a>&nbsp;' .
-					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Back-end target settings&#8221;',     'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best settings',    'ip-geo-block' ) . '</a>',
+					'<a class="button button-secondary" id="ip-geo-block-preferred" title="' . __( 'Import the preferred settings mainly for the &#8220;Back-end target settings&#8221;',     'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Best settings',    'ip-geo-block' ) . '</a>&nbsp;' .
+					'<a class="button button-secondary" id="ip-geo-block-default"   title="' . __( 'Import the default settings to revert to the &#8220;Right after installing&#8221; state', 'ip-geo-block' ) . '" href="javascript:void(0)">' . __( 'Default settings', 'ip-geo-block' ) . '</a>',
 				'after' => '<div id="ip-geo-block-pre-defined"></div>',
 			)
 		);

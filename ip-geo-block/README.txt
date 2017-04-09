@@ -478,25 +478,35 @@ This function protects your site against such a case.
 
 == Screenshots ==
 
-1. **IP Geo Plugin** - Settings.
-2. **IP Geo Plugin** - Statistics.
-3. **IP Geo Plugin** - Logs.
-4. **IP Geo Plugin** - Search.
-5. **IP Geo Plugin** - Attribution.
+1. **IP Geo Plugin** - Settings tab
+2. **IP Geo Plugin** - Validation rule settings
+3. **IP Geo Plugin** - Back-end target settings
+4. **IP Geo Plugin** - Front-end target settings
+5. **IP Geo Plugin** - Geolocation API settings
+6. **IP Geo Plugin** - IP address cache settings
+7. **IP Geo Plugin** - Statistics tab
+8. **IP Geo Plugin** - Logs tab
+9. **IP Geo Plugin** - Search tab
+10. **IP Geo Plugin** - Attribution tab
 
 == Changelog ==
+
+= 3.0.3 =
+* **New feature:** Bad extensions in $_FILES with malicious extension.
+* **New feature:** Force to load WP core for PHP files under `wp-content` 
+  and `wp-includes`.
 
 = 3.0.2.1 =
 This is a maintenance release addressing some issues.
 
-* **Update:** Net_DNS2 (FreeBSD License) to 1.4.3.
-* **Update:** Net_IPv6 (FreeBSD License) to 1.3.0b2.
-* **Update:** Net_IPv4 to be compatible with GPLv2 or later.
+* **Update:** Net_DNS2, Net_IPv6, Net_IPv4 to the newest.
 * **Update:** Geolocation database API for Maxmind and IP2Location to 1.1.8.
 * **Update:** Bring back the priority of validation for wp-zep and badsig 
   as same as 3.0.2 and before.
 * **Improvement:** Handle some of loop back and private IP addresses for 
   localhost and host inside load balancer.
+* **Improvement:** Update instructions when the geolocation API libraries 
+  fails to install.
 * **Bug fix:** Fix the blocking issue of admin ajax/post on front-end.
 * **Bug fix:** Fix the issue of improper IPv6 handling on setting page.
 

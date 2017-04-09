@@ -828,14 +828,16 @@ class IP_Geo_Block_Admin {
 		array_shift( $key );
 		array_shift( $val );
 		$output['signature'] = preg_replace( $key, $val, trim( $output['signature'] ) );
+		$output['extension'] = preg_replace( $key, $val, trim( $output['extension'] ) );
 
 		// 3.0.0 convert country code to upper case, remove redundant spaces
 		$output['public']['ua_list'] = preg_replace( $key, $val, trim( $output['public']['ua_list'] ) );
 		$output['public']['ua_list'] = preg_replace( '/([:#]) *([!]+) *([^ ]+) *([,\n]+)/', '$1$2$3$4', $output['public']['ua_list'] );
 		$output['public']['ua_list'] = preg_replace_callback( '/[:#]([\w:]+)/', array( $this, 'strtoupper' ), $output['public']['ua_list'] );
 
-		// reject invalid signature which potentially blocks itself
+		// reject invalid signature and extension which potentially blocks itself
 		$output['signature'] = implode( ',', $this->trim( $output['signature'] ) );
+		$output['extension'] = implode( ',', $this->trim( $output['extension'] ) );
 
 		// 2.2.5 exception : convert associative array to simple array
 		foreach ( array( 'plugins', 'themes' ) as $key ) {

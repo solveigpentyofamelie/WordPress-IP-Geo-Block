@@ -148,7 +148,8 @@ class IP_Geo_Block_Opts {
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,   // just simulate, never block
 		),
-		// since version 3.0.2
+		// since version 3.0.3
+		'extension'          => 'php,cgi,htm,html,shtml,sh', // Bad extensions
 		'ip_src' => 0, // 0:REMOTE_ADDR, 1:HTTP_CLIENT_IP, 2:HTTP_X_FORWARDED_FOR, 3:HTTP_CF_CONNECTING_IP
 	);
 
@@ -285,10 +286,8 @@ class IP_Geo_Block_Opts {
 			if ( version_compare( $version, '3.0.1' ) < 0 )
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
 
-			if ( version_compare( $version, '3.0.2' ) < 0 )
-				$settings['ip_src'] = $default['ip_src'];
-
 			if ( version_compare( $version, '3.0.3' ) < 0 ) {
+				$settings['extension' ]            = $default['extension' ];
 				$settings['validation']['content'] = $default['validation']['content'];
 				$settings['exception' ]['content'] = $default['exception' ]['content'];
 			}

@@ -413,11 +413,20 @@ class IP_Geo_Block_Logs {
 
 		// post data
 		else {
-			$keys = array_fill_keys( array_keys( $_POST ), NULL );
+			$posts = $_POST;
+
+			// Uploading files
+			if ( ! empty( $_FILES ) ) {
+				foreach ( $_FILES as $key => $val ) {
+					$posts['FILES'] = str_replace( PHP_EOL, ' ', print_r( $val, TRUE ) );
+				}
+			}
+
+			$keys = array_fill_keys( array_keys( $posts ), NULL );
 			foreach ( explode( ',', $settings['validation']['postkey'] ) as $key ) {
-				if ( array_key_exists( $key, $_POST ) ) {
+				if ( array_key_exists( $key, $posts ) ) {
 					// mask the password
-					$keys[ $key ] = ( 'pwd' === $key && $mask_pwd ) ? '***' : $_POST[ $key ];
+					$keys[ $key ] = ( 'pwd' === $key && $mask_pwd ) ? '***' : $posts[ $key ];
 				}
 			}
 
@@ -639,8 +648,9 @@ class IP_Geo_Block_Logs {
 		}
 
 		// sort by 'time'
-		foreach ( $cache as $key => $val )
+		foreach ( $cache as $key => $val ) {
 			$hash[ $key ] = $val['time'];
+		}
 
 		array_multisort( $hash, SORT_DESC, $cache );
 

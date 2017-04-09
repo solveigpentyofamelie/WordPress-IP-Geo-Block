@@ -240,6 +240,9 @@ angular.module('WPApp').controller('WPAppCtrl', [
 "        </value>\n" +
 "    </member>\n" +
 "</struct>"
+		},
+		upload: {
+			filename: 'test.php'
 		}
 	};
 
@@ -260,7 +263,8 @@ angular.module('WPApp').controller('WPAppCtrl', [
 		pingback: true,
 		xmlrpc: true,
 		xmlrpc_demo: true,
-		xmlrpc_multi: true
+		xmlrpc_multi: true,
+		upload: true,
 	};
 	$scope.selectAll = function () {
 		var item;
@@ -468,11 +472,10 @@ angular.module('WPApp').controller('WPAppCtrl', [
 		// Trackback
 		if ($scope.checkbox.trackback) {
 			$scope.validate_page(false).then(function () {
-				url = trailingslashit($scope.home_url) +
-				    'wp-trackback.php?p=' + $scope.form.comment.comment_post_ID;
-//				    'wp-trackback.php/' + $scope.form.comment.comment_post_ID;
+/*				url = home + 'wp-trackback.php?p=' + $scope.form.comment.comment_post_ID;*/
+/*				url = home + 'wp-trackback.php/' + $scope.form.comment.comment_post_ID;*/
+				url = page + 'trackback/'; // doesn't work in WordPress 4.4, works in WordPress 4.7
 				post_trackback(url, proxy);
-//				post_trackback(page + 'trackback/', proxy); // doesn't work in WordPress 4.4
 			});
 		}
 
@@ -560,6 +563,14 @@ angular.module('WPApp').controller('WPAppCtrl', [
 				form = serialize_plain($scope.form.bbPress);
 				post_form(url, form, proxy, 'POST', 'bbPress');
 			});
+		}
+
+		// File upload
+		if ($scope.checkbox.upload) {
+			var form = new FormData();
+			var file = new File([], $scope.form.upload.filename);
+			form.append('file', file);
+			post_form(home, form, proxy, 'MULTI', 'File upload');
 		}
 	};
 

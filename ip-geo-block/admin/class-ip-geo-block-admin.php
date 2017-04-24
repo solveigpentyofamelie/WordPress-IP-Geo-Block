@@ -949,7 +949,7 @@ class IP_Geo_Block_Admin {
 				$which['api_key']['GoogleMap'] = NULL;
 				update_option( IP_Geo_Block::OPTION_NAME, $which );
 				$res = array(
-					'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_SLUG,
+					'page' => 'options-general.php?page=' . IP_Geo_Block::PLUGIN_NAME,
 					'tab' => 'tab=2'
 				);
 			}

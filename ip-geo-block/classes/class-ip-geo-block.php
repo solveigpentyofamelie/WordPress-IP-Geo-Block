@@ -42,7 +42,7 @@ class IP_Geo_Block {
 	private function __construct() {
 		// setup loader to configure validation function
 		$settings = self::get_option();
-		$priority = $settings['priority'];
+		$priority = $settings['priority'  ];
 		$validate = $settings['validation'];
 		$loader = new IP_Geo_Block_Loader();
 
@@ -341,7 +341,7 @@ class IP_Geo_Block {
 		do_action( self::PLUGIN_NAME . '-send-response', $hook, $code, $validate );
 
 		// Set the headers to prevent caching for the different browsers.
-		nocache_headers();
+		nocache_headers(); // wp-includes/functions.php @since 2.0.0
 
 		if ( defined( 'XMLRPC_REQUEST' ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
@@ -369,7 +369,7 @@ class IP_Geo_Block {
 
 			// Show human readable page
 			elseif ( ! defined( 'DOING_AJAX' ) && ! defined( 'XMLRPC_REQUEST' ) ) {
-				$hook = IP_Geo_Block_Util::may_be_logged_in() && 'admin' === $this->target_type;
+				$hook = IP_Geo_Block_Util::is_user_logged_in() && 'admin' === $this->target_type;
 				FALSE !== ( @include get_stylesheet_directory() .'/'.$code.'.php' ) or // child  theme
 				FALSE !== ( @include get_template_directory()   .'/'.$code.'.php' ) or // parent theme
 				wp_die( // get_dashboard_url() @since 3.1.0
@@ -388,9 +388,9 @@ class IP_Geo_Block {
 	 * @param array   $settings option settings
 	 * @param boolean $block    block                      if validation fails (for simulate)
 	 * @param boolean $die      send http response and die if validation fails (for validate_front )
-	 * @param boolean $auth     block and save log         if validation fails (for admin dashboard)
+	 * @param boolean $save_log save log and block         if validation fails (for admin dashboard)
 	 */
-	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $auth = TRUE ) {
+	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $save_log = TRUE ) {
 		// set IP address to be validated
 		$ips = array( self::get_ip_address() );
 
@@ -445,7 +445,7 @@ class IP_Geo_Block {
 				break;
 		}
 
-		if ( $auth ) {
+		if ( $save_log ) {
 			// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
 			$var = (int)apply_filters( self::PLUGIN_NAME . '-record-logs', $settings['validation']['reclogs'], $hook, $validate );
 			$block = ( 'passed' !== $validate['result'] );
@@ -601,7 +601,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature (except in the comment and post)
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+		if ( ! IP_Geo_Block_Util::is_user_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
@@ -641,7 +641,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() )
+		if ( ! IP_Geo_Block_Util::is_user_logged_in() )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
@@ -686,7 +686,7 @@ class IP_Geo_Block {
 				if ( $settings['save_statistics'] )
 					IP_Geo_Block_Logs::update_stat( 'login', $validate, $settings );
 
-				$this->send_response( 'login', $settings );
+				$this->send_response( 'login', $validate, $settings );
 			}
 		}
 

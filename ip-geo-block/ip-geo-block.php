@@ -46,8 +46,8 @@ define( 'IP_GEO_BLOCK_BASE', plugin_basename( __FILE__ ) ); // @since 1.5
 require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block.php';
 require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-util.php';
 require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-load.php';
-require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php';
 require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-logs.php';
+require IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-apis.php';
 
 /**
  * Register hooks that are fired when the plugin is activated or deactivated.

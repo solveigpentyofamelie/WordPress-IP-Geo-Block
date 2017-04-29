@@ -27,8 +27,13 @@ var IP_GEO_BLOCK_ZEP = {
 	function escapeHTML(html) {
 		var elem = document.createElement('div');
 		elem.appendChild(document.createTextNode(html));
-		html = elem.innerHTML;
-		elem = elem.outerHTML = '';
+		html = elem.innerHTML.replace(/["']/g, function (match) {
+			return {
+				'"': '&quot;',
+				"'": '&#39;'
+			}[match];
+		});
+		elem = '';
 		return html;
 	}
 
@@ -352,7 +357,9 @@ var IP_GEO_BLOCK_ZEP = {
 					w.document.close();
 
 					// stop event propagation
-					$(event).stopImmediatePropagation(); // stopPropagation()
+					event.stopImmediatePropagation();
+
+					// automatically call event.stopPropagation() and event.preventDefault()
 					return false;
 				}
 			});

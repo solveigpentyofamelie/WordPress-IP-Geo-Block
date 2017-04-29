@@ -15,7 +15,7 @@ class IP_Geo_Block {
 	 * Unique identifier for this plugin.
 	 *
 	 */
-	const VERSION = '3.0.2.1';
+	const VERSION = '3.0.2.2';
 	const GEOAPI_NAME = 'ip-geo-api';
 	const PLUGIN_NAME = 'ip-geo-block';
 	const OPTION_NAME = 'ip_geo_block_settings';
@@ -388,9 +388,9 @@ class IP_Geo_Block {
 	 * @param array   $settings option settings
 	 * @param boolean $block    block                      if validation fails (for simulate)
 	 * @param boolean $die      send http response and die if validation fails (for validate_front )
-	 * @param boolean $save_log save log and block         if validation fails (for admin dashboard)
+	 * @param boolean $auth     save log and block         if validation fails (for admin dashboard)
 	 */
-	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $save_log = TRUE ) {
+	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $auth = TRUE ) {
 		// set IP address to be validated
 		$ips = array( self::get_ip_address() );
 
@@ -445,7 +445,7 @@ class IP_Geo_Block {
 				break;
 		}
 
-		if ( $save_log ) {
+		if ( $auth ) {
 			// record log (0:no, 1:blocked, 2:passed, 3:unauth, 4:auth, 5:all)
 			$var = (int)apply_filters( self::PLUGIN_NAME . '-record-logs', $settings['validation']['reclogs'], $hook, $validate );
 			$block = ( 'passed' !== $validate['result'] );

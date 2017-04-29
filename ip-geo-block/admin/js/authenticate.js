@@ -388,11 +388,13 @@ var IP_GEO_BLOCK_ZEP = {
 
 	$(function () {
 		// avoid conflict with "Open external links in a new window"
-		$('a').each(function () {
-			if(!this.hasAttribute('onClick') && is_admin(this.getAttribute('href')) === -1) {
-				this.setAttribute('onClick', 'javascript:void(0);return false;');
-			}
-		});
+		if (is_back_end()) {
+			$('a').each(function () {
+				if(!this.hasAttribute('onClick') && is_admin(this.getAttribute('href')) === -1) {
+					this.setAttribute('onClick', 'javascript:void(0);return false;');
+				}
+			});
+		}
 
 		// attach event to add nonce
 		attach_nonce();

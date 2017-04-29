@@ -600,8 +600,8 @@ class IP_Geo_Block {
 			}
 		}
 
-		// register validation of malicious signature (except in the comment and post including search query)
-		if ( ! IP_Geo_Block_Util::is_user_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php', 'edit.php' ), TRUE ) )
+		// register validation of malicious signature (except in the comment and post)
+		if ( ! IP_Geo_Block_Util::is_user_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)

@@ -333,9 +333,10 @@ But there're exceptions: When you enable "**Force to load WP core**" for **Plugi
 == Changelog ==
 
 = 3.0.2.2 =
-* **Improvement:** Changed the behavior of "Referrer Suppressor" not to open a new window on public facing pages.
-* **Bug fix:** Fix the bug of undefined symbol related to the Google Map API in admin class.
-* **Bug fix:** Fix the issue of blocking related the search box at post page.
+* **Improvement:** Change the behavior of "Referrer Suppressor" not to open a new window on public facing pages.
+* **Improvement:** Add a fallback condition in case this plugin is forcibly deleted.
+* **Bug fix:** Fix the bug of undefined symbol in admin class related to the Google Map API.
+* **Bug fix:** Fix the issue of blocking related to the search box at post page.
 
 = 3.0.2.1 =
 This is a maintenance release addressing some issues.

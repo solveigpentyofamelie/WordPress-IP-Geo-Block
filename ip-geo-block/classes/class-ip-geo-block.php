@@ -485,7 +485,7 @@ class IP_Geo_Block {
 	}
 
 	public function validate_front( $can_access = TRUE ) {
-		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE );
+		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE, FALSE );
 		return ( 'passed' === $validate['result'] ? $can_access : FALSE );
 	}
 
@@ -818,12 +818,12 @@ class IP_Geo_Block {
 	}
 
 	public function check_page( $validate, $settings ) {
-		global $post;
+		global $post, $pagename;
 		$public = $settings['public'];
 
-		if ( $post ) {
-			// check page
-			if ( isset( $post->post_name ) && isset( $public['target_pages'][ $post->post_name ] ) )
+		if ( $post || $pagename ) {
+			// check page (page slug or page name)
+			if ( ( $keys = isset( $post->post_name ) ? $post->post_name : $pagename ) && isset( $public['target_pages'][ $keys ] ) )
 				return $validate; // block by country
 
 			// check post type (this would not block top page)

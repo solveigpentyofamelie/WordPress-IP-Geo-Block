@@ -337,6 +337,7 @@ But there're exceptions: When you enable "**Force to load WP core**" for **Plugi
 * **Improvement:** Improve some of the descriptions of help text.
 * **Bug fix:** Fix the bug of undefined symbol in admin class related to the Google Map API.
 * **Bug fix:** Fix the bug of incompatible function arguments when the number of login fails reaches the limit.
+* **Bug fix:** Fix the issue of not working blocking by country on specific pages correctly as the validation target.
 
 = 3.0.2.1 =
 This is a maintenance release addressing some issues.

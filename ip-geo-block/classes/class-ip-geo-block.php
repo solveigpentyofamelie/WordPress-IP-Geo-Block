@@ -818,14 +818,14 @@ class IP_Geo_Block {
 	}
 
 	public function check_page( $validate, $settings ) {
-		global $post, $pagename;
+		global $pagename, $post;
 		$public = $settings['public'];
 
-		if ( $post || $pagename ) {
-			// check page (page slug or page name)
-			if ( ( $keys = isset( $post->post_name ) ? $post->post_name : $pagename ) && isset( $public['target_pages'][ $keys ] ) )
+		if ( $pagename ) {
+			// check page
+			if ( isset( $public['target_pages'][ $pagename ] ) )
 				return $validate; // block by country
-
+		} elseif ( $post ) {
 			// check post type (this would not block top page)
 			$keys = array_keys( $public['target_posts'] );
 			if ( ! empty( $keys ) && is_singular( $keys ) )

@@ -45,7 +45,7 @@ class IP_Geo_Block_Opts {
 			'xmlrpc'      => 1,       // Validate on xmlrpc (1:country 2:close)
 			'proxy'       => NULL,    // $_SERVER variables for IPs
 			'reclogs'     => 1,       // 1:blocked 2:passed 3:unauth 4:auth 5:all
-			'postkey'     => NULL,    // Keys in $_POST
+			'postkey'     => 'action',// Keys in $_POST
 			// since version 1.3.1
 			'maxlogs'     => 100,     // Max number of rows of log
 			'backup'      => NULL,    // Absolute path to directory for backup logs
@@ -60,6 +60,10 @@ class IP_Geo_Block_Opts {
 			'uploads'     => 3,       // for UPLOADS/uploads
 			'languages'   => 3,       // for WP_CONTENT_DIR/language
 			'public'      => 0,       // Validate on public facing pages
+			// since version 3.0.3
+			'content'     => 3,       // for WP_CONTENT_DIR
+			'restapi'     => 3,       // for get_rest_url()
+			'mimetype'    => 1,       // Validate $_FILES
 		),
 		'update'          => array(   // Updating IP address DB
 			'auto'        => TRUE,    // Auto updating of DB file
@@ -79,7 +83,7 @@ class IP_Geo_Block_Opts {
 			'plugins'     => FALSE,   // for wp-content/plugins
 			'themes'      => FALSE,   // for wp-content/themes
 			// since version 3.0.0
-			'public'      => FALSE,   // for public facing pages
+			'content'     => FALSE,   // for wp-content/
 			'includes'    => FALSE,   // for wp-includes/
 			'uploads'     => FALSE,   // for UPLOADS/uploads
 			'languages'   => FALSE,   // for wp-content/language
@@ -115,6 +119,9 @@ class IP_Geo_Block_Opts {
 			'includes'    => array(), // for wp-includes/
 			'uploads'     => array(), // for UPLOADS/uploads
 			'languages'   => array(), // for wp-content/language
+			// since version 3.0.3
+			'content'     => array(), // for WP_CONTENT_DIR
+			'restapi'     => array(), // for get_rest_url()
 		),
 		// since version 2.2.7
 		'api_key'         => array(   // API key
@@ -124,26 +131,32 @@ class IP_Geo_Block_Opts {
 		'login_action' => array(      // Actions for wp-login.php
 			'login'        => TRUE,
 			'register'     => TRUE,
-			'resetpasss'   => TRUE,
+			'resetpass'    => TRUE,
 			'lostpassword' => TRUE,
 			'postpass'     => TRUE,
 		),
 		// since version 3.0.0
 		'response_msg'    => 'Sorry, your request cannot be accepted.', // message on blocking
 		'redirect_uri'    => 'http://blackhole.webpagetest.org/',   // redirection on blocking
-		'network_wide'    => FALSE,   // settings page on network dashboard
+		'network_wide'    => FALSE,      // settings page on network dashboard
 		'public'          => array(
-			'matching_rule'  => -1,   // -1:follow, 0:white list, 1:black list
-			'white_list'     => NULL, // Comma separeted country code
-			'black_list'     => 'ZZ', // Comma separeted country code
-			'target_rule'    => 0,    // 0:all requests, 1:specify the target
+			'matching_rule'  => -1,      // -1:follow, 0:white list, 1:black list
+			'white_list'     => NULL,    // Comma separeted country code
+			'black_list'     => 'ZZ',    // Comma separeted country code
+			'target_rule'    => 0,       // 0:all requests, 1:specify the target
 			'target_pages'   => array(), // blocking target of pages
 			'target_posts'   => array(), // blocking target of post types
 			'target_cates'   => array(), // blocking target of categories
 			'target_tags'    => array(), // blocking target of tags
-			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\n*:HOST=embed.ly,Twitterbot:US,Facebot:US",
+			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\nembed.ly:HOST,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,   // just simulate, never block
+			// since version 3.0.3
+			'dnslkup'        => TRUE,    // use DNS reverse lookup
 		),
+		// since version 3.0.3
+		'mimetype'        => array(),    // key and value
+		'send_email'      => array(),    // TBD
+		'create_user'     => 0,          // 0:disable, 1:block by country, 2:only admin, 3:prohibit
 	);
 
 	/**
@@ -151,6 +164,7 @@ class IP_Geo_Block_Opts {
 	 *
 	 */
 	public static function get_default() {
+		self::$option_table['mimetype'] = IP_Geo_Block_Util::get_allowed_mime_types();
 		return self::$option_table;
 	}
 
@@ -278,6 +292,24 @@ class IP_Geo_Block_Opts {
 
 			if ( version_compare( $version, '3.0.1' ) < 0 )
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
+
+			if ( version_compare( $version, '3.0.3' ) < 0 ) {
+				$settings['login_action']['resetpass'] = $default['login_action']['resetpass'];
+				$settings['exception'   ]['content'  ] = $default['exception'   ]['content'  ];
+				$settings['exception'   ]['restapi'  ] = $default['exception'   ]['restapi'  ];
+				$settings['validation'  ]['content'  ] = $default['validation'  ]['content'  ];
+				$settings['validation'  ]['restapi'  ] = $default['validation'  ]['restapi'  ];
+				$settings['validation'  ]['mimetype' ] = $default['validation'  ]['mimetype' ];
+				$settings['rewrite'     ]['content'  ] = $default['rewrite'     ]['content'  ];
+				$settings['public'      ]['ua_list'  ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
+				$settings['validation'  ]['postkey'  ] && strpos( $settings['validation']['postkey'], 'FILES' ) === FALSE and $settings['validation']['postkey'] .= ',FILES';
+				$settings['public'      ]['dnslkup'  ] = TRUE;
+				$settings['mimetype'    ] = $default['mimetype'   ];
+				$settings['create_user' ] = $default['create_user'];
+				$settings['send_email'  ] = $default['send_email' ];
+				unset( $settings['login_action']['resetpasss'] ); // mis-spelling
+				unset( $settings['rewrite'     ]['public'    ] ); // unneeded
+			}
 
 			// save package version number
 			$settings['version'] = IP_Geo_Block::VERSION;

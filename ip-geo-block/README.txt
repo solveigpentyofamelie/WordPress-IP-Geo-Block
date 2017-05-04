@@ -4,7 +4,7 @@ Donate link:
 Tags: security, firewall, brute force, vulnerability, login, wp-admin, admin, ajax, xmlrpc, comment, pingback, trackback, spam, IP address, geo, geolocation, buddypress, bbPress
 Requires at least: 3.7
 Tested up to: 4.7.3
-Stable tag: 3.0.2.2
+Stable tag: 3.0.3a
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -331,6 +331,15 @@ But there're exceptions: When you enable "**Force to load WP core**" for **Plugi
 10. **IP Geo Plugin** - Attribution tab
 
 == Changelog ==
+
+= 3.0.3 =
+* **Improvement:** New Option "DNS reverse lookup" to enable/disable .
+* **New feature:** New option "Prevent malicious upload" to restrict MIME types.
+* **New feature:** New option "Force to load WP core" for PHP files under `wp-content` and `wp-includes`.
+* **New feature:** Network settings for multisite.
+* **Bug fix:** Fix the bug of Export/Import settings.
+* **Bug fix:** Fix the bug of "Password Reset" caused by miss-spelling "resetpasss".
+* See some details at [release 3.0.3](http://www.ipgeoblock.com/changelog/release-3.0.3.html "3.0.3 Release Note | IP Geo Block").
 
 = 3.0.2.2 =
 * **Improvement:** Change the behavior of "Referrer Suppressor" not to open a new window on public facing pages.

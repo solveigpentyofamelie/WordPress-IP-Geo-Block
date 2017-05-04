@@ -465,6 +465,85 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
+	 * WP alternative function current_user_can() for mu-plugins
+	 *
+	 * Whether the current user has a specific capability.
+	 * @source wp-includes/capabilities.php
+	 */
+	public static function current_user_can( $capability ) {
+		// possibly logged in but should be verified after 'init' hook is fired.
+		return did_action( 'init' ) ? current_user_can( $capability ) : ( self::parse_auth_cookie( 'logged_in' ) ? TRUE : FALSE );
+	}
+
+	/**
+	 * WP alternative function get_allowed_mime_types() for mu-plugins
+	 *
+	 * Retrieve list of allowed mime types and file extensions.
+	 * @source wp-includes/functions.php
+	 */
+	public static function get_allowed_mime_types( $user = NULL ) {
+		$t = wp_get_mime_types(); // wp-includes/functions.php @since 3.5.0
+
+		unset( $t['swf'], $t['exe'] );
+
+		if ( ! self::is_user_logged_in() )
+			unset( $t['htm|html'] );
+
+		return apply_filters( 'upload_mimes', $t, $user );
+	}
+
+	/**
+	 * WP alternative function wp_check_filetype() for mu-plugins
+	 *
+	 * Retrieve the file type from the file name.
+	 * @source wp-includes/functions.php
+	 */
+	public static function check_filetype( $filename, $mimes ) {
+		$type = FALSE;
+		$ext = FALSE;
+
+		foreach ( $mimes as $ext_preg => $mime_match ) {
+			$ext_preg = '!\.(' . $ext_preg . ')$!i';
+			if ( preg_match( $ext_preg, $filename, $ext_matches ) ) {
+				$type = $mime_match;
+				$ext = $ext_matches[1];
+				break;
+			}
+		}
+
+		return compact( 'ext', 'type' );
+	}
+
+	/**
+	 * WP alternative function wp_check_filetype_and_ext() for mu-plugins
+	 *
+	 * Attempt to determine the real file type of a file.
+	 * @source wp-includes/functions.php
+	 */
+	public static function check_filetype_and_ext( $file, $filename, $mimeset ) {
+		// We can't do any further validation without a file to work with
+		$filename = str_replace( "\0", '', urldecode( $filename ) );
+		if ( ! @file_exists( $file ) || ! $filename )
+			return TRUE;
+
+		// Do basic extension validation and MIME mapping
+		$type = self::check_filetype( $filename, $mimeset );
+		if ( FALSE === ( $type = $type['type'] ) )
+			return FALSE;
+
+		// check images using GD (it doesn't care about extension if it's a real image file)
+		if ( 0 === strpos( $type, 'image/' ) && function_exists( 'getimagesize' ) )
+			return FALSE !== @getimagesize( $file );
+
+		// check file type and content type
+		$info = function_exists( 'finfo_open' ) ? finfo_open( FILEINFO_MIME, apply_filters( self::PLUGIN_NAME . '-mime-file', NULL ) ) : NULL;
+		$type = $type === ( $info ? finfo_file( $info, $file ) : mime_content_type( $file ) );
+		$info and finfo_close( $info );
+
+		return $type;
+	}
+
+	/**
 	 * WP alternative function for advanced-cache.php
 	 *
 	 * Add / Remove slash at the end of string.
@@ -532,6 +611,14 @@ class IP_Geo_Block_Util {
 	 */
 	public static function is_private_ip( $ip ) {
 		return ( 0 === strpos( $ip, '127.0.0.' ) || 0 === strpos( $ip, '10.0.0.' ) || '::1' === $ip );
+	}
+
+	/**
+	 * Remove `HOST` and `HOST=...` from `UA and qualification`
+	 *
+	 */
+	public static function mask_qualification( $ua_list ) {
+		return preg_replace( array( '/HOST[^,]*?/', '/\*[:#]\*,?/' ), array( '*', '' ), $ua_list );
 	}
 
 }

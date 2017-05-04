@@ -777,7 +777,7 @@ class IP_Geo_Block {
 			}
 
 			if ( isset( $result['result'] ) ) {
-				$validate = apply_filters( self::PLUGIN_NAME . '-malicious-upload', $validate + $result );
+				$validate = apply_filters( self::PLUGIN_NAME . '-forbidden-upload', $validate + $result );
 				$validate['upload'] = TRUE; // for IP_Geo_Block_Logs::update_stat()
 			}
 		}

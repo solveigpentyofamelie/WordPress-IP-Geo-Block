@@ -73,7 +73,7 @@ if ( $options['save_statistics'] ) :
 		$html = '<div id="'.$plugin_slug.'-chart-daily"><table id="'.$plugin_slug.'-targets">';
 
 		$prev = 0;
-		$targets = array( 'comment', 'xmlrpc', 'login', 'admin', 'public' );
+		$targets = array( 'comment', 'xmlrpc', 'login', 'admin', 'public', 'upload' );
 		foreach ( $statistics['daystats'] as $key => $val ) {
 			while( $prev && $key - $prev > DAY_IN_SECONDS ) {
 				$prev += DAY_IN_SECONDS;

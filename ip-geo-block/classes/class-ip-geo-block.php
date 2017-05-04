@@ -29,7 +29,7 @@ class IP_Geo_Block {
 	protected static $instance = NULL;
 
 	// Globals in this class
-	public  static $wp_path;
+	public static $wp_path;
 	private static $ip_client;
 	private $pagenow = NULL;
 	private $request_uri = NULL;
@@ -43,7 +43,7 @@ class IP_Geo_Block {
 	private function __construct() {
 		// setup loader to configure validation function
 		$settings = self::get_option();
-		$priority = $settings['priority'];
+		$priority = $settings['priority'  ];
 		$validate = $settings['validation'];
 		$loader = new IP_Geo_Block_Loader();
 
@@ -73,13 +73,14 @@ class IP_Geo_Block {
 		self::$wp_path = array( 'home' => IP_Geo_Block_Util::unslashit( parse_url( site_url(), PHP_URL_PATH ) ) ); // @since 2.6.0
 		$len = strlen( self::$wp_path['home'] );
 		$list = array(
-			'admin'     => 'admin_url',                     // @since 2.6.0 /wp-admin/
-			'plugins'   => 'plugins_url',                   // @since 2.6.0 /wp-content/plugins/
-			'themes'    => 'get_theme_root_uri',            // @since 1.5.0 /wp-content/themes/
+			'admin'     => 'admin_url',          // @since 2.6.0 /wp-admin/
+			'plugins'   => 'plugins_url',        // @since 2.6.0 /wp-content/plugins/
+			'themes'    => 'get_theme_root_uri', // @since 1.5.0 /wp-content/themes/
+//			'restapi'   => 'rest_url',           // @since 4.4   /wp-json/
 //			'uploads'   => array( $this, 'uploads_url' ),   // @since 2.2.0 /wp-content/uploads/
 //			'languages' => array( $this, 'languages_url' ), // @since 2.6.0 /wp-content/languages/
-			'content'   => 'content_url',                   // @since 2.6.0 /wp-content/
-			'includes'  => 'includes_url',                  // @since 2.6.0 /wp-includes/
+			'includes'  => 'includes_url',       // @since 2.6.0 /wp-includes/
+			'content'   => 'content_url',        // @since 2.6.0 /wp-content/
 		);
 
 		// analize the validation target (admin|plugins|themes|includes)
@@ -120,7 +121,7 @@ class IP_Geo_Block {
 
 		else {
 			// public facing pages
-			if ( $validate['public'] || ! empty( $_FILES ) /* && 'index.php' === $this->pagenow */ )
+			if ( $validate['public'] || ( $validate['mimetype'] && ! empty( $_FILES ) ) /* && 'index.php' === $this->pagenow */ )
 				$loader->add_action( 'init', array( $this, 'validate_public' ), $priority );
 
 			// message text on comment form
@@ -152,6 +153,10 @@ class IP_Geo_Block {
 				}
 			}
 		}
+
+		// prohibit creating a new user
+//		if ( $settings['create_user'] )
+//			add_filter( 'pre_user_login', array( $this, 'validate_user' ), $priority ); // wp_create_user @since 2.0.3
 
 		// force to change the redirect URL on logout to remove nonce, embed a nonce into pages
 		add_filter( 'wp_redirect', array( $this, 'logout_redirect' ), 20, 2 ); // logout_redirect @4.2
@@ -357,8 +362,7 @@ class IP_Geo_Block {
 		require_once ABSPATH . WPINC . '/functions.php'; // for get_status_header_desc() @since 2.3.0
 
 		// prevent caching (WP Super Cache, W3TC, Wordfence, Comet Cache)
-		if ( ! defined( 'DONOTCACHEPAGE' ) )
-			define( 'DONOTCACHEPAGE', TRUE );
+		defined( 'DONOTCACHEPAGE' ) or define( 'DONOTCACHEPAGE', TRUE );
 
 		$code = (int   )apply_filters( self::PLUGIN_NAME . '-'.$hook.'-status', $settings['response_code'] );
 		$mesg = (string)apply_filters( self::PLUGIN_NAME . '-'.$hook.'-reason', $settings['response_msg' ] ? $settings['response_msg'] : get_status_header_desc( $code ) );
@@ -367,7 +371,7 @@ class IP_Geo_Block {
 		do_action( self::PLUGIN_NAME . '-send-response', $hook, $code, $validate );
 
 		// Set the headers to prevent caching for the different browsers.
-		nocache_headers();
+		nocache_headers(); // wp-includes/functions.php @since 2.0.0
 
 		if ( defined( 'XMLRPC_REQUEST' ) && 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			status_header( 405 );
@@ -395,7 +399,7 @@ class IP_Geo_Block {
 
 			// Show human readable page
 			elseif ( ! defined( 'DOING_AJAX' ) && ! defined( 'XMLRPC_REQUEST' ) ) {
-				$hook = IP_Geo_Block_Util::may_be_logged_in() && 'admin' === $this->target_type;
+				$hook = IP_Geo_Block_Util::is_user_logged_in() && 'admin' === $this->target_type;
 				FALSE !== ( @include get_stylesheet_directory() .'/'.$code.'.php' ) or // child  theme
 				FALSE !== ( @include get_template_directory()   .'/'.$code.'.php' ) or // parent theme
 				wp_die( // get_dashboard_url() @since 3.1.0
@@ -414,7 +418,7 @@ class IP_Geo_Block {
 	 * @param array   $settings option settings
 	 * @param boolean $block    block                      if validation fails (for simulate)
 	 * @param boolean $die      send http response and die if validation fails (for validate_front )
-	 * @param boolean $auth     block and save log         if validation fails (for admin dashboard)
+	 * @param boolean $auth     save log and block         if validation fails (for admin dashboard)
 	 */
 	public function validate_ip( $hook, $settings, $block = TRUE, $die = TRUE, $auth = TRUE ) {
 		// set IP address to be validated
@@ -432,21 +436,20 @@ class IP_Geo_Block {
 		}
 
 		// register auxiliary validation functions
-		// priority high 1 check_ips_black
-		//               2 close_xmlrpc
-		//               5 check_nonce
-		//               6 check_upload, check_signature
+		// priority high 4 close_xmlrpc, close_restapi
+		//               5 check_nonce (high), check_user (low)
+		//               6 check_upload (high), check_signature (low)
 		//               7 check_auth
 		//               8 check_fail
-		//               9 check_ips_white
+		//               9 check_ips_black (high), check_ips_white (low)
 		// priority low 10 validate_country
 		$var = self::PLUGIN_NAME . '-' . $hook;
-		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
-		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 1, 2 );
-		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 9, 2 );
-		$settings['login_fails'] >= 0        and add_filter( $var, array( $this, 'check_fail'      ), 8, 2 );
+		$settings['validation']['mimetype' ] and add_filter( $var, array( $this, 'check_upload'    ), 6, 2 );
 		$auth                                and add_filter( $var, array( $this, 'check_auth'      ), 7, 2 );
-		$auth                                and add_filter( $var, array( $this, 'check_upload'    ), 6, 2 );
+		$settings['login_fails'] >= 0        and add_filter( $var, array( $this, 'check_fail'      ), 8, 2 );
+		$settings['extra_ips'] = apply_filters( self::PLUGIN_NAME . '-extra-ips', $settings['extra_ips'], $hook );
+		$settings['extra_ips']['black_list'] and add_filter( $var, array( $this, 'check_ips_black' ), 9, 2 );
+		$settings['extra_ips']['white_list'] and add_filter( $var, array( $this, 'check_ips_white' ), 9, 2 );
 
 		// make valid provider name list
 		$providers = IP_Geo_Block_Provider::get_valid_providers( $settings['providers'] );
@@ -512,7 +515,7 @@ class IP_Geo_Block {
 	}
 
 	public function validate_front( $can_access = TRUE ) {
-		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE );
+		$validate = $this->validate_ip( 'comment', self::get_option(), TRUE, FALSE, FALSE );
 		return ( 'passed' === $validate['result'] ? $can_access : FALSE );
 	}
 
@@ -524,7 +527,7 @@ class IP_Geo_Block {
 		$settings = self::get_option();
 
 		if ( 2 === (int)$settings['validation']['xmlrpc'] ) // Completely close
-			add_filter( self::PLUGIN_NAME . '-xmlrpc', array( $this, 'close_xmlrpc' ), 2, 2 );
+			add_filter( self::PLUGIN_NAME . '-xmlrpc', array( $this, 'close_xmlrpc' ), 4, 2 );
 
 		else // wp-includes/class-wp-xmlrpc-server.php @since 3.5.0
 			add_filter( 'xmlrpc_login_error', array( $this, 'auth_fail' ), $settings['priority'] );
@@ -563,6 +566,28 @@ class IP_Geo_Block {
 		$this->validate_ip( 'login', $settings, ! empty( $list[ $action ] ) || 'bp_' === substr( current_filter(), 0, 3 ) );
 	}
 
+	/**
+	 * Validate on creating a new user.
+	 *
+	 *//*
+	public function validate_user( $user_login ) {
+		$trace = debug_backtrace( FALSE, 3 );
+		if ( empty( $trace[2] ) || $trace[2]['function'] !== 'wp_create_user' )
+			return $user_login;
+	
+		add_filter( self::PLUGIN_NAME . 'login', array( $this, 'check_user' ), 4, 2 );
+		$this->validate_ip( 'login', self::get_option(), TRUE );
+		return $user_login;
+	}
+
+	public function check_user( $validate, $settings ) {
+		if ( $settings['send_email'] ) {
+			// send email
+		}
+
+		return $validate + array( 'result' => 'newuser' ); // can't overwrite existing result
+	}
+*/
 	/**
 	 * Check exceptions
 	 *
@@ -628,7 +653,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature (except in the comment and post)
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
+		if ( ! IP_Geo_Block_Util::is_user_logged_in() || ! in_array( $this->pagenow, array( 'comment.php', 'post.php' ), TRUE ) )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
@@ -668,7 +693,7 @@ class IP_Geo_Block {
 		}
 
 		// register validation of malicious signature
-		if ( ! IP_Geo_Block_Util::may_be_logged_in() )
+		if ( ! IP_Geo_Block_Util::is_user_logged_in() )
 			add_filter( self::PLUGIN_NAME . '-admin', array( $this, 'check_signature' ), 6, 2 );
 
 		// validate country by IP address (1: Block by country)
@@ -713,7 +738,7 @@ class IP_Geo_Block {
 				if ( $settings['save_statistics'] )
 					IP_Geo_Block_Logs::update_stat( 'login', $validate, $settings );
 
-				$this->send_response( 'login', $settings );
+				$this->send_response( 'login', $validate, $settings );
 			}
 		}
 
@@ -757,11 +782,33 @@ class IP_Geo_Block {
 		return $validate;
 	}
 
+	/**
+	 * Validate malicious file uploading.
+	 * @since 3.0.3
+	 */
 	public function check_upload( $validate, $settings ) {
 		if ( ! empty( $_FILES ) ) {
-			foreach ( $_FILES as $key => $val ) {
-				if ( ! empty( $val['name'] ) && FALSE !== stripos( $settings['extension'], pathinfo( urldecode( $val['name'] ), PATHINFO_EXTENSION ) ) )
-					return $validate + array( 'result' => 'upload' ); // can't overwrite existing result
+			// check capability
+			if ( ! IP_Geo_Block_Util::current_user_can( 'upload_files' ) )
+				$result = array( 'result' => 'upload' ); // can't overwrite existing result
+
+			else foreach ( $_FILES as $key => $val ) {
+				// check $_FILES corruption attack
+				if ( ! isset( $val['error'] ) || is_array( $val['error'] ) ) {
+					$result = array( 'result' => 'upload' ); // can't overwrite existing result
+					break;
+				}
+
+				// check extention at the tail in whitelist
+				if ( ! IP_Geo_Block_Util::check_filetype_and_ext( @$val['tmp_name'], @$val['name'], $settings['mimetype'] ) ) {
+					$result = array( 'result' => 'upload' ); // can't overwrite existing result
+					break;
+				}
+			}
+
+			if ( isset( $result['result'] ) ) {
+				$validate = apply_filters( self::PLUGIN_NAME . '-malicious-upload', $validate + $result );
+				$validate['upload'] = TRUE; // for IP_Geo_Block_Logs::update_stat()
 			}
 		}
 
@@ -868,14 +915,14 @@ class IP_Geo_Block {
 	}
 
 	public function check_page( $validate, $settings ) {
-		global $post;
+		global $pagename, $post;
 		$public = $settings['public'];
 
-		if ( $post ) {
+		if ( $pagename ) {
 			// check page
-			if ( isset( $post->post_name ) && isset( $public['target_pages'][ $post->post_name ] ) )
+			if ( isset( $public['target_pages'][ $pagename ] ) )
 				return $validate; // block by country
-
+		} elseif ( $post ) {
 			// check post type (this would not block top page)
 			$keys = array_keys( $public['target_posts'] );
 			if ( ! empty( $keys ) && is_singular( $keys ) )
@@ -897,6 +944,10 @@ class IP_Geo_Block {
 
 	public function check_bots( $validate, $settings ) {
 		require_once IP_GEO_BLOCK_PATH . 'classes/class-ip-geo-block-lkup.php';
+
+		// mask HOST if DNS lookup is false
+		if ( empty( $settings['public']['dnslkup'] ) )
+			$settings['public']['ua_list'] = IP_Geo_Block_Util::mask_qualification( $settings['public']['ua_list'] );
 
 		// get the name of host (from the cache if exists)
 		if ( empty( $validate['host'] ) && FALSE !== strpos( $settings['public']['ua_list'], 'HOST' ) )

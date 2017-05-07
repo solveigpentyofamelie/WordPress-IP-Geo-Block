@@ -333,8 +333,7 @@ class IP_Geo_Block_Logs {
 	 * These data must be sanitized before rendering
 	 */
 	private static function get_user_agent() {
-		return isset( $_SERVER['HTTP_USER_AGENT'] ) ?
-			self::truncate_utf8( $_SERVER['HTTP_USER_AGENT'] ) : '';
+		return isset( $_SERVER['HTTP_USER_AGENT'] ) ? self::truncate_utf8( $_SERVER['HTTP_USER_AGENT'] ) : '';
 	}
 
 	private static function get_http_headers() {
@@ -358,9 +357,7 @@ class IP_Geo_Block_Logs {
 				$headers[] = $key . '=' . $_SERVER[ $key ];
 		}
 
-		return self::truncate_utf8(
-			implode( ',', $headers ), NULL, '', IP_GEO_BLOCK_MAX_STR_LEN
-		);
+		return self::truncate_utf8( implode( ',', $headers ) );
 	}
 
 	private static function get_post_data( $hook, $validate, $settings ) {
@@ -370,7 +367,7 @@ class IP_Geo_Block_Logs {
 		// XML-RPC
 		if ( 'xmlrpc' === $hook ) {
 			$posts = self::truncate_utf8(
-				file_get_contents( 'php://input' ), '!\s*([<>])\s*!', '$1', IP_GEO_BLOCK_MAX_STR_LEN
+				file_get_contents( 'php://input' ), '!\s*([<>])\s*!', '$1'
 			);
 
 			// mask the password
@@ -406,9 +403,7 @@ class IP_Geo_Block_Logs {
 				! in_array( $key, $keys, TRUE ) and $data[] = $key;
 			}
 
-			return self::truncate_utf8(
-				implode( ',', $data ), '/\s+/', ' ', IP_GEO_BLOCK_MAX_STR_LEN
-			);
+			return self::truncate_utf8( implode( ',', $data ), '/\s+/', ' ' );
 		}
 	}
 

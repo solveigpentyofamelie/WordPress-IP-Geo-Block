@@ -235,8 +235,9 @@ class IP_Geo_Block_Admin_Tab {
 		);
 
 		// Prevent malicious upload
+		// get_allowed_mime_types() in wp-includes/functions.php @since 2.8.6
 		$list = '';
-		foreach ( IP_Geo_Block_Util::get_allowed_mime_types() as $key => $val ) {
+		foreach ( get_allowed_mime_types() as $key => $val ) {
 			$key = esc_attr( $key );
 			$val = esc_attr( $val );
 			$list .= '<li><input id="ip_geo_block_settings_mimetype_' . $key . '" name="ip_geo_block_settings[mimetype][' . $key . ']" type="checkbox" value="' . $val . '"' . checked( isset( $options['mimetype'][ $key ] ), TRUE, FALSE ) . '><label for="ip_geo_block_settings_mimetype_' . $key . '"><dfn title="' . $val . '">' . $key . '</dfn></label></li>' . "\n";

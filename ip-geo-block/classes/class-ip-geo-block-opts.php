@@ -45,7 +45,7 @@ class IP_Geo_Block_Opts {
 			'xmlrpc'      => 1,       // Validate on xmlrpc (1:country 2:close)
 			'proxy'       => NULL,    // $_SERVER variables for IPs
 			'reclogs'     => 1,       // 1:blocked 2:passed 3:unauth 4:auth 5:all
-			'postkey'     => 'action',// Keys in $_POST
+			'postkey'     => 'action,comment,log,pwd,FILES', // Keys in $_POST, $_FILES
 			// since version 1.3.1
 			'maxlogs'     => 100,     // Max number of rows of log
 			'backup'      => NULL,    // Absolute path to directory for backup logs
@@ -164,7 +164,7 @@ class IP_Geo_Block_Opts {
 	 *
 	 */
 	public static function get_default() {
-		self::$option_table['mimetype'] = IP_Geo_Block_Util::get_allowed_mime_types();
+		self::$option_table['mimetype'] = get_allowed_mime_types(); // wp-includes/functions.php @since 2.8.6
 		return self::$option_table;
 	}
 

@@ -753,8 +753,8 @@ class IP_Geo_Block {
 	}
 
 	/**
-	 * Validate malicious file uploading.
-	 * @since 3.0.3
+	 * Validate malicious file uploading. @since 3.0.3
+	 * @see wp_handle_upload() in wp-admin/includes/file.php
 	 */
 	public function check_upload( $validate, $settings ) {
 		if ( ! empty( $_FILES ) ) {

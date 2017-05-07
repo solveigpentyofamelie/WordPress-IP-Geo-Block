@@ -476,71 +476,37 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
-	 * WP alternative function get_allowed_mime_types() for mu-plugins
-	 *
-	 * Retrieve list of allowed mime types and file extensions.
-	 * @source wp-includes/functions.php
-	 */
-	public static function get_allowed_mime_types( $user = NULL ) {
-		$t = wp_get_mime_types(); // wp-includes/functions.php @since 3.5.0
-
-		unset( $t['swf'], $t['exe'] );
-
-		if ( ! self::is_user_logged_in() )
-			unset( $t['htm|html'] );
-
-		return apply_filters( 'upload_mimes', $t, $user );
-	}
-
-	/**
-	 * WP alternative function wp_check_filetype() for mu-plugins
-	 *
-	 * Retrieve the file type from the file name.
-	 * @source wp-includes/functions.php
-	 */
-	public static function check_filetype( $filename, $mimes ) {
-		$type = FALSE;
-		$ext = FALSE;
-
-		foreach ( $mimes as $ext_preg => $mime_match ) {
-			$ext_preg = '!\.(' . $ext_preg . ')$!i';
-			if ( preg_match( $ext_preg, $filename, $ext_matches ) ) {
-				$type = $mime_match;
-				$ext = $ext_matches[1];
-				break;
-			}
-		}
-
-		return compact( 'ext', 'type' );
-	}
-
-	/**
 	 * WP alternative function wp_check_filetype_and_ext() for mu-plugins
 	 *
 	 * Attempt to determine the real file type of a file.
 	 * @source wp-includes/functions.php
+	 * @see wp_handle_upload()          in wp-admin/includes/file.php  https://developer.wordpress.org/reference/functions/wp_handle_upload/
+	 * @see _wp_handle_upload()         in wp-admin/includes/file.php  https://developer.wordpress.org/reference/functions/_wp_handle_upload/
+	 * @see wp_check_filetype()         in wp-includes/functions.php   https://developer.wordpress.org/reference/functions/wp_check_filetype/
+	 * @see wp_check_filetype_and_ext() in wp-includes/functions.php() https://developer.wordpress.org/reference/functions/wp_check_filetype_and_ext/
+	 * @see get_allowed_mime_types()    in wp-includes/functions.php   https://developer.wordpress.org/reference/functions/get_allowed_mime_types/
 	 */
 	public static function check_filetype_and_ext( $file, $filename, $mimeset ) {
 		// We can't do any further validation without a file to work with
-		$filename = str_replace( "\0", '', urldecode( $filename ) );
-		if ( ! @file_exists( $file ) || ! $filename )
+		if ( ! @file_exists( $file ) )
 			return TRUE;
 
 		// Do basic extension validation and MIME mapping
-		$type = self::check_filetype( $filename, $mimeset );
-		if ( FALSE === ( $type = $type['type'] ) )
+		$filename = str_replace( "\0", '', urldecode( $filename ) );
+		$type = wp_check_filetype( $filename, $mimeset ); // wp-includes/functions.php @since 2.0.4
+		if ( ! ( $type = $type['type'] ) )
 			return FALSE;
 
 		// check images using GD (it doesn't care about extension if it's a real image file)
 		if ( 0 === strpos( $type, 'image/' ) && function_exists( 'getimagesize' ) )
 			return FALSE !== @getimagesize( $file );
 
-		// check file type and content type
+		// this doesn't always correct. @see http://stackoverflow.com/questions/36837875/php-finfo-file-returns-incorrect-mime-type
 		$info = function_exists( 'finfo_open' ) ? finfo_open( FILEINFO_MIME, apply_filters( self::PLUGIN_NAME . '-mime-file', NULL ) ) : NULL;
 		$type = $type === ( $info ? finfo_file( $info, $file ) : mime_content_type( $file ) );
 		$info and finfo_close( $info );
 
-		return $type;
+		return $type; // TRUE or FALSE
 	}
 
 	/**

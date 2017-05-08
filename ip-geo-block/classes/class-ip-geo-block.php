@@ -770,7 +770,7 @@ class IP_Geo_Block {
 				}
 
 				// check extention at the tail in whitelist
-				if ( ! IP_Geo_Block_Util::check_filetype_and_ext( @$val['tmp_name'], @$val['name'], $settings['mimetype'] ) ) {
+				if ( ! IP_Geo_Block_Util::check_filetype_and_ext( @$val['tmp_name'], @$val['name'], $settings['mimetype']['white_list'] ) ) {
 					$result = array( 'result' => 'upload' ); // can't overwrite existing result
 					break;
 				}

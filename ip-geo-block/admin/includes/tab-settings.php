@@ -234,13 +234,13 @@ class IP_Geo_Block_Admin_Tab {
 			)
 		);
 
-		// Prevent malicious upload
+		// Prevent malicious upload (white_list)
 		// get_allowed_mime_types() in wp-includes/functions.php @since 2.8.6
 		$list = '';
 		foreach ( get_allowed_mime_types() as $key => $val ) {
 			$key = esc_attr( $key );
 			$val = esc_attr( $val );
-			$list .= '<li><input id="ip_geo_block_settings_mimetype_' . $key . '" name="ip_geo_block_settings[mimetype][' . $key . ']" type="checkbox" value="' . $val . '"' . checked( isset( $options['mimetype'][ $key ] ), TRUE, FALSE ) . '><label for="ip_geo_block_settings_mimetype_' . $key . '"><dfn title="' . $val . '">' . $key . '</dfn></label></li>' . "\n";
+			$list .= '<li><input id="ip_geo_block_settings_mimetype_white_list' . $key . '" name="ip_geo_block_settings[mimetype][white_list][' . $key . ']" type="checkbox" value="' . $val . '"' . checked( isset( $options['mimetype']['white_list'][ $key ] ), TRUE, FALSE ) . '><label for="ip_geo_block_settings_mimetype_white_list' . $key . '"><dfn title="' . $val . '">' . $key . '</dfn></label></li>' . "\n";
 		}
 		$list = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
 			. __( '<dfn title="Select allowed MIME type.">Allowed MIME type</dfn>', 'ip-geo-block' ) . "\n"
@@ -262,6 +262,25 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'html' => __( '<dfn title="It verifies upload capability, and validates integrity between file extension and real MIME content type.">Verify capability and MIME type</dfn>', 'ip-geo-block' ),
 				'after' => $list,
+				'display' => 2 !== (int)$options[ $field ][ $key ],
+			)
+		);
+
+		// Prevent malicious upload (black_list)
+		add_settings_field(
+			$option_name.'_mimetype_black_list',
+			__( '<dfn title="In case of blacklist, MIME type will not be checked.">Forbidden file extension</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => 'mimetype',
+				'sub-field' => 'black_list',
+				'value' => $options['mimetype']['black_list'],
+				'after' => $comma[0],
+				'display' => 2 === (int)$options[ $field ][ $key ],
 			)
 		);
 /*

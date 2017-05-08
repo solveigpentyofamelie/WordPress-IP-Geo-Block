@@ -651,8 +651,8 @@ class IP_Geo_Block_Admin {
 		$default = IP_Geo_Block::get_default();
 
 		// initialize checkboxes not in the form (added after 2.0.0, just in case)
-		foreach ( array( 'anonymize', 'network_wide', 'mimetype' ) as $key ) {
-			$output[ $key ] = is_array( $default[ $key ] ) ? array() : 0;
+		foreach ( array( 'anonymize', 'network_wide' ) as $key ) {
+			$output[ $key ] = 0;
 		}
 
 		// initialize checkboxes not in the form
@@ -666,6 +666,9 @@ class IP_Geo_Block_Admin {
 				$input['exception'][ $key ] = $output['exception'][ $key ];
 			}
 		}
+
+		// keep disabled checkboxes not in the form
+		$output['mimetype']['white_list'] = array();
 
 		// keep disabled checkboxes not in the form
 		if ( empty( $input['validation']['public'] ) ) {
@@ -739,9 +742,10 @@ class IP_Geo_Block_Admin {
 				break;
 
 			  case 'mimetype':
-				foreach ( $input[ $key ] as $k => $v ) {
-					$output[ $key ][ $k ] = sanitize_text_field( $v );
+				foreach ( $input[ $key ]['white_list'] as $k => $v ) {
+					$output[ $key ]['white_list'][ $k ] = sanitize_text_field( $v );
 				}
+				$output[ $key ]['black_list'] = sanitize_text_field( $input[ $key ]['black_list'] );
 				break;
 
 			  default: // checkbox, select, text
@@ -818,6 +822,10 @@ class IP_Geo_Block_Admin {
 		array_shift( $val );
 		$output['signature'] = preg_replace( $key, $val, trim( $output['signature'] ) );
 		$output['signature'] = implode     ( ',', $this->trim( $output['signature'] ) );
+
+		// 3.0.3
+		$output['mimetype' ]['black_list'] = preg_replace( $key, $val, trim( $output['mimetype']['black_list'] ) );
+		$output['mimetype' ]['black_list'] = implode     ( ',', $this->trim( $output['mimetype']['black_list'] ) );
 
 		// 3.0.0 convert country code to upper case, remove redundant spaces
 		$output['public']['ua_list'] = preg_replace( $key, $val, trim( $output['public']['ua_list'] ) );

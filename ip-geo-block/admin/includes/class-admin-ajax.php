@@ -177,7 +177,7 @@ class IP_Geo_Block_Admin_Ajax {
 
 		// some of checkboxes should be off by default
 		$data = IP_Geo_Block::get_option();
-		$data['mimetype'] = array();
+		$data['mimetype']['white_list'] = array();
 		foreach ( array( 'plugins', 'themes' ) as $key ) {
 			$data['exception'][ $key ] = array();
 		}
@@ -332,7 +332,8 @@ class IP_Geo_Block_Admin_Ajax {
 			'[clean_uninstall]',
 			'[api_key][GoogleMap]',      // 2.2.7
 			'[network_wide]',            // 3.0.0
-			'[mimetype][%]',             // 3.0.3
+			'[mimetype][white_list][%]', // 3.0.3
+			'[mimetype][black_list]',    // 3.0.3
 			'[send_email][%]',           // 3.0.3
 			'[create_user]',             // 3.0.3
 		);
@@ -350,7 +351,7 @@ class IP_Geo_Block_Admin_Ajax {
 
 				  case 3:
 					if ( '%' === $m[2] ) {
-						foreach( $input[ $m[1] ] as $key => $val ) {
+						foreach ( $input[ $m[1] ] as $key => $val ) {
 							$json[ $prfx.'['.$m[1].']['.$key.']' ] = $val;
 						}
 						break;
@@ -374,6 +375,10 @@ class IP_Geo_Block_Admin_Ajax {
 						if ( '*' === $m[3] ) {
 							foreach ( $input[ $m[1] ][ $m[2] ] as $val ) {
 								$json[ $prfx.'['.$m[1].']['.$m[2].']'.'['.$val.']' ] = 1;
+							}
+						} elseif ( '%' === $m[3] ) {
+							foreach ( $input[ $m[1] ][ $m[2] ] as $key => $val ) {
+								$json[ $prfx.'['.$m[1].']['.$m[2].']'.'['.$key.']' ] = $val;
 							}
 						} elseif ( is_array( $input[ $m[1] ][ $m[2] ] ) ) { // '$' === $m[3]
 							$json[ $prfx.'['.$m[1].']['.$m[2].']' ] = implode( ',', $input[ $m[1] ][ $m[2] ] );

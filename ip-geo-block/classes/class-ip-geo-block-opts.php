@@ -154,7 +154,10 @@ class IP_Geo_Block_Opts {
 			'dnslkup'        => TRUE,    // use DNS reverse lookup
 		),
 		// since version 3.0.3
-		'mimetype'        => array(),    // key and value
+		'mimetype'        => array(
+			'white_list'     => array(), // key and value
+			'black_list'     => "asp,cgi,exe,jsp,php,php3,php4,pl,py,pht,phtml,html,htm,shtml,sh", // comma separated extension
+		),
 		'send_email'      => array(),    // TBD
 		'create_user'     => 0,          // 0:disable, 1:block by country, 2:only admin, 3:prohibit
 	);
@@ -164,7 +167,7 @@ class IP_Geo_Block_Opts {
 	 *
 	 */
 	public static function get_default() {
-		self::$option_table['mimetype'] = get_allowed_mime_types(); // wp-includes/functions.php @since 2.8.6
+		self::$option_table['mimetype']['white_list'] = get_allowed_mime_types(); // wp-includes/functions.php @since 2.8.6
 		return self::$option_table;
 	}
 

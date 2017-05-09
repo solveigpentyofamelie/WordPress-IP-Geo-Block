@@ -68,12 +68,12 @@ if ( $options['save_statistics'] ) :
 			)
 		);
 
-		// Blocked on a daily basis
+		// Blocked by date
 		$field = 'daily';
 		$html = '<div id="'.$plugin_slug.'-chart-daily"><table id="'.$plugin_slug.'-targets">';
 
 		$prev = 0;
-		$targets = array( 'comment', 'xmlrpc', 'login', 'admin', 'public', 'upload' );
+		$targets = array( 'comment', 'xmlrpc', 'login', 'admin', 'public' /*, 'upload'*/ );
 		foreach ( $statistics['daystats'] as $key => $val ) {
 			while( $prev && $key - $prev > DAY_IN_SECONDS ) {
 				$prev += DAY_IN_SECONDS;

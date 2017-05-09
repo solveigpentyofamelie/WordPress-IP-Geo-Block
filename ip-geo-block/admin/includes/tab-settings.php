@@ -262,7 +262,7 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'html' => __( '<dfn title="It verifies upload capability, and validates integrity between file extension and real MIME content type.">Verify capability and MIME type</dfn>', 'ip-geo-block' ),
 				'after' => $list,
-				'display' => 2 !== (int)$options[ $field ][ $key ],
+				'class' => 2 !== (int)$options[ $field ][ $key ] ? '' : 'ip-geo-block-hide',
 			)
 		);
 
@@ -280,7 +280,7 @@ class IP_Geo_Block_Admin_Tab {
 				'sub-field' => 'black_list',
 				'value' => $options['mimetype']['black_list'],
 				'after' => $comma[0],
-				'display' => 2 === (int)$options[ $field ][ $key ],
+				'class' => 2 === (int)$options[ $field ][ $key ] ? '' : 'ip-geo-block-hide',
 			)
 		);
 /*

@@ -318,7 +318,7 @@ var ip_geo_block_time = new Date();
 		dataLine: null,
 		viewLine: null,
 		drawLine: function () {
-			var i, j, k, m, n, cells, arr = [], tr;
+			var i, j, m, n, cells, arr = [], tr;
 			if (!self.dataLine) {
 				i = self.dataLine = new google.visualization.DataTable();
 				i.addColumn('date',   'Date'   );
@@ -327,14 +327,14 @@ var ip_geo_block_time = new Date();
 				i.addColumn('number', 'login'  );
 				i.addColumn('number', 'admin'  );
 				i.addColumn('number', 'public' );
-				i.addColumn('number', 'upload' );
+//				i.addColumn('number', 'upload' ); // tab-statistics.php: Blocked by date
 				tr = $(ID('#', 'targets tr'));
 				for (m = tr.length, i = 0; i < m; ++i) {
 					arr[i] = [];
 					cells = tr.eq(i).children();
-					for (n = cells.length, j = 0; j < n; ++j) {
-						k = cells.eq(j).text();
-						arr[i].push(j ? Number(k) : new Date(k));
+					arr[i].push(new Date(cells.eq(0).text()));
+					for (n = cells.length, j = 1; j < n; j++) {
+						arr[i].push(Number(cells.eq(j).text()));
 					}
 				}
 				self.dataLine.addRows(arr);
@@ -357,9 +357,9 @@ var ip_geo_block_time = new Date();
 						top: '5%',
 						width: '100%',
 						height: '75%'
-					},
+					}
 					//       blue       red        orange     green      purple     cyan
-					colors: ['#0000ff', '#ff0000', '#ffa500', '#008000', '#800080', '#00ffff']
+					// ,colors: ['#0000ff', '#ff0000', '#ffa500', '#008000', '#800080', '#00ffff']
 				});
 			}
 		}

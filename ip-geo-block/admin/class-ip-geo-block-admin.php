@@ -660,15 +660,15 @@ class IP_Geo_Block_Admin {
 			$output['validation'][ $key ] = 0;
 		}
 
+		// initialize checkboxes not in the form
+		$output['mimetype']['white_list'] = array();
+
 		// keep disabled checkboxes not in the form
 		foreach ( array( 'admin', 'plugins', 'themes' ) as $key ) {
 			if ( empty( $input['validation'][ $key ] ) ) {
 				$input['exception'][ $key ] = $output['exception'][ $key ];
 			}
 		}
-
-		// keep disabled checkboxes not in the form
-		$output['mimetype']['white_list'] = array();
 
 		// keep disabled checkboxes not in the form
 		if ( empty( $input['validation']['public'] ) ) {
@@ -811,7 +811,7 @@ class IP_Geo_Block_Admin {
 			preg_replace( '/[^\w,]/', '', strtoupper( $output['validation']['proxy'] ) )
 		) );
 
-		// sanitize and format ip address
+		// sanitize and format ip address (text area)
 		$key = array( '/[^\w\n\.\/,:]/', '/([\s,])+/', '/(?:^,|,$)/' );
 		$val = array( '',                '$1',         ''            );
 		$output['extra_ips']['white_list'] = preg_replace( $key, $val, trim( $output['extra_ips']['white_list'] ) );
@@ -823,7 +823,7 @@ class IP_Geo_Block_Admin {
 		$output['signature'] = preg_replace( $key, $val, trim( $output['signature'] ) );
 		$output['signature'] = implode     ( ',', $this->trim( $output['signature'] ) );
 
-		// 3.0.3
+		// 3.0.3 trim extra space and comma
 		$output['mimetype' ]['black_list'] = preg_replace( $key, $val, trim( $output['mimetype']['black_list'] ) );
 		$output['mimetype' ]['black_list'] = implode     ( ',', $this->trim( $output['mimetype']['black_list'] ) );
 

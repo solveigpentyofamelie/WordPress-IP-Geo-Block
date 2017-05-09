@@ -523,10 +523,9 @@ class IP_Geo_Block_Logs {
 
 		$sql = "SELECT `hook`, `time`, `ip`, `code`, `result`, `method`, `user_agent`, `headers`, `data` FROM `$table`";
 
-		if ( ! $hook )
-			$sql .= " ORDER BY `hook`, `No` DESC";
-		else
-			$sql .= $wpdb->prepare( " WHERE `hook` = '%s' ORDER BY `No` DESC", $hook );
+		$sql .= $hook ?
+			$wpdb->prepare( " WHERE `hook` = '%s' ORDER BY `No` DESC", $hook ) :
+			" ORDER BY `hook`, `No` DESC";
 
 		return $sql ? $wpdb->get_results( $sql, ARRAY_N ) : array();
 	}
@@ -552,7 +551,7 @@ class IP_Geo_Block_Logs {
 				$stat['providers'][ $provider ] = array( 'count' => 0, 'time' => 0.0 );
 
 			$stat['providers'][ $provider ]['count']++; // undefined in auth_fail()
-			$stat['providers'][ $provider ]['time' ] += (float)(empty( $validate['time'] ) ? 0 : $validate['time']);
+			$stat['providers'][ $provider ]['time' ] += (float)( isset( $validate['time'] ) ? $validate['time'] : 0 );
 
 			if ( 'passed' !== $validate['result'] ) {
 				// Blocked by type of IP address
@@ -560,7 +559,16 @@ class IP_Geo_Block_Logs {
 					++$stat['IPv4'];
 				elseif ( filter_var( $validate['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) )
 					++$stat['IPv6'];
+if (1) {
+				++$stat['blocked'];
+				$days = mktime( 0, 0, 0 );
+				isset( $stat['countries'][ $validate['code'] ] ) ? ++$stat['countries'][ $validate['code'] ] : $stat['countries'][ $validate['code'] ] = 1;
+				isset( $stat['daystats' ][ $days ][ $hook ]    ) ? ++$stat['daystats' ][ $days ][ $hook ]    : $stat['daystats' ][ $days ][ $hook ]    = 1;
+				isset( $stat['reason'   ][ $hook ]             ) ? ++$stat['reason'   ][ $hook ]             : $stat['reason'   ][ $hook ]             = 1;
 
+				if ( isset( $validate['upload'] ) )
+					isset( $stat['reason']['upload'] ) ? ++$stat['reason']['upload'] : $stat['reason']['upload'] = 1;
+} else {
 				if ( isset( $validate['upload'] ) )
 					$hook = 'upload';
 
@@ -568,9 +576,9 @@ class IP_Geo_Block_Logs {
 				@++$stat['countries'][ $validate['code'] ];
 				@++$stat['daystats' ][ mktime( 0, 0, 0 ) ][ $hook ];
 				@++$stat['reason'   ][ $hook ];
-			}
+}			}
 
-			if ( count( $stat['daystats'] ) > max( 30, min( 365, (int)@$settings['validation']['recdays'] ) ) ) {
+			if ( count( $stat['daystats'] ) > max( 30, min( 365, (int)$settings['validation']['recdays'] ) ) ) {
 				reset( $stat['daystats'] );
 				unset( $stat['daystats'][ key( $stat['daystats'] ) ] );
 			}

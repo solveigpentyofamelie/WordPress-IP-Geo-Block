@@ -333,7 +333,8 @@ But there're exceptions: When you enable "**Force to load WP core**" for **Plugi
 == Changelog ==
 
 = 3.0.3 =
-* **Improvement:** New Option "DNS reverse lookup" to enable/disable .
+* **Improvement:** Stop rendering sections on setting pages to reduce flash of unstyled content.
+* **Improvement:** New Option "DNS reverse lookup" to enable/disable.
 * **New feature:** New option "Prevent malicious upload" to restrict MIME types.
 * **New feature:** New option "Force to load WP core" for PHP files under `wp-content` and `wp-includes`.
 * **New feature:** Network settings for multisite.

@@ -147,7 +147,7 @@ class IP_Geo_Block {
 		}
 
 		// prohibit creating a new user
-//		if ( $settings['create_user'] )
+//		if ( $settings['others']['create_user'] )
 //			add_filter( 'pre_user_login', array( $this, 'validate_user' ), $priority ); // wp_create_user @since 2.0.3
 
 		// force to change the redirect URL on logout to remove nonce, embed a nonce into pages

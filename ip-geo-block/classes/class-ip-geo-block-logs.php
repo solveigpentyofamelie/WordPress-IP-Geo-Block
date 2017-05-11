@@ -579,8 +579,8 @@ if (1) {
 }			}
 
 			if ( count( $stat['daystats'] ) > max( 30, min( 365, (int)$settings['validation']['recdays'] ) ) ) {
-				reset( $stat['daystats'] );
-				unset( $stat['daystats'][ key( $stat['daystats'] ) ] );
+				reset( $stat['daystats'] ); // pointer to the top
+				unset( $stat['daystats'][ key( $stat['daystats'] ) ] ); // unset at the top
 			}
 
 			// Record statistics.

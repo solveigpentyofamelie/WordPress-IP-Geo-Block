@@ -285,7 +285,8 @@ class IP_Geo_Block_Admin_Tab {
 		);
 /*
 		// Create a new user
-		$field = 'create_user';
+		$field = 'others';
+		$key = 'create_user';
 		add_settings_field(
 			$option_name.'_'.$field,
 			__( '<dfn title="It enables/disables to restrict creation of new user accounts.">Create a newe user</dfn>', 'ip-geo-block' ),
@@ -296,14 +297,15 @@ class IP_Geo_Block_Admin_Tab {
 				'type' => 'select',
 				'option' => $option_name,
 				'field' => $field,
-				'value' => $options[ $field ],
+				'sub-field' => $key,
+				'value' => $options[ $field ][ $key ],
 				'list' => array(
 					0 => 'Disable',
 					1 => 'Block by country',
 					2 => 'Only by admin',
 					3 => 'Prohibit',
 				),
-				'after' => '<br /><input id="ip_geo_block_settings_send_email_create_user" name="ip_geo_block_settings[send_email][create_user]" type="checkbox"' . checked( ! empty( $options['send_email']['create_user'] ), TRUE, FALSE ) . '/><label for="ip_geo_block_settings_send_email_create_user"><dfn title="It enables to send email to administrator when a new user count is created.">Send email</dfn></label>',
+				'after' => '<br /><input id="ip_geo_block_settings_' . $field . '_' . $key . '" name="ip_geo_block_settings[' . $field . '][' . $key . ']" type="checkbox"' . checked( ! empty( $options[ $field ][ $key ] ), TRUE, FALSE ) . '/><label for="ip_geo_block_settings_' . $field . '_' . $key . '"><dfn title="It enables to send email to administrator when a new user count is created.">Send email</dfn></label>',
 			)
 		);
 */

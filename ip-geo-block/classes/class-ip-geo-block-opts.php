@@ -158,8 +158,7 @@ class IP_Geo_Block_Opts {
 			'white_list'     => array(), // key and value
 			'black_list'     => "asp,cgi,exe,jsp,php,php3,php4,pl,py,pht,phtml,html,htm,shtml,sh", // comma separated extension
 		),
-		'send_email'      => array(),    // TBD
-		'create_user'     => 0,          // 0:disable, 1:block by country, 2:only admin, 3:prohibit
+		'others'          => array(),    // TBD
 	);
 
 	/**
@@ -297,21 +296,20 @@ class IP_Geo_Block_Opts {
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
 
 			if ( version_compare( $version, '3.0.3' ) < 0 ) {
-				$settings['login_action']['resetpass'] = $default['login_action']['resetpass'];
-				$settings['exception'   ]['content'  ] = $default['exception'   ]['content'  ];
-				$settings['exception'   ]['restapi'  ] = $default['exception'   ]['restapi'  ];
-				$settings['validation'  ]['content'  ] = $default['validation'  ]['content'  ];
-				$settings['validation'  ]['restapi'  ] = $default['validation'  ]['restapi'  ];
-				$settings['validation'  ]['mimetype' ] = $default['validation'  ]['mimetype' ];
-				$settings['rewrite'     ]['content'  ] = $default['rewrite'     ]['content'  ];
+				$settings['rewrite'     ]['content'  ] = $default['rewrite'      ]['content'   ];
+				$settings['exception'   ]['content'  ] = $default['exception'    ]['content'   ];
+				$settings['exception'   ]['restapi'  ] = $default['exception'    ]['restapi'   ];
+				$settings['validation'  ]['content'  ] = $default['validation'   ]['content'   ];
+				$settings['validation'  ]['restapi'  ] = $default['validation'   ]['restapi'   ];
+				$settings['validation'  ]['mimetype' ] = $default['validation'   ]['mimetype'  ];
+				$settings['validation'  ]['postkey'  ] = $settings['validation'  ]['postkey'   ] . (strpos( $settings['validation']['postkey'], 'FILES' ) === FALSE ? ',FILES' : '');
+				$settings['login_action']['resetpass'] = $settings['login_action']['resetpasss'];
 				$settings['public'      ]['ua_list'  ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
-				$settings['validation'  ]['postkey'  ] && strpos( $settings['validation']['postkey'], 'FILES' ) === FALSE and $settings['validation']['postkey'] .= ',FILES';
 				$settings['public'      ]['dnslkup'  ] = TRUE;
-				$settings['mimetype'    ] = $default['mimetype'   ];
-				$settings['create_user' ] = $default['create_user'];
-				$settings['send_email'  ] = $default['send_email' ];
-				unset( $settings['login_action']['resetpasss'] ); // mis-spelling
+				$settings['mimetype'    ] = $default['mimetype'];
+				$settings['others'      ] = $default['others'  ];
 				unset( $settings['rewrite'     ]['public'    ] ); // unneeded
+				unset( $settings['login_action']['resetpasss'] ); // mis-spelled
 			}
 
 			// save package version number

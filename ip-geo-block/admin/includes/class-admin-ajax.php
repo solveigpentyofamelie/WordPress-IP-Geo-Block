@@ -334,8 +334,7 @@ class IP_Geo_Block_Admin_Ajax {
 			'[network_wide]',            // 3.0.0
 			'[mimetype][white_list][%]', // 3.0.3
 			'[mimetype][black_list]',    // 3.0.3
-			'[send_email][%]',           // 3.0.3
-			'[create_user]',             // 3.0.3
+			'[others][%]',               // 3.0.3
 		);
 		$json = array();
 		$prfx = IP_Geo_Block::OPTION_NAME;

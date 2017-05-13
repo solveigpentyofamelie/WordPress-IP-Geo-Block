@@ -381,24 +381,27 @@ class IP_Geo_Block_Logs {
 
 		// post data
 		else {
+			$keys  = explode( ',', $settings['validation']['postkey'] );
+			$data  = array();
 			$posts = $_POST;
-			$data = array();
 
 			// uploading files
-			if ( ! empty( $_FILES ) )
+			if ( ! empty( $_FILES ) ) {
 				$posts['FILES'] = str_replace( PHP_EOL, ' ', print_r( $_FILES, TRUE ) );
+				! in_array( 'FILES', $keys, TRUE ) and $keys[] = 'FILES';
+			}
 
 			// mask the password
 			if ( ! empty( $posts['pwd'] ) && $mask_pwd )
 				$posts['pwd'] = '***';
 
 			// primaly: $_POST keys
-			foreach ( $keys = explode( ',', $settings['validation']['postkey'] ) as $key ) {
+			foreach ( $keys as $key ) {
 				array_key_exists( $key, $posts ) and $data[] = $key . '=' . $posts[ $key ];
 			}
 
 			// secondary: rest of the keys in $_POST
-			foreach ( array_keys( $posts ) as $key ) {
+			foreach ( array_keys( $_POST ) as $key ) {
 				! in_array( $key, $keys, TRUE ) and $data[] = $key;
 			}
 
@@ -563,9 +566,6 @@ class IP_Geo_Block_Logs {
 				 ++$stat['blocked'  ];
 				@++$stat['countries'][ $validate['code'] ];
 				@++$stat['daystats' ][ mktime( 0, 0, 0 ) ][ $hook ];
-
-				// count 'upload' on 'unknown' @since 3.0.3
-				isset( $validate['upload'] ) and ++$stat['unknown'];
 			}
 
 			if ( count( $stat['daystats'] ) > max( 30, min( 365, (int)$settings['validation']['recdays'] ) ) ) {

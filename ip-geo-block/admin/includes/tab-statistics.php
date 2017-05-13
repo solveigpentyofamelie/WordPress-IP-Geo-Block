@@ -38,7 +38,7 @@ if ( $options['save_statistics'] ) :
 				'type' => 'html',
 				'option' => $option_name,
 				'field' => $field,
-				'value' => esc_html( $statistics[ $field ] ),
+				'value' => (int)$statistics[ $field ],
 			)
 		);
 

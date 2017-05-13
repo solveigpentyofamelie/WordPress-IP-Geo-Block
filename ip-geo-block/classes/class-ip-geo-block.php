@@ -760,25 +760,25 @@ class IP_Geo_Block {
 		if ( ! empty( $_FILES ) ) {
 			// check capability
 			if ( ! IP_Geo_Block_Util::current_user_can( 'upload_files' ) )
-				$result = array( 'result' => 'upload' ); // can't overwrite existing result
+				$upload = TRUE;
 
 			else foreach ( $_FILES as $key => $val ) {
 				// check $_FILES corruption attack
 				if ( ! isset( $val['error'] ) || is_array( $val['error'] ) ) {
-					$result = array( 'result' => 'upload' ); // can't overwrite existing result
+					$upload = TRUE;
 					break;
 				}
 
 				// check extention at the tail in whitelist
 				if ( ! IP_Geo_Block_Util::check_filetype_and_ext( @$val['tmp_name'], @$val['name'], $settings['mimetype']['white_list'] ) ) {
-					$result = array( 'result' => 'upload' ); // can't overwrite existing result
+					$upload = TRUE;
 					break;
 				}
 			}
 
-			if ( isset( $result['result'] ) ) {
-				$validate = apply_filters( self::PLUGIN_NAME . '-forbidden-upload', $validate + $result );
-				$validate['upload'] = TRUE; // for IP_Geo_Block_Logs::update_stat()
+			if ( isset( $upload ) ) {
+				$validate['result'] = isset( $validate['result'] ) ? $validate['result'] . '*' : 'upload';
+				$validate = apply_filters( self::PLUGIN_NAME . '-forbidden-upload', $validate );
 			}
 		}
 

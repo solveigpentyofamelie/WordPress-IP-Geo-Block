@@ -221,7 +221,7 @@ class IP_Geo_Block_Admin_Tab {
 		$field = 'signature';
 		add_settings_field(
 			$option_name.'_'.$field,
-			__( '<dfn title="It validates malicious signatures independently of &#8220;Block by country&#8221; and &#8220;Prevent Zero-day Exploit&#8221; for the target &#8220;Admin area&#8221;, &#8220;Admin ajax/post&#8221;, &#8220;Plugins area&#8221; and &#8220;Themes area&#8221;.">Bad signatures in query</dfn> <nobr>(<a href="javascript:void(0)" id="ip-geo-block-decode" title="When you find ugly character string in the text area, please click to restore."><span id="ip-geo-block-cycle"></span></a>)</nobr>', 'ip-geo-block' ),
+			__( '<dfn title="It validates malicious signatures independently of &#8220;Block by country&#8221; and &#8220;Prevent Zero-day Exploit&#8221; for the target &#8220;Admin area&#8221;, &#8220;Admin ajax/post&#8221;, &#8220;Plugins area&#8221; and &#8220;Themes area&#8221;.">Bad signatures in query</dfn> <nobr>(<a class="ip-geo-block-cycle" id="ip-geo-block-decode" title="When you find ugly character string in the text area, please click to restore."><span></span></a>)</nobr>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -242,9 +242,9 @@ class IP_Geo_Block_Admin_Tab {
 			$val = esc_attr( $val );
 			$list .= '<li><input id="ip_geo_block_settings_mimetype_white_list' . $key . '" name="ip_geo_block_settings[mimetype][white_list][' . $key . ']" type="checkbox" value="' . $val . '"' . checked( isset( $options['mimetype']['white_list'][ $key ] ), TRUE, FALSE ) . '><label for="ip_geo_block_settings_mimetype_white_list' . $key . '"><dfn title="' . $val . '">' . $key . '</dfn></label></li>' . "\n";
 		}
-		$list = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
-			. __( '<dfn title="Select allowed MIME type.">Allowed MIME type</dfn>', 'ip-geo-block' ) . "\n"
-			. '<li style="display:none"><ul class="ip-geo-block-float">' . "\n" . $list . '</ul></li></ul>' . "\n";
+		$list = '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">'
+			. __( '<dfn title="Select allowed MIME type.">Allowed MIME type</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>'
+			. "\n<li style=\"display:none\"><ul class=\"ip-geo-block-float\">\n" . $list . "</ul></li></ul>\n";
 
 		$field = 'validation';
 		$key = 'mimetype';
@@ -269,7 +269,7 @@ class IP_Geo_Block_Admin_Tab {
 		// Prevent malicious upload (black_list)
 		add_settings_field(
 			$option_name.'_mimetype_black_list',
-			__( '<dfn title="In case of blacklist, MIME type will not be checked.">Forbidden file extension</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="In this case, MIME type will not be checked.">Forbidden file extension</dfn>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -517,7 +517,7 @@ class IP_Geo_Block_Admin_Tab {
 				'sub-field' => $key,
 				'value' => $options[ $field ][ $key ],
 				'text' => __( 'Block by country', 'ip-geo-block' ),
-				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual action as a blocking target.">Target actions</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n". $list . "</ul></li></ul>\n",
+				'after' => '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual action as a blocking target.">Target actions</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n" . $list . "</ul></li></ul>\n",
 			)
 		);
 
@@ -611,9 +611,9 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'list' => $list,
 				'desc' => $desc,
-				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">'
-					. __( '<dfn title="Specify the page name (&#8220;&hellip;&#8221; in &#8220;page=&hellip;&#8221;) or action name (&#8220;&hellip;&#8221; in &#8220;action=&hellip;&#8221;) to prevent undesired blocking caused by &#8220;Block by country&#8221; for non logged-in user and &#8220;Prevent Zero-day Exploit&#8221; for logged-in user.">Exceptions</dfn>', 'ip-geo-block' )
-					. '<li style="display:none"><ul><li>' . "\n"
+				'after' => '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">'
+					. __( '<dfn title="Specify the page name (&#8220;&hellip;&#8221; in &#8220;page=&hellip;&#8221;) or action name (&#8220;&hellip;&#8221; in &#8220;action=&hellip;&#8221;) to prevent undesired blocking caused by &#8220;Block by country&#8221; for non logged-in user and &#8220;Prevent Zero-day Exploit&#8221; for logged-in user.">Exceptions</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>'
+					. "\n<li style=\"display:none\"><ul><li>\n"
 					. '<input class="regular-text code" id="ip_geo_block_settings_exception_admin" name="ip_geo_block_settings[exception][admin]" type="text" value="' . esc_attr( implode( ',', $options['exception']['admin'] ) ) . '">' . "\n"
 					. $comma[0]
 					. '</li><li><ul id="ip-geo-block-actions">'
@@ -683,7 +683,7 @@ class IP_Geo_Block_Admin_Tab {
 					2 => sprintf( $desc[0], $val ),
 				),
 				'before' => $tmp,
-				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[2] . '<li style="display:none"><ul>' . "\n" . $exception . "</ul></li></ul>\n",
+				'after' => '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . $desc[2] . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n" . $exception . "</ul></li></ul>\n",
 			)
 		);
 
@@ -733,7 +733,7 @@ class IP_Geo_Block_Admin_Tab {
 					2 => sprintf( $desc[0], $val ),
 				),
 				'before' => $tmp,
-				'after' => '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . $desc[2] . '<li style="display:none"><ul>' . "\n" . $exception . "</ul></li></ul>\n",
+				'after' => '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . $desc[2] . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n" . $exception . "</ul></li></ul>\n",
 			)
 		);
 
@@ -826,7 +826,7 @@ class IP_Geo_Block_Admin_Tab {
 		);
 
 		// List of page
-		$exception = '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual page as a blocking target.">Page</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception = '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual page as a blocking target.">Page</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n";
 		$tmp = get_pages();
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -838,7 +838,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of post type
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual post type on a single page as a blocking target.">Post type</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual post type on a single page as a blocking target.">Post type</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n";
 		$tmp = get_post_types( array( 'public' => TRUE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -850,7 +850,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of category
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual category on a single page or archive page as a blocking target.">Category</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual category on a single page or archive page as a blocking target.">Category</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n";
 		$tmp = get_categories( array( 'hide_empty' => FALSE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {
@@ -862,7 +862,7 @@ class IP_Geo_Block_Admin_Tab {
 		$exception .= '</ul></li></ul>' . "\n";
 
 		// List of tag
-		$exception .= '<ul class="ip_geo_block_settings_folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual tag on a single page or archive page as a blocking target.">Tag</dfn>', 'ip-geo-block' ) . "<li style='display:none'><ul>\n";
+		$exception .= '<ul class="ip-geo-block-settings-folding ip-geo-block-dropup">' . __( '<dfn title="Specify the individual tag on a single page or archive page as a blocking target.">Tag</dfn>', 'ip-geo-block' ) . '<a class="ip-geo-block-cycle ip-geo-block-hide"><span></span></a>' . "\n<li style=\"display:none\"><ul>\n";
 		$tmp = get_tags( array( 'hide_empty' => FALSE ) );
 		if ( ! empty( $tmp ) ) {
 			foreach ( $tmp as $key ) {

@@ -137,12 +137,12 @@ var ip_geo_block_time = new Date();
 	}
 
 	// Show/Hide folding list
-	function show_folding_list($this, element, field, mask) {
+	function show_folding_list($this, element, mask) {
 		var stat = false;
 		stat |= (0 === $this.prop('type').indexOf('checkbox') && $this.is(':checked'));
 		stat |= (0 === $this.prop('type').indexOf('select'  ) && '0' !== $this.val());
 
-		element.nextAll('.' + field + '_folding').each(function (i, obj) {
+		element.nextAll(ID('.', 'settings-folding')).each(function (i, obj) {
 			fold_elements($(obj), stat && mask);
 		});
 	}
@@ -198,19 +198,18 @@ var ip_geo_block_time = new Date();
 
 	// Enable / Disable at front-end target settings
 	function set_front_end($this) {
-		var field   = ID('%', 'settings'),
-		    checked = $this.is(':checked'),
+		var checked = $this.is(':checked'),
 		    select  = $(ID('@', 'public_target_rule')),
 		    parent  = $this.closest('tr').nextAll('tr');
 
 		// Enable / Disable descendent items
-		parent.find('[name^="' + field + '"]').prop('disabled', !checked);
+		parent.find('[name^="' + ID('%', 'settings') + '"]').prop('disabled', !checked);
 
 		// Enable / Disable description
 		parent.find(ID('.', 'desc')).css('opacity', checked ? 1.0 : 0.5);
 
 		// Show / Hide validation target
-		show_folding_list($this, select, field, '1' === select.val() ? true : false);
+		show_folding_list($this, select, '1' === select.val() ? true : false);
 	}
 
 	/**
@@ -408,13 +407,10 @@ var ip_geo_block_time = new Date();
 
 		// Toggle all
 		$(ID('#', 'toggle-sections')).on('click', function (event) {
-			var $this, n = 0,
-				id = [ID('dropdown'), ID('dropup')],
-				title = $(ID('.', 'field')).find('h2,h3');
-
-			title.each(function (i) {
-				n += $(this).hasClass(id[0]);
-			});
+			var $this,
+			    id = [ID('dropdown'), ID('dropup')],
+			    title = $(ID('.', 'field')).find('h2,h3'),
+			    n = title.filter('.' + id[0]).length;
 
 			// update cookie
 			title.each(function (i) {
@@ -525,11 +521,7 @@ var ip_geo_block_time = new Date();
 				$(ID('#', 'actions')).find('input').each(function (i, e) {
 					var $this = $(this),
 					    action = $this.attr('id').replace(ID('%', ''), '');
-					if (-1 !== $.inArray(action, actions)) {
-						$this.prop('checked',true);
-					} else {
-						$this.prop('checked',false);
-					}
+					$this.prop('checked', -1 !== $.inArray(action, actions));
 				});
 			}).change();
 
@@ -551,6 +543,7 @@ var ip_geo_block_time = new Date();
 				var $this = $(this),
 				    id = $this.attr('id'),
 				    parent = $this.parent();
+
 				ajax_post(id.replace(/^.*(?:scan)/, 'scanning'), {
 					cmd: 'scan-code',
 					which: id.replace(ID('$', 'scan-'), '')
@@ -698,11 +691,35 @@ var ip_geo_block_time = new Date();
 				return false;
 			});
 
+			// Toggle checkbox
+			$(ID('.', 'cycle')).on('click', function (event) {
+				var $that = $(this).next('li'),
+				    text = $that.find(ID('@', 'exception_admin')),
+				    cbox = $that.find('input:checkbox'),
+				    stat = cbox.filter(':checked').length;
+
+				if (text.length) {
+					cbox.filter(stat ? ':checked' : ':not(:checked)').click();
+				} else {
+					cbox.prop('checked', !stat);
+				}
+
+				return false;
+			});
+
 			// Folding list
-			$('ul.' + name + '_folding>dfn').on('click', function (event) {
-				var $this = $(this).parent();
+			$(ID('.', 'settings-folding>dfn')).on('click', function (event) {
+				var drop = ID('drop'),
+				$this = $(this).parent();
 				$this.children('li').toggle();
-				$this.toggleClass(ID('dropup')).toggleClass(ID('dropdown'));
+				$this.toggleClass(drop + 'up').toggleClass(drop + 'down');
+
+				if ($this.hasClass(drop + 'down')) {
+					$this.children('a').show();
+				} else {
+					$this.children('a').hide();
+				}
+
 				return false;
 			});
 
@@ -740,11 +757,11 @@ var ip_geo_block_time = new Date();
 			// Candidate actions
 			$(ID('#', 'actions')).on('click', 'input', function (event) {
 				var i, $this = $(this),
-				    action = $this.attr('id').replace(ID('%', ''), ''),
-				    $admin = $(ID('@', 'exception_admin')),
-				    actions = $.grep($admin.val().split(','), function (e){
-				    	return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
-				    });
+				action = $this.attr('id').replace(ID('%', ''), ''),
+				$admin = $(ID('@', 'exception_admin')),
+				actions = $.grep($admin.val().split(','), function (e){
+					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
+				});
 
 				// find the action
 				i = $.inArray(action, actions);

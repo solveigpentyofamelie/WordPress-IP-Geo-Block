@@ -302,7 +302,6 @@ class IP_Geo_Block_Opts {
 				$settings['validation'  ]['content'  ] = $default['validation'   ]['content'   ];
 				$settings['validation'  ]['restapi'  ] = $default['validation'   ]['restapi'   ];
 				$settings['validation'  ]['mimetype' ] = $default['validation'   ]['mimetype'  ];
-				$settings['validation'  ]['postkey'  ] = $settings['validation'  ]['postkey'   ] . (strpos( $settings['validation']['postkey'], 'FILES' ) === FALSE ? ',FILES' : '');
 				$settings['login_action']['resetpass'] = $settings['login_action']['resetpasss'];
 				$settings['public'      ]['ua_list'  ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
 				$settings['public'      ]['dnslkup'  ] = TRUE;

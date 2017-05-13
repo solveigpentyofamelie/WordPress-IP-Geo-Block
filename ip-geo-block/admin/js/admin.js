@@ -327,7 +327,6 @@ var ip_geo_block_time = new Date();
 				i.addColumn('number', 'login'  );
 				i.addColumn('number', 'admin'  );
 				i.addColumn('number', 'public' );
-//				i.addColumn('number', 'upload' ); // tab-statistics.php: Blocked by date
 				tr = $(ID('#', 'targets tr'));
 				for (m = tr.length, i = 0; i < m; ++i) {
 					arr[i] = [];
@@ -358,8 +357,6 @@ var ip_geo_block_time = new Date();
 						width: '100%',
 						height: '75%'
 					}
-					//       blue       red        orange     green      purple     cyan
-					// ,colors: ['#0000ff', '#ff0000', '#ffa500', '#008000', '#800080', '#00ffff']
 				});
 			}
 		}

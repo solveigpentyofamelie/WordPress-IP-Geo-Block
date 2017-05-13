@@ -113,7 +113,7 @@ class IP_Geo_Block {
 
 		else {
 			// public facing pages
-			if ( $validate['public'] || ( $validate['mimetype'] && ! empty( $_FILES ) ) /* && 'index.php' === $this->pagenow */ )
+			if ( $validate['public'] || ( ! empty( $_FILES ) && $validate['mimetype'] ) /* && 'index.php' === $this->pagenow */ )
 				$loader->add_action( 'init', array( $this, 'validate_public' ), $priority );
 
 			// message text on comment form
@@ -548,7 +548,7 @@ class IP_Geo_Block {
 		$trace = debug_backtrace( FALSE, 3 );
 		if ( empty( $trace[2] ) || $trace[2]['function'] !== 'wp_create_user' )
 			return $user_login;
-	
+
 		add_filter( self::PLUGIN_NAME . 'login', array( $this, 'check_user' ), 4, 2 );
 		$this->validate_ip( 'login', self::get_option(), TRUE );
 		return $user_login;

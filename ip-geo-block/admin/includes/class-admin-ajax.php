@@ -350,7 +350,7 @@ class IP_Geo_Block_Admin_Ajax {
 
 				  case 3:
 					if ( '%' === $m[2] ) {
-						foreach ( $input[ $m[1] ] as $key => $val ) {
+						foreach ( isset( $input[ $m[1] ] ) ? $input[ $m[1] ] : array() as $key => $val ) {
 							$json[ $prfx.'['.$m[1].']['.$key.']' ] = $val;
 						}
 						break;

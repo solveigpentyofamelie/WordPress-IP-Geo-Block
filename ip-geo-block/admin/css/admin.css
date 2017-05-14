@@ -356,7 +356,7 @@ input#ip_geo_block_settings_filter_logs {
     margin-bottom: 0.5em;
 }
 #ip-geo-block-toggle-sections,
-#ip-geo-block-back-to-top {
+#ip-geo-block-back-to-top a {
     box-shadow: none;
 }
 #ip-geo-block-wp-info textarea {

@@ -63,7 +63,7 @@ class IP_Geo_Block_Opts {
 			// since version 3.0.3
 			'content'     => 3,       // for WP_CONTENT_DIR
 			'restapi'     => 3,       // for get_rest_url()
-			'mimetype'    => 1,       // Validate $_FILES
+			'mimetype'    => 0,       // Validate $_FILES
 		),
 		'update'          => array(   // Updating IP address DB
 			'auto'        => TRUE,    // Auto updating of DB file
@@ -151,12 +151,12 @@ class IP_Geo_Block_Opts {
 			'ua_list'        => "Google:HOST,bot:HOST,slurp:HOST\nspider:HOST,archive:HOST,*:FEED\nembed.ly:HOST,Twitterbot:US,Facebot:US",
 			'simulate'       => FALSE,   // just simulate, never block
 			// since version 3.0.3
-			'dnslkup'        => TRUE,    // use DNS reverse lookup
+			'dnslkup'        => FALSE,   // use DNS reverse lookup
 		),
 		// since version 3.0.3
 		'mimetype'        => array(
 			'white_list'     => array(), // key and value
-			'black_list'     => "asp,cgi,exe,jsp,php,php3,php4,pl,py,pht,phtml,html,htm,shtml,sh", // comma separated extension
+			'black_list'     => "asp,aspx,cgi,exe,js,jsp,php,php3,php4,pl,py,pht,phtml,html,htm,shtml,sh,rar,tar", // comma separated extension
 		),
 		'others'          => array(),    // TBD
 	);
@@ -166,7 +166,7 @@ class IP_Geo_Block_Opts {
 	 *
 	 */
 	public static function get_default() {
-		self::$option_table['mimetype']['white_list'] = get_allowed_mime_types(); // wp-includes/functions.php @since 2.8.6
+		self::$option_table['mimetype']['white_list'] = IP_Geo_Block_Util::get_allowed_mime_types();
 		return self::$option_table;
 	}
 
@@ -296,15 +296,15 @@ class IP_Geo_Block_Opts {
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
 
 			if ( version_compare( $version, '3.0.3' ) < 0 ) {
-				$settings['rewrite'     ]['content'  ] = $default['rewrite'      ]['content'   ];
-				$settings['exception'   ]['content'  ] = $default['exception'    ]['content'   ];
-				$settings['exception'   ]['restapi'  ] = $default['exception'    ]['restapi'   ];
-				$settings['validation'  ]['content'  ] = $default['validation'   ]['content'   ];
-				$settings['validation'  ]['restapi'  ] = $default['validation'   ]['restapi'   ];
-				$settings['validation'  ]['mimetype' ] = $default['validation'   ]['mimetype'  ];
-				$settings['login_action']['resetpass'] = $settings['login_action']['resetpasss'];
+				$settings['rewrite'     ]['content'  ] = $default['rewrite'   ]['content' ];
+				$settings['exception'   ]['content'  ] = $default['exception' ]['content' ];
+				$settings['exception'   ]['restapi'  ] = $default['exception' ]['restapi' ];
+				$settings['validation'  ]['content'  ] = $default['validation']['content' ];
+				$settings['validation'  ]['restapi'  ] = $default['validation']['restapi' ];
+				$settings['validation'  ]['mimetype' ] = $default['validation']['mimetype'];
+				$settings['public'      ]['dnslkup'  ] = $default['public'    ]['dnslkup' ];
 				$settings['public'      ]['ua_list'  ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
-				$settings['public'      ]['dnslkup'  ] = TRUE;
+				$settings['login_action']['resetpass'] = @$settings['login_action']['resetpasss'];
 				$settings['mimetype'    ] = $default['mimetype'];
 				$settings['others'      ] = $default['others'  ];
 				unset( $settings['rewrite'     ]['public'    ] ); // unneeded

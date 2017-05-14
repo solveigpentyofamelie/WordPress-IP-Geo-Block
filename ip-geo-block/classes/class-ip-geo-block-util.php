@@ -476,6 +476,16 @@ class IP_Geo_Block_Util {
 	}
 
 	/**
+	 * WP alternative function current_user_can() for mu-plugins
+	 *
+	 * Retrieve list of allowed mime types and file extensions.
+	 * @source wp-includes/functions.php @since 2.8.6
+	 */
+	public static function get_allowed_mime_types( $user = NULL ) {
+		return apply_filters( 'upload_mimes', wp_get_mime_types(), $user );
+	}
+
+	/**
 	 * WP alternative function wp_check_filetype_and_ext() for mu-plugins
 	 *
 	 * Attempt to determine the real file type of a file.
@@ -584,7 +594,7 @@ class IP_Geo_Block_Util {
 	 *
 	 */
 	public static function mask_qualification( $ua_list ) {
-		return preg_replace( array( '/HOST[^,]*?/', '/\*[:#]\*,?/' ), array( '*', '' ), $ua_list );
+		return preg_replace( array( '/HOST[^,]*?/', '/\*[:#]!?\*,?/' ), array( '*', '' ), $ua_list );
 	}
 
 }

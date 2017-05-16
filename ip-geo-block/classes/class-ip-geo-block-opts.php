@@ -152,6 +152,8 @@ class IP_Geo_Block_Opts {
 			'simulate'       => FALSE,   // just simulate, never block
 			// since version 3.0.3
 			'dnslkup'        => FALSE,   // use DNS reverse lookup
+			'response_code'  => 200,     // better for AdSense
+			'redirect_uri'   => '/',     // top page
 		),
 		// since version 3.0.3
 		'mimetype'        => array(
@@ -296,15 +298,17 @@ class IP_Geo_Block_Opts {
 				delete_transient( IP_Geo_Block::CACHE_NAME ); // @since 2.8
 
 			if ( version_compare( $version, '3.0.3' ) < 0 ) {
-				$settings['rewrite'     ]['content'  ] = $default['rewrite'   ]['content' ];
-				$settings['exception'   ]['content'  ] = $default['exception' ]['content' ];
-				$settings['exception'   ]['restapi'  ] = $default['exception' ]['restapi' ];
-				$settings['validation'  ]['content'  ] = $default['validation']['content' ];
-				$settings['validation'  ]['restapi'  ] = $default['validation']['restapi' ];
-				$settings['validation'  ]['mimetype' ] = $default['validation']['mimetype'];
-				$settings['public'      ]['dnslkup'  ] = $default['public'    ]['dnslkup' ];
-				$settings['public'      ]['ua_list'  ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
-				$settings['login_action']['resetpass'] = @$settings['login_action']['resetpasss'];
+				$settings['rewrite'     ]['content'      ] = $default['rewrite'   ]['content' ];
+				$settings['exception'   ]['content'      ] = $default['exception' ]['content' ];
+				$settings['exception'   ]['restapi'      ] = $default['exception' ]['restapi' ];
+				$settings['validation'  ]['content'      ] = $default['validation']['content' ];
+				$settings['validation'  ]['restapi'      ] = $default['validation']['restapi' ];
+				$settings['validation'  ]['mimetype'     ] = $default['validation']['mimetype'];
+				$settings['public'      ]['dnslkup'      ] = TRUE;
+				$settings['public'      ]['ua_list'      ] = str_replace( '*:HOST=embed.ly', 'embed.ly:HOST', $settings['public']['ua_list'] );
+				$settings['public'      ]['response_code'] = $settings['response_code'];
+				$settings['public'      ]['redirect_uri' ] = $settings['redirect_uri' ];
+				$settings['login_action']['resetpass'    ] = @$settings['login_action']['resetpasss'];
 				$settings['mimetype'    ] = $default['mimetype'];
 				$settings['others'      ] = $default['others'  ];
 				unset( $settings['rewrite'     ]['public'    ] ); // unneeded

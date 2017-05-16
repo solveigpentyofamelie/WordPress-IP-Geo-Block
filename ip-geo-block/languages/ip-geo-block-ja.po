@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IP Geo Block 3.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ip-geo-block\n"
-"POT-Creation-Date: 2017-05-14 16:57+0900\n"
-"PO-Revision-Date: 2017-05-14 19:17+0900\n"
+"POT-Creation-Date: 2017-05-15 22:35+0900\n"
+"PO-Revision-Date: 2017-05-16 09:54+0900\n"
 "Last-Translator: tokkonopapa <tokkonopapa@yahoo.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -488,7 +488,7 @@ msgstr "無効"
 msgid "Verify capability and MIME type"
 msgstr ""
 "<dfn title=\"権限、および拡張子と&thinsp;MIME&thinsp;タイプの整合性を検証しま"
-"す。\">権限と&thinsp;MIME&thinsp;タイプの検証</dfn>"
+"す。\">権限と&thinsp;MIME&thinsp;タイプを検証</dfn>"
 
 #: admin/includes/tab-settings.php:269
 msgid "Verify only file extension"
@@ -1026,8 +1026,8 @@ msgid ""
 msgstr "主に「バックエンドの設定」に関する推奨の設定値をインポートします"
 
 #: admin/includes/tab-settings.php:1359
-msgid "Best settings"
-msgstr "ベストな設定"
+msgid "Best for Back-end"
+msgstr "バックエンドの推奨設定"
 
 #: admin/includes/tab-settings.php:1369
 msgid "Delete DB table for validation logs"

@@ -851,9 +851,9 @@ class IP_Geo_Block {
 
 		// replace "Validation rule settings"
 		if ( -1 !== (int)$public['matching_rule'] ) {
-			$settings['matching_rule'] = $public['matching_rule'];
-			$settings['white_list'   ] = $public['white_list'   ];
-			$settings['black_list'   ] = $public['black_list'   ];
+			foreach ( array( 'matching_rule', 'white_list', 'black_list', 'response_code', 'redirect_uri' ) as $key ) {
+				$settings[ $key ] = $public[ $key ];
+			}
 		}
 
 		// retrieve IP address of visitor via proxy services

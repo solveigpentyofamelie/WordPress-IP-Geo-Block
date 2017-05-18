@@ -345,7 +345,7 @@ var ip_geo_block_time = new Date();
 					arr[i] = [];
 					cells = tr.eq(i).children();
 					arr[i].push(new Date(cells.eq(0).text()));
-					for (n = cells.length, j = 1; j < n; j++) {
+					for (n = cells.length, j = 1; j < n; ++j) {
 						arr[i].push(Number(cells.eq(j).text()));
 					}
 				}
@@ -486,84 +486,9 @@ var ip_geo_block_time = new Date();
 			// Name of base class
 			var name = ID('%', 'settings');
 
-			// Matching rule
-			$(ID('@', 'matching_rule')).on('change', function () {
-				$(ID('@', 'white_list')).closest('tr').toggle(this.value === '0');
-				$(ID('@', 'black_list')).closest('tr').toggle(this.value === '1');
-				return false;
-			}).change();
-
-			// Show/Hide folding list at prevent malicious upload
-			$(ID('@', 'validation_mimetype')).on('change', function (event) {
-				var $this = $(this),
-				    stat = parseInt($this.val(), 10);
-				$this.nextAll(ID('.', 'settings-folding')).each(function (i, obj) {
-					fold_elements($(obj), stat === i + 1);
-				});
-				return stopPropergation(event);
-			}).change();
-
-			// Show/Hide folding list at Login form
-			$(ID('@', 'validation_login')).on('change', function (event) {
-				var $this = $(this);
-				show_folding_list($this, $this, name, true);
-				return stopPropergation(event);
-			}).change();
-
-			// Response message and Redirect URL
-			$(ID('@', 'response_code')).on('change', function (event) {
-				var res = parseInt($(this).val() / 100, 10),
-				    elm = $(this).closest('tr').nextAll('tr');
-				if (res <= 3) { // 2xx, 3xx
-					elm.each(function (index) {
-						if      (0 === index) { $(this).show(); } // redirect_uri
-						else if (1 === index) { $(this).hide(); } // response_msg
-					});
-				}
-				else { // 4xx, 5xx
-					elm.each(function (index) {
-						if      (0 === index) { $(this).hide(); } // redirect_uri
-						else if (1 === index) { $(this).show(); } // response_msg
-					});
-				}
-				return stopPropergation(event);
-			}).change();
-
-			// Exceptions for Admin ajax/post
-			$(ID('@', 'exception_admin')).on('change', function (event) {
-				var actions = $.grep($(this).val().split(','), function (e){
-					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
-				});
-
-				$(ID('#', 'actions')).find('input').each(function (i, e) {
-					var $this = $(this),
-					    action = $this.attr('id').replace(ID('%', ''), '');
-					$this.prop('checked', -1 !== $.inArray(action, actions));
-				});
-				return stopPropergation(event);
-			}).change();
-
-			// Enable / Disable for Public facing pages
-			$(ID('@', 'validation_public')).on('change', function (event) {
-				set_front_end($(this));
-				return stopPropergation(event);
-			}).change();
-
-			// Matching rule on front-end
-			$(ID('@', 'public_matching_rule')).on('change', function (event) {
-				$(ID('@', 'public_white_list')).closest('tr').toggle(this.value === '0');
-				$(ID('@', 'public_black_list')).closest('tr').toggle(this.value === '1');
-				return stopPropergation(event);
-			}).change();
-
-			// Show/Hide description (this change event hander should be at the last)
-			$('select[name^="' + name + '"]').on('change', function (event) {
-				var $this = $(this);
-				show_description($this);
-				show_folding_list($this, $this, name, true);
-				return false;
-			}).change();
-
+			/*---------------------------
+			 * Validation rule settings
+			 *---------------------------*/
 			// Scan your country code
 			$('[id^="' + ID('$', 'scan-') + '"]').on('click', function (event) {
 				var $this = $(this),
@@ -598,6 +523,128 @@ var ip_geo_block_time = new Date();
 				return false;
 			});
 
+			// Matching rule
+			$(ID('@', 'matching_rule')).on('change', function () {
+				var value = this.value;
+				$(ID('@', 'white_list')).closest('tr').toggle(value === '0');
+				$(ID('@', 'black_list')).closest('tr').toggle(value === '1');
+				return false;
+			}).change();
+
+			// Show/Hide folding list at prevent malicious upload
+			$(ID('@', 'validation_mimetype')).on('change', function (event) {
+				var $this = $(this),
+				    stat = parseInt($this.val(), 10);
+				$this.nextAll(ID('.', 'settings-folding')).each(function (i, obj) {
+					fold_elements($(obj), stat === i + 1);
+				});
+				return stopPropergation(event);
+			}).change();
+
+			// Response message and Redirect URL
+			$(ID('@', 'response_code')).on('change', function (event) {
+				var res = parseInt($(this).val() / 100, 10),
+				    elm = $(this).closest('tr').nextAll('tr');
+				if (res <= 3) { // 2xx, 3xx
+					elm.each(function (index) {
+						if      (0 === index) { $(this).show(); } // redirect_uri
+						else if (1 === index) { $(this).hide(); } // response_msg
+					});
+				}
+				else { // 4xx, 5xx
+					elm.each(function (index) {
+						if      (0 === index) { $(this).hide(); } // redirect_uri
+						else if (1 === index) { $(this).show(); } // response_msg
+					});
+				}
+				return stopPropergation(event);
+			}).change();
+
+			// Decode
+			$(ID('#', 'decode')).on('click', function (event) {
+				var elm = $(ID('@', 'signature')),
+				    str = elm.val();
+				if (str.search(/,/) === -1) {
+					elm.val(decode_str(str));
+				} else {
+					elm.val(encode_str(str));
+				}
+				return false;
+			});
+
+			/*---------------------------
+			 * Back-end target settings
+			 *---------------------------*/
+			// Show/Hide folding list at Login form
+			$(ID('@', 'validation_login')).on('change', function (event) {
+				var $this = $(this);
+				show_folding_list($this, $this, name, true);
+				return stopPropergation(event);
+			}).change();
+
+			// Exceptions for Admin ajax/post
+			$(ID('@', 'exception_admin')).on('change', function (event) {
+				var actions = $.grep($(this).val().split(','), function (e){
+					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
+				});
+
+				$(ID('#', 'actions')).find('input').each(function (i, e) {
+					var $this = $(this),
+					    action = $this.attr('id').replace(ID('%', ''), '');
+					$this.prop('checked', -1 !== $.inArray(action, actions));
+				});
+				return stopPropergation(event);
+			}).change();
+
+			// Candidate actions
+			$(ID('#', 'actions')).on('click', 'input', function (event) {
+				var i, $this = $(this),
+				action = $this.attr('id').replace(ID('%', ''), ''),
+				$admin = $(ID('@', 'exception_admin')),
+				actions = $.grep($admin.val().split(','), function (e){
+					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
+				});
+
+				// find the action
+				i = $.inArray(action, actions);
+
+				if (-1 === i) {
+					actions.push(action);
+				} else {
+					actions.splice(i, 1);
+				}
+
+				$admin.val(actions.join(',')).change();
+			});
+
+			// Enable / Disable Exceptions
+			show_folding_ajax($(ID('@', 'validation_ajax_1')));
+			$('input[id^="' + ID('!', 'validation_ajax_') + '"]').on('click', function (event) {
+				show_folding_ajax($(this));
+			});
+
+			/*---------------------------
+			 * Front-end target settings
+			 *---------------------------*/
+			// Enable / Disable for Public facing pages
+			$(ID('@', 'validation_public')).on('change', function (event) {
+				set_front_end($(this));
+				return stopPropergation(event);
+			}).change();
+
+			// Matching rule on front-end
+			$(ID('@', 'public_matching_rule')).on('change', function (event) {
+				var value = this.value;
+				$(ID('@', 'public_white_list'   )).closest('tr').toggle(value ===  '0');
+				$(ID('@', 'public_black_list'   )).closest('tr').toggle(value ===  '1');
+				$(ID('@', 'public_response_code')).closest('tr').toggle(value !== '-1');
+				$(ID('@', 'public_redirect_uri' )).closest('tr').toggle(value !== '-1');
+				return stopPropergation(event);
+			}).change();
+
+			/*---------------------------
+			 * Local database settings
+			 *---------------------------*/
 			// Update local database
 			$(ID('@', 'update')).on('click', function (event) {
 				ajax_post('download', {
@@ -625,6 +672,9 @@ var ip_geo_block_time = new Date();
 				return false;
 			});
 
+			/*---------------------------
+			 * Plugin settings
+			 *---------------------------*/
 			// Export / Import settings
 			add_hidden_form('validate');
 
@@ -719,6 +769,36 @@ var ip_geo_block_time = new Date();
 				return false;
 			});
 
+			// Show WordPress installation info
+			$(ID('#', 'show-info')).on('click', function (event) {
+				$(ID('#', 'wp-info')).empty();
+				ajax_post('wp-info', {
+					cmd: 'show-info'
+				}, function (data) {
+					var key, res = [];
+					for (key in data) {
+						if (data.hasOwnProperty(key)) {
+							res.push('- ' + key + ' ' + data[key]);
+						}
+					}
+
+					// response should be escaped at server side
+					$(ID('#', 'wp-info')).html('<textarea rows="' + res.length + '">' + /*escapeHTML*/(res.join("\n")) + '</textarea>').find('textarea').select();
+					return false;
+				});
+			});
+
+			/*---------------------------
+			 * Common event handler
+			 *---------------------------*/
+			// Show/Hide description (this change event hander should be at the last)
+			$('select[name^="' + name + '"]').on('change', function (event) {
+				var $this = $(this);
+				show_description($this);
+				show_folding_list($this, $this, name, true);
+				return false;
+			}).change();
+
 			// Toggle checkbox
 			$(ID('.', 'cycle')).on('click', function (event) {
 				var $that = $(this).next('li'),
@@ -749,64 +829,6 @@ var ip_geo_block_time = new Date();
 				}
 
 				return false;
-			});
-
-			// Decode
-			$(ID('#', 'decode')).on('click', function (event) {
-				var elm = $(ID('@', 'signature')),
-				    str = elm.val();
-				if (str.search(/,/) === -1) {
-					elm.val(decode_str(str));
-				} else {
-					elm.val(encode_str(str));
-				}
-				return false;
-			});
-
-			// Show WordPress installation info
-			$(ID('#', 'show-info')).on('click', function (event) {
-				$(ID('#', 'wp-info')).empty();
-				ajax_post('wp-info', {
-					cmd: 'show-info'
-				}, function (data) {
-					var key, res = [];
-					for (key in data) {
-						if (data.hasOwnProperty(key)) {
-							res.push('- ' + key + ' ' + data[key]);
-						}
-					}
-
-					// response should be escaped at server side
-					$(ID('#', 'wp-info')).html('<textarea rows="' + res.length + '">' + /*escapeHTML*/(res.join("\n")) + '</textarea>').find('textarea').select();
-					return false;
-				});
-			});
-
-			// Candidate actions
-			$(ID('#', 'actions')).on('click', 'input', function (event) {
-				var i, $this = $(this),
-				action = $this.attr('id').replace(ID('%', ''), ''),
-				$admin = $(ID('@', 'exception_admin')),
-				actions = $.grep($admin.val().split(','), function (e){
-					return '' !== e.replace(/^\s+|\s+$/g, ''); // remove empty element
-				});
-
-				// find the action
-				i = $.inArray(action, actions);
-
-				if (-1 === i) {
-					actions.push(action);
-				} else {
-					actions.splice(i, 1);
-				}
-
-				$admin.val(actions.join(',')).change();
-			});
-
-			// Enable / Disable Exceptions
-			show_folding_ajax($(ID('@', 'validation_ajax_1')));
-			$('input[id^="' + ID('!', 'validation_ajax_') + '"]').on('click', function (event) {
-				show_folding_ajax($(this));
 			});
 
 			// Submit

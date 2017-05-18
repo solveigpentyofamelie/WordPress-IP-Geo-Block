@@ -307,6 +307,8 @@ class IP_Geo_Block_Admin_Ajax {
 			'[public][ua_list]',         // 3.0.0
 			'[public][simulate]',        // 3.0.0
 			'[public][dnslkup]',         // 3.0.3
+			'[public][response_code]',   // 3.0.3
+			'[public][redirect_uri]',    // 3.0.3
 			'[providers][Maxmind]',
 			'[providers][IP2Location]',
 			'[providers][freegeoip.net]',

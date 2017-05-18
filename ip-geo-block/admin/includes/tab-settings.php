@@ -331,7 +331,7 @@ class IP_Geo_Block_Admin_Tab {
 		$field = 'redirect_uri';
 		add_settings_field(
 			$option_name.'_'.$field,
-			__( '<dfn title="Specify the URL for response code 2xx and 3xx. Front-end URL on your site would not be blocked to prevent loop of redirection even when you enable [Front-end target settings]. Empty URL is altered to your home.">Redirect URL</dfn>', 'ip-geo-block' ),
+			__( '<dfn title="Specify the URL for response code 2xx and 3xx. If it is pointed to a public facing page, visitors would not be blocked on the page to prevent loop of redirection even when you enable [Block by country] in [Front-end target settings] section. Empty URL is altered to your home.">Redirect URL</dfn>', 'ip-geo-block' ),
 			array( $context, 'callback_field' ),
 			$option_slug,
 			$section,
@@ -810,6 +810,49 @@ class IP_Geo_Block_Admin_Tab {
 				'value' => $options[ $field ][ $key ],
 				'after' => $comma[0],
 				'class' => $options[ $field ]['matching_rule'] == 1 ? '' : 'ip-geo-block-hide',
+			)
+		);
+
+		// Response code (RFC 2616)
+		$key = 'response_code';
+		add_settings_field(
+			$option_name.'_'.$field.'_'.$key,
+			sprintf( __( '<dfn title="You can configure a different response code from the Back-end. This is useful to prevent violation against your affiliate program.">Response code</dfn> %s', 'ip-geo-block' ), '(<a rel="noreferrer" href="http://tools.ietf.org/html/rfc2616#section-10" title="RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1">RFC 2616</a>)' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'select',
+				'option' => $option_name,
+				'field' => $field,
+				'sub-field' => $key,
+				'value' => $options[ $field ][ $key ],
+				'list' => array(
+					200 => '200 OK',
+					301 => '301 Moved Permanently',
+					302 => '302 Found',
+					303 => '303 See Other',
+					307 => '307 Temporary Redirect',
+				),
+				'class' => $options[ $field ]['matching_rule'] == -1 ? 'ip-geo-block-hide' :'',
+			)
+		);
+
+		// Redirect URI
+		$key = 'redirect_uri';
+		add_settings_field(
+			$option_name.'_'.$field,
+			__( '<dfn title="Specify the URL for response code 2xx and 3xx. If it is pointed to a public facing page, visitors would not be blocked on the page to prevent loop of redirection even when you enable [Block by country] in [Front-end target settings] section. Empty URL is altered to your home.">Redirect URL</dfn>', 'ip-geo-block' ),
+			array( $context, 'callback_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type' => 'text',
+				'option' => $option_name,
+				'field' => $field,
+				'sub-field' => $key,
+				'value' => $options[ $field ][ $key ],
+				'class' => $options[ $field ]['response_code'] < 400 ? '' : 'ip-geo-block-hide',
 			)
 		);
 

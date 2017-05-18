@@ -835,6 +835,13 @@ class IP_Geo_Block {
 		$settings = self::get_option();
 		$public = $settings['public'];
 
+		// replace "Validation rule settings"
+		if ( -1 !== (int)$public['matching_rule'] ) {
+			foreach ( array( 'matching_rule', 'white_list', 'black_list', 'response_code', 'redirect_uri' ) as $key ) {
+				$settings[ $key ] = $public[ $key ];
+			}
+		}
+
 		// avoid redirection loop
 		if ( $settings['response_code'] < 400 && IP_Geo_Block_Util::compare_url( $_SERVER['REQUEST_URI'], $settings['redirect_uri'] ? $settings['redirect_uri'] : home_url( '/' ) ) )
 			return; // do not block
@@ -847,13 +854,6 @@ class IP_Geo_Block {
 
 			// register filter hook to check pages and post types
 			add_filter( self::PLUGIN_NAME . '-public', array( $this, 'check_page' ), 10, 2 );
-		}
-
-		// replace "Validation rule settings"
-		if ( -1 !== (int)$public['matching_rule'] ) {
-			foreach ( array( 'matching_rule', 'white_list', 'black_list', 'response_code', 'redirect_uri' ) as $key ) {
-				$settings[ $key ] = $public[ $key ];
-			}
 		}
 
 		// retrieve IP address of visitor via proxy services
